@@ -31,19 +31,25 @@ class TestDetectArms(unittest.TestCase):
 
         # call function
         result = fluentnao_translator.detect_command(joint_dict)
+        self.assertEqual(len(result), 1, "Should get one tuple")
+
+        # expect one tuple
+        first_tuple = result[0]
 
         # command
-        command = result[0]
-        self.assertEqual("arms.left_forward", command, "Should detect command arms forward")
+        print 'first: ' + str(first_tuple)
+        print 'cmd: ' + first_tuple[0]
+        command = first_tuple[0]
+        self.assertEqual("arms.forward", command, "Should detect command arms forward")
 
         # pitch offset
         desired_pitch_offset = math.degrees(joint_dict['LShoulderPitch'])
-        actual_pitch_offset = result[1][0]
+        actual_pitch_offset = first_tuple[1][0]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
         desired_roll_offset = math.degrees(joint_dict['LShoulderRoll'])
-        actual_roll_offset = result[1][1]
+        actual_roll_offset = first_tuple[1][1]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
 
