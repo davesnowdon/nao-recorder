@@ -4,7 +4,7 @@ Created on 6 Jul 2013
 @author: dns
 '''
 import unittest
-
+import math
 import recorder.JointManager as JointManager
 import translators.fluentnao.core as fluentnao_translator
 
@@ -24,10 +24,36 @@ def make_joint_dict(angles):
 
 class TestDetectArms(unittest.TestCase):
 
-    def testName(self):
+    def testArmsForward(self):
+        
+        # joint positions
         joint_dict = make_joint_dict(POSITION_ZERO)
-        self.assertEqual("arms.forward", fluentnao_translator.detect_command(joint_dict), 
-                         "Should detect arms forward")
+
+        # call function
+        result = fluentnao_translator.detect_command(joint_dict)
+        self.assertEqual(len(result), 1, "Should get one tuple")
+
+        # expect one tuple
+        first_tuple = result[0]
+
+        # command
+        print 'first: ' + str(first_tuple)
+        print 'cmd: ' + first_tuple[0]
+        command = first_tuple[0]
+        self.assertEqual("arms.forward", command, "Should detect command arms forward")
+
+        # pitch offset
+        desired_pitch_offset = math.degrees(joint_dict['LShoulderPitch'])
+        actual_pitch_offset = first_tuple[1][0]
+        self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
+
+        # roll offset
+        desired_roll_offset = math.degrees(joint_dict['LShoulderRoll'])
+        actual_roll_offset = first_tuple[1][1]
+        self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
+
+
+
 
 
 if __name__ == "__main__":
