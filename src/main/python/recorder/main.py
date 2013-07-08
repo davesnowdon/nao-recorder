@@ -19,6 +19,9 @@ from pygments import lexers
 from pygame import font as fonts
 import codecs, os
 
+import naoutil.naoenv as naoenv
+import fluentnao.nao as nao
+
 class Fnt_SpinnerOption(SpinnerOption):
     pass
 
@@ -51,6 +54,11 @@ class NaoRecorderApp(App):
     files = ListProperty([None, ])
 
     def build(self):
+
+        # connect to nao
+        self._make_environment()
+
+        # building Kivy Interface
         b = BoxLayout(orientation='vertical')
 
 
@@ -67,9 +75,21 @@ class NaoRecorderApp(App):
             values=('Open', 'SaveAs', 'Save', 'Close'))
         mnu_file.bind(text=self._file_menu_selected)
 
+
+        # root actions
+        self.standard_positions = {
+            'stand_init': self.nao.stand_init, 
+            'sit_relax': self.nao.sit_relax, 
+            'stand_zero': self.nao.stand_zero, 
+            'lying_belly': self.nao.lying_belly, 
+            'lying_back': self.nao.lying_back, 
+            'stand': self.nao.stand, 
+            'crouch': self.nao.crouch, 
+            'sit': self.nao.sit
+        }
         robot_actions = Spinner(
             text='action',
-            values=sorted(['stand', 'stand-zero', 'sit', 'sit-relaxed']))
+            values=sorted(self.standard_positions.keys()))
         robot_actions.bind(text=self.on_action)
 
         menu.add_widget(mnu_file)
@@ -84,6 +104,13 @@ class NaoRecorderApp(App):
         b.add_widget(self.codeinput)
 
         return b
+
+    def _make_environment(self):
+        # nao util environment
+        self.env = naoenv.make_environment(None, ipaddr="nao.local", port=9559)
+
+        # fluent nao
+        self.nao = nao.Nao(self.env, None)
 
     def _update_size(self, instance, size):
         self.codeinput.font_size = float(size)
@@ -124,8 +151,16 @@ class NaoRecorderApp(App):
         _file.close()
 
     def on_action(self, instance, l):
-        print l
 
+        try:
+            # turn nao motors on
+            nao.stiff()
 
+            # run standard position
+            self.standard_positions[l]()
+        except KeyError as e:
+            print e
+
+        
 if __name__ == '__main__':
     NaoRecorderApp().run()
