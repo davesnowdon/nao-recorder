@@ -4,9 +4,7 @@ Created on Dec 31, 2012
 @author: dns
 '''
 
-import time
-from threading import Timer
-
+from mathutil import FLOAT_CMP_ACCURACY, feq
 
 # joint names in same order as returned by ALMotion.getAngles('Body')
 JOINT_NAMES = ('HeadYaw', 'HeadPitch', 
@@ -38,3 +36,20 @@ class JointManager(object):
         for n, v in zip(JOINT_NAMES, angles):
             self.joints[n] = v
         return self.joints
+
+    def joint_changes(self, oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
+        """
+        Returns a dict containing the changes in angles. Angles that have not changed have their
+        values set to None. Requires that oldangles and newangles have the same set
+        of keys.
+        """
+        deltas =  {}
+        for k in oldangles:
+            j1 = oldangles[k]
+            j2 = newangles[k]
+            if not feq(j1, j2):
+                deltas[k] = j2 - j1
+            else:
+                deltas[k] = None
+        return deltas
+    
