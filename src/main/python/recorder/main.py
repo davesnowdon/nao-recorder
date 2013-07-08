@@ -9,12 +9,14 @@ kivy.require('1.7.1')
 
 from kivy.app import App
 from kivy.extras.highlight import KivyLexer
+from kivy.uix.button import Button
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
 from kivy.uix.popup import Popup
 from kivy.properties import ListProperty
 from kivy.core.window import Window
+
 from pygments import lexers
 from pygame import font as fonts
 import codecs, os
@@ -70,13 +72,21 @@ class NaoRecorderApp(App):
             option_cls=Fnt_SpinnerOption,
             values=sorted(map(str, fonts.get_fonts())))
         fnt_name.bind(text=self._update_font)
+
+        # file menu
         mnu_file = Spinner(
             text='File',
             values=('Open', 'SaveAs', 'Save', 'Close'))
         mnu_file.bind(text=self._file_menu_selected)
 
+        # motors on/off
+        btn_motors_on = Button(text='motors on')
+        btn_motors_on.bind(on_press=self._on_motors_on)
 
-        # root actions
+        btn_motors_off = Button(text='motors off')
+        btn_motors_off.bind(on_press=self._on_motors_off)
+
+        # root actions menu
         self.standard_positions = {
             'stand_init': self.nao.stand_init, 
             'sit_relax': self.nao.sit_relax, 
@@ -92,7 +102,10 @@ class NaoRecorderApp(App):
             values=sorted(self.standard_positions.keys()))
         robot_actions.bind(text=self.on_action)
 
+        # add to menu
         menu.add_widget(mnu_file)
+        menu.add_widget(btn_motors_on)
+        menu.add_widget(btn_motors_off)
         menu.add_widget(robot_actions)
         b.add_widget(menu)
 
@@ -143,6 +156,15 @@ class NaoRecorderApp(App):
                 self.codeinput.text = ''
                 Window.title = 'untitled'
 
+
+    def _on_motors_off(self, instance):
+        print 'nao motors off'
+        self.nao.relax()
+
+    def _on_motors_on(self, instance):
+        print 'nao motors on'
+        self.nao.stiff()
+
     def on_files(self, instance, values):
         if not values[0]:
             return
@@ -153,11 +175,10 @@ class NaoRecorderApp(App):
     def on_action(self, instance, l):
 
         try:
-            # turn nao motors on
-            nao.stiff()
 
             # run standard position
             self.standard_positions[l]()
+            
         except KeyError as e:
             print e
 
