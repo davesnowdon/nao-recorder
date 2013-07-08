@@ -80,11 +80,15 @@ class NaoRecorderApp(App):
         mnu_file.bind(text=self._file_menu_selected)
 
         # motors on/off
-        btn_motors_on = Button(text='motors on')
+        btn_motors_on = Button(text='Motors On')
         btn_motors_on.bind(on_press=self._on_motors_on)
 
-        btn_motors_off = Button(text='motors off')
+        btn_motors_off = Button(text='Motors Off')
         btn_motors_off.bind(on_press=self._on_motors_off)
+
+        # run script
+        btn_run_script = Button(text='Run Script')
+        btn_run_script.bind(on_press=self._on_run_script)
 
         # root actions menu
         self.standard_positions = {
@@ -98,7 +102,7 @@ class NaoRecorderApp(App):
             'sit': self.nao.sit
         }
         robot_actions = Spinner(
-            text='action',
+            text='Action',
             values=sorted(self.standard_positions.keys()))
         robot_actions.bind(text=self.on_action)
 
@@ -106,13 +110,15 @@ class NaoRecorderApp(App):
         menu.add_widget(mnu_file)
         menu.add_widget(btn_motors_on)
         menu.add_widget(btn_motors_off)
+        menu.add_widget(btn_run_script)
         menu.add_widget(robot_actions)
         b.add_widget(menu)
 
+        # code input
         self.codeinput = CodeInput(
             lexer=lexers.PythonLexer(),
             font_name='data/fonts/DroidSansMono.ttf', font_size=12,
-            text="")
+            text="nao.say('hi')")
 
         b.add_widget(self.codeinput)
 
@@ -165,6 +171,15 @@ class NaoRecorderApp(App):
         print 'nao motors on'
         self.nao.stiff()
 
+    def _on_run_script(self, instance):
+        
+        # TODO: run only selected code 
+        #code = self.codeinput.selection_text
+        #if not code or len(code) == 0:
+        code = self.codeinput.text
+        self.nao.naoscript.run_script(code, '\n')
+
+
     def on_files(self, instance, values):
         if not values[0]:
             return
@@ -178,7 +193,7 @@ class NaoRecorderApp(App):
 
             # run standard position
             self.standard_positions[l]()
-            
+
         except KeyError as e:
             print e
 
