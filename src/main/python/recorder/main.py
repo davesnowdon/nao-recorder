@@ -24,6 +24,9 @@ import codecs, os
 import naoutil.naoenv as naoenv
 import fluentnao.nao as nao
 
+from JointManager import JointManager
+import translators.fluentnao.core as fluentnao_translator
+
 class Fnt_SpinnerOption(SpinnerOption):
     pass
 
@@ -90,6 +93,10 @@ class NaoRecorderApp(App):
         btn_run_script = Button(text='Run Script')
         btn_run_script.bind(on_press=self._on_run_script)
 
+        # add keyframe
+        btn_add_keyframe = Button(text='Add Keyframe')
+        btn_add_keyframe.bind(on_press=self._on_add_keyframe)
+
         # root actions menu
         self.standard_positions = {
             'stand_init': self.nao.stand_init, 
@@ -108,6 +115,7 @@ class NaoRecorderApp(App):
 
         # add to menu
         menu.add_widget(mnu_file)
+        menu.add_widget(btn_add_keyframe)
         menu.add_widget(btn_motors_on)
         menu.add_widget(btn_motors_off)
         menu.add_widget(btn_run_script)
@@ -125,8 +133,10 @@ class NaoRecorderApp(App):
         return b
 
     def _make_environment(self):
+
         # nao util environment
         self.env = naoenv.make_environment(None, ipaddr="nao.local", port=9559)
+        self.joint_manager = JointManager(self.env)
 
         # fluent nao
         self.nao = nao.Nao(self.env, None)
@@ -178,6 +188,35 @@ class NaoRecorderApp(App):
         #if not code or len(code) == 0:
         code = self.codeinput.text
         self.nao.naoscript.run_script(code, '\n')
+
+    def _on_add_keyframe(self, instance):
+
+        # get angles
+        angles = self.joint_manager.get_joint_angles()
+        print angles
+
+        # translating
+        commands = fluentnao_translator.detect_command(angles)
+
+        print "-----"
+        print commands
+        print "-----"
+
+        # covert commands into naoscript w/ args
+        output = ""
+        for command_tuple in commands:
+            # the command
+            output = output + command_tuple[0] + "(0" 
+
+            # the arguments
+            for arg in command_tuple[1]:
+                output = output + ", " + str(arg)
+            output = output + ")" 
+
+        print output
+
+        # display commands
+        self.codeinput.text = self.codeinput.text + "\n" + output
 
 
     def on_files(self, instance, values):
