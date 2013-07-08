@@ -13,6 +13,7 @@ from kivy.uix.button import Button
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
+from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
 from kivy.properties import ListProperty
 from kivy.core.window import Window
@@ -129,8 +130,15 @@ class NaoRecorderApp(App):
             text="nao.say('hi')")
 
         b.add_widget(self.codeinput)
+        
+        # status window
+        self.status = TextInput(text="", readonly=True, multiline=True, size_hint=(1.0, 0.25))
+        b.add_widget(self.status)
 
         return b
+
+    def add_status(self, text):
+        self.status.text = self.status.text + "\n" + text
 
     def _make_environment(self):
 
@@ -174,11 +182,11 @@ class NaoRecorderApp(App):
 
 
     def _on_motors_off(self, instance):
-        print 'nao motors off'
+        self.add_status('Turning NAO motors off')
         self.nao.relax()
 
     def _on_motors_on(self, instance):
-        print 'nao motors on'
+        self.add_status('Turning NAO motors on')
         self.nao.stiff()
 
     def _on_run_script(self, instance):
