@@ -25,7 +25,7 @@ import naoutil.naoenv as naoenv
 import fluentnao.nao as nao
 
 from JointManager import JointManager
-import translators.fluentnao.core as fluentnao_translator
+from core import get_translator
 
 class Fnt_SpinnerOption(SpinnerOption):
     pass
@@ -196,7 +196,7 @@ class NaoRecorderApp(App):
         print angles
 
         # translating
-        commands = fluentnao_translator.detect_command(angles)
+        commands = get_translator().detect_command(angles)
 
         print "-----"
         print commands
