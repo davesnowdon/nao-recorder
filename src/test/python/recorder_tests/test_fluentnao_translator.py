@@ -6,9 +6,12 @@ Created on 6 Jul 2013
 import unittest
 import math
 
-import translators.fluentnao.core as fluentnao_translator
+from translators.fluentnao.core import FluentNaoTranslator
 from testutil import POSITION_ZERO, make_joint_dict
 
+
+def get_translator():
+    return FluentNaoTranslator()
 
 class TestDetectArms(unittest.TestCase):
 
@@ -18,7 +21,7 @@ class TestDetectArms(unittest.TestCase):
         joint_dict = make_joint_dict(POSITION_ZERO)
 
         # call function
-        result = fluentnao_translator.detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict)
         self.assertEqual(len(result), 1, "Should get one tuple")
 
         # expect one tuple
@@ -39,9 +42,6 @@ class TestDetectArms(unittest.TestCase):
         desired_roll_offset = math.degrees(joint_dict['LShoulderRoll'])
         actual_roll_offset = first_tuple[1][1]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
-
-
-
 
 
 if __name__ == "__main__":
