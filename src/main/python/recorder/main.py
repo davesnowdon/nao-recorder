@@ -67,7 +67,13 @@ class NaoRecorderApp(App):
             values=('Open', 'SaveAs', 'Save', 'Close'))
         mnu_file.bind(text=self._file_menu_selected)
 
+        robot_actions = Spinner(
+            text='action',
+            values=sorted(['stand', 'stand-zero', 'sit', 'sit-relaxed']))
+        robot_actions.bind(text=self.on_action)
+
         menu.add_widget(mnu_file)
+        menu.add_widget(robot_actions)
         b.add_widget(menu)
 
         self.codeinput = CodeInput(
@@ -116,6 +122,9 @@ class NaoRecorderApp(App):
         _file = codecs.open(values[0], 'r', encoding='utf8')
         self.codeinput.text = _file.read()
         _file.close()
+
+    def on_action(self, instance, l):
+        print l
 
 
 if __name__ == '__main__':
