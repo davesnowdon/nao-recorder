@@ -6,33 +6,102 @@ Created on 6 Jul 2013
 import math
 
 class FluentNaoTranslator(object):
+	def __init__(self):
+
+		# command: (desired deg, max deg, min deg)
+		self.commands_dict = {
+			"arms.left_forward": {
+				'LShoulderPitch': (0, 45, -45),
+				'LShoulderRoll': (0, 45, -90)
+			},
+			"arms.right_forward": {
+				'LShoulderPitch': (0, 45, -45),
+				'LShoulderRoll': (0, 90, -45)
+			}
+		}
+
+
 	def detect_command(self, joint_dict):
+		score = {}
 		commands = []
 
-		# check both arms
-		result = self.is_arms_forward(joint_dict)
-		if result:
-			commands.append(result)
+		# commands
+		for command in self.commands_dict.keys():
 
-		else:
-			# check left
-			left = self.is_left_arm_forward(joint_dict)
-			if left:
-				commands.append(left)
-			else: 
-				# out or up?
-				pass
+			# command joint dict: desired, max and min
+			cmd_joint_dict = self.commands_dict[command]
 
-			# check right
-			right = self.is_right_arm_forward(joint_dict)	
-			if right:
-				commands.append(right)
-			else:
-				# out or up?
-				pass
+			# final command tuple
+			cmd_tuple = (command, [0, 0]) 				 
+			
+
+			# joint degrees
+			range_match = True
+			for joint in cmd_joint_dict:
+
+				# naos current position (passed in)
+				deg_nao = math.degrees(joint_dict[joint])
+
+				# range tuple
+				cmd_range_tuple = cmd_joint_dict[joint]
+
+				# set: desired, max & min
+				deg_desired = cmd_range_tuple[0]
+				deg_max = cmd_range_tuple[1]
+				deg_min = cmd_range_tuple[2]
+
+				# in range?
+				print joint + ' ' + str(deg_min) + ' <= ' + str(deg_nao) + ' <= ' + str(deg_max)
+				if deg_min <= deg_nao <= deg_max:
+
+					# offset
+					offset = caculate_offset(deg_desired, deg_nao, joint)
+
+					# assign to cmd tuple
+					assign_offset(joint, cmd_tuple)
+
+				# not in range?
+				else:
+					range_match = False
+
+			# use command
+			if range_match:
+				commands.append(cmd_tuple)
 
 		# return all commands needed for arms
-		return commands
+		return commands #reduce_commands(commands)
+
+	#def reduce_commands(commands):
+    #
+	#	for cmd_tuple in commands:
+	#		m = [cmd for x in l where x[0] == 'a']
+
+
+
+	def assign_offset(joint, cmd_tuple):
+
+		# Roll?
+		if (joint.find('Roll') > -1):
+			
+			# first offset
+			cmd_tuple[1][1] = offset
+
+		else:
+
+			# second offset
+			cmd_tuple[1][0] = offset
+
+	def caculate_offset(deg_desired, deg_nao, joint):
+
+		# Roll?
+		if (joint.find('Roll') > -1):
+			
+			# Left?
+			if (joint.startswith('L')):
+				return deg_desired + deg_nao
+
+		# default offset calculation
+		return deg_desired - deg_nao
 
 	def is_left_arm_forward(self, joint_dict):
 
