@@ -55,10 +55,10 @@ class FluentNaoTranslator(object):
 				if deg_min <= deg_nao <= deg_max:
 
 					# offset
-					offset = caculate_offset(deg_desired, deg_nao, joint)
+					offset = self.caculate_offset(deg_desired, deg_nao, joint)
 
 					# assign to cmd tuple
-					assign_offset(joint, cmd_tuple)
+					self.assign_offset(joint, cmd_tuple, offset)
 
 				# not in range?
 				else:
@@ -69,16 +69,30 @@ class FluentNaoTranslator(object):
 				commands.append(cmd_tuple)
 
 		# return all commands needed for arms
-		return commands #reduce_commands(commands)
+		return self.reduce_commands(commands)
 
-	#def reduce_commands(commands):
-    #
-	#	for cmd_tuple in commands:
-	#		m = [cmd for x in l where x[0] == 'a']
+	def reduce_commands(self, commands):
+
+		reduced_commands = []
+    
+    	
+		for command_tuple in commands:
+
+			# match end of command
+			match = command_tuple[0].split('_')[-1]
+
+			# against collection
+			tuples = [c for c in commands if match in c[0]]
+			
+			if len(tuples) > 1:
+
+				# reduce
+				pass
+
+		return commands
 
 
-
-	def assign_offset(joint, cmd_tuple):
+	def assign_offset(self, joint, cmd_tuple, offset):
 
 		# Roll?
 		if (joint.find('Roll') > -1):
@@ -91,7 +105,7 @@ class FluentNaoTranslator(object):
 			# second offset
 			cmd_tuple[1][0] = offset
 
-	def caculate_offset(deg_desired, deg_nao, joint):
+	def caculate_offset(self, deg_desired, deg_nao, joint):
 
 		# Roll?
 		if (joint.find('Roll') > -1):
