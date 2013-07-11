@@ -22,12 +22,10 @@ class FluentNaoTranslator(object):
 		arms_commands = self.eval_forward(joint_dict)
 
 		# arms out?
-		if len(arms_commands) == 0:
-			arms_commands = self.eval_out(joint_dict)
+		arms_commands = arms_commands + self.eval_out(joint_dict)
 
 		# arms up?
-		if len(arms_commands) == 0:
-			arms_commands = self.eval_up(joint_dict)
+ 		arms_commands = arms_commands + self.eval_up(joint_dict)
 
 		# arms back?
 
