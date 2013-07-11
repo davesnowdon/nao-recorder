@@ -88,7 +88,7 @@ class TestDetectArms(unittest.TestCase):
         print 'first: ' + str(first_tuple)
         print 'cmd: {0}(0, {1},{2})'.format(first_tuple[0], first_tuple[1][0], first_tuple[1][1])
         command = first_tuple[0]
-        self.assertEqual("arms.up", command, "Should detect command arms out")
+        self.assertEqual("arms.out", command, "Should detect command arms out")
 
         # pitch offset
         desired_pitch_offset = round(-math.degrees(joint_dict['LShoulderPitch']))
@@ -96,7 +96,7 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(90 + math.degrees(joint_dict['LShoulderRoll']))
+        desired_roll_offset = round(math.degrees(joint_dict['LShoulderRoll']) - 90)
         actual_roll_offset = first_tuple[1][1]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
