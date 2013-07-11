@@ -17,10 +17,12 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
 from kivy.properties import ListProperty
 from kivy.core.window import Window
+from kivy.lang import Builder
 
 from pygments import lexers
 from pygame import font as fonts
 import codecs, os
+import logging
 
 import naoutil.naoenv as naoenv
 import fluentnao.nao as nao
@@ -28,8 +30,12 @@ import fluentnao.nao as nao
 from JointManager import JointManager
 from core import get_translator
 
+
+main_logger = logging.getLogger("recorder.main")
+
 class Fnt_SpinnerOption(SpinnerOption):
     pass
+
 
 class LoadDialog(Popup):
 
@@ -55,14 +61,46 @@ class SaveDialog(Popup):
     def cancel(self):
         self.dismiss()
 
+
+Builder.load_string('''
+<ConnectionDialog>:
+    size_hint: .5, .5
+    auto_dismiss: False
+    title: 'Connect to NAO'
+    f_hostname: hostname
+    f_port: port
+    GridLayout:
+        rows: 3
+        cols: 2
+        padding: 10
+        spacing: 10
+        Label:
+            text: 'Address'
+        TextInput:
+            id: hostname
+            text: 'nao.local'
+        Label:
+            text: 'Port number'
+        TextInput:
+            id: port
+            text: '9559'
+        Button:
+            text: 'Connect'
+            on_press: root.dismiss()
+
+''')
+
+class ConnectionDialog(Popup):
+    pass
+
+
 class NaoRecorderApp(App):
 
     files = ListProperty([None, ])
 
     def build(self):
+        self.is_connected = False
 
-        # connect to nao
-        self._make_environment()
 
         # building Kivy Interface
         b = BoxLayout(orientation='vertical')
@@ -80,7 +118,7 @@ class NaoRecorderApp(App):
         # file menu
         mnu_file = Spinner(
             text='File',
-            values=('Open', 'SaveAs', 'Save', 'Close'))
+            values=('Connect', 'Open', 'SaveAs', 'Save', 'Close'))
         mnu_file.bind(text=self._file_menu_selected)
 
         # motors on/off
@@ -97,17 +135,18 @@ class NaoRecorderApp(App):
         # add keyframe
         btn_add_keyframe = Button(text='Add Keyframe')
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
+        
 
         # root actions menu
         self.standard_positions = {
-            'stand_init': self.nao.stand_init, 
-            'sit_relax': self.nao.sit_relax, 
-            'stand_zero': self.nao.stand_zero, 
-            'lying_belly': self.nao.lying_belly, 
-            'lying_back': self.nao.lying_back, 
-            'stand': self.nao.stand, 
-            'crouch': self.nao.crouch, 
-            'sit': self.nao.sit
+            'stand_init': None, 
+            'sit_relax': None, 
+            'stand_zero': None, 
+            'lying_belly': None, 
+            'lying_back': None, 
+            'stand': None, 
+            'crouch': None, 
+            'sit': None
         }
         robot_actions = Spinner(
             text='Action',
@@ -137,17 +176,46 @@ class NaoRecorderApp(App):
 
         return b
 
+    def on_start(self):
+        self.show_connection_dialog(None)
+
     def add_status(self, text):
         self.status.text = self.status.text + "\n" + text
 
-    def _make_environment(self):
+    def show_connection_dialog(self, b):
+        p = ConnectionDialog()
+        p.bind(on_dismiss=self.do_connect)
+        p.open()
 
-        # nao util environment
-        self.env = naoenv.make_environment(None, ipaddr="nao.local", port=9559)
-        self.joint_manager = JointManager(self.env)
+    def do_connect(self, popup):
+        print "hostname = " + str(popup.f_hostname.text)
+        print "port = "+ str(popup.f_port.text)
+        self._make_environment(popup.f_hostname.text, int(popup.f_port.text))
 
-        # fluent nao
-        self.nao = nao.Nao(self.env, None)
+    def _make_environment(self, hostname, portnumber):
+        main_logger.info("Connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
+        self.env = naoenv.make_environment(None, ipaddr=hostname, port=portnumber)
+        if (self.env):
+            self.add_status("Connected to robot at {host}:{port}".format(host=hostname, port=portnumber))
+        
+            self.joint_manager = JointManager(self.env)
+            self.nao = nao.Nao(self.env, None)
+            self.is_connected = True
+                
+            self.standard_positions = {
+                'stand_init': self.nao.stand_init, 
+                'sit_relax': self.nao.sit_relax, 
+                'stand_zero': self.nao.stand_zero, 
+                'lying_belly': self.nao.lying_belly, 
+                'lying_back': self.nao.lying_back, 
+                'stand': self.nao.stand, 
+                'crouch': self.nao.crouch, 
+                'sit': self.nao.sit
+            }
+            
+        else:
+            self.add_status("Error connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
+            self.show_connection_dialog(None)
 
     def _update_size(self, instance, size):
         self.codeinput.font_size = float(size)
@@ -160,7 +228,10 @@ class NaoRecorderApp(App):
         if value == 'File':
             return
         instance.text = 'File'
-        if value == 'Open':
+        if value == 'Connect':
+            self.show_connection_dialog(None)
+        
+        elif value == 'Open':
             if not hasattr(self, 'load_dialog'):
                 self.load_dialog = LoadDialog()
             self.load_dialog.open()
@@ -182,49 +253,51 @@ class NaoRecorderApp(App):
 
 
     def _on_motors_off(self, instance):
-        self.add_status('Turning NAO motors off')
-        self.nao.relax()
+        if self.is_connected:
+            self.add_status('Turning NAO motors off')
+            self.nao.relax()
 
     def _on_motors_on(self, instance):
-        self.add_status('Turning NAO motors on')
-        self.nao.stiff()
+        if self.is_connected:
+            self.add_status('Turning NAO motors on')
+            self.nao.stiff()
 
     def _on_run_script(self, instance):
-        
-        # TODO: run only selected code 
-        #code = self.codeinput.selection_text
-        #if not code or len(code) == 0:
-        code = self.codeinput.text
-        self.nao.naoscript.run_script(code, '\n')
+        if self.is_connected:
+            # TODO: run only selected code 
+            #code = self.codeinput.selection_text
+            #if not code or len(code) == 0:
+            code = self.codeinput.text
+            self.nao.naoscript.run_script(code, '\n')
 
     def _on_add_keyframe(self, instance):
+        if self.is_connected:
+            # get angles
+            angles = self.joint_manager.get_joint_angles()
+            print angles
 
-        # get angles
-        angles = self.joint_manager.get_joint_angles()
-        print angles
+            # translating
+            commands = get_translator().detect_command(angles)
 
-        # translating
-        commands = get_translator().detect_command(angles)
+            print "-----"
+            print commands
+            print "-----"
 
-        print "-----"
-        print commands
-        print "-----"
+            # covert commands into naoscript w/ args
+            output = ""
+            for command_tuple in commands:
+                # the command
+                output = output + command_tuple[0] + "(0" 
 
-        # covert commands into naoscript w/ args
-        output = ""
-        for command_tuple in commands:
-            # the command
-            output = output + command_tuple[0] + "(0" 
+                # the arguments
+                for arg in command_tuple[1]:
+                    output = output + ", " + str(arg)
+                output = output + ")" 
 
-            # the arguments
-            for arg in command_tuple[1]:
-                output = output + ", " + str(arg)
-            output = output + ")" 
+            print output
 
-        print output
-
-        # display commands
-        self.codeinput.text = self.codeinput.text + "\n" + output
+            # display commands
+            self.codeinput.text = self.codeinput.text + "\n" + output
 
 
     def on_files(self, instance, values):
@@ -235,14 +308,11 @@ class NaoRecorderApp(App):
         _file.close()
 
     def on_action(self, instance, l):
-
-        try:
-
-            # run standard position
-            self.standard_positions[l]()
-
-        except KeyError as e:
-            print e
+        if self.is_connected:
+            try:
+                self.standard_positions[l]()
+            except KeyError as e:
+                print e
 
         
 if __name__ == '__main__':
