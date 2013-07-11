@@ -138,6 +138,7 @@ class NaoRecorderApp(App):
         
 
         # root actions menu
+        # TODO Need to fix this!!
         self.standard_positions = {
             'stand_init': None, 
             'sit_relax': None, 
