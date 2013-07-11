@@ -9,6 +9,23 @@ class FluentNaoTranslator(object):
 	def detect_command(self, joint_dict):
 		commands = []
 
+		# arms forward?
+		commands = commands + self.eval_forward(joint_dict)
+
+		# arms out?
+
+		# arms up?
+
+		# arms back?
+
+		# return commands
+		return commands
+
+
+
+	def eval_forward(self, joint_dict):
+		commands = []
+
 		# check both arms
 		result = self.is_arms_forward(joint_dict)
 		if result:
@@ -18,19 +35,11 @@ class FluentNaoTranslator(object):
 			left = self.is_left_arm_forward(joint_dict)
 			if left:
 				commands.append(left)
-			else: 
-				# out or up?
-				pass
-
+			
 			# check right
 			right = self.is_right_arm_forward(joint_dict)	
 			if right:
 				commands.append(right)
-			else:
-				# out or up?
-				pass
-
-		# return all commands needed for arms
 		return commands
 
 	def is_left_arm_forward(self, joint_dict):
@@ -41,11 +50,11 @@ class FluentNaoTranslator(object):
 
 		# left pitch range(90)
 		if l_should_pitch <= 45 and l_should_pitch >= -45:
-			l_pitch_offset = 0 + l_should_pitch 
+			l_pitch_offset = round(l_should_pitch)
 
 			# LEFT: match roll
 			if l_should_roll <= 45:
-				l_roll_offset = 0 + l_should_roll
+				l_roll_offset = round(-l_should_roll)
 				return ("arms.left_forward", [l_pitch_offset, l_roll_offset]) 
 		return None
 
@@ -57,11 +66,11 @@ class FluentNaoTranslator(object):
 
 		# RIGHT: match pitch
 		if r_should_pitch <= 45 and r_should_pitch >= -45:
-			r_pitch_offset = 0 + r_should_pitch 
+			r_pitch_offset = round(r_should_pitch)
 
 			# LEFT: match roll
 			if r_should_roll >= -45:
-				r_roll_offset = 0 + r_should_roll
+				r_roll_offset = round(r_should_roll)
 				return ("arms.right_forward", [r_pitch_offset, r_roll_offset])
 		return None
 
