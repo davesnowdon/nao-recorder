@@ -22,7 +22,32 @@ class FluentNaoTranslator(object):
 		arms_commands = self.eval_forward(joint_dict)
 
 		# arms out?
-		arms_commands = arms_commands + self.eval_out(joint_dict)
+		arms_out_args = {
+			'both_command': 'arms.out',
+			'left': {
+				'command': 'arms.left_out',
+				'pitch_joint':'LShoulderPitch',
+				'roll_joint':'LShoulderRoll',
+				'pitch_max':45,
+				'pitch_min':-45,
+				'roll_max':110,
+				'roll_min':45,
+				'offset_pitch_lambda': lambda x: round(-x),
+				'offset_roll_lambda': lambda x: round(x - 90)
+			},
+			'right': {
+				'command': 'arms.right_out',
+				'pitch_joint':'RShoulderPitch',
+				'roll_joint':'RShoulderRoll',
+				'pitch_max':45,
+				'pitch_min':-45,
+				'roll_max':-45,
+				'roll_min':-110,
+				'offset_pitch_lambda': lambda x: round(-x),
+				'offset_roll_lambda': lambda x: round(-x - 90)
+			}
+		}
+		arms_commands = arms_commands + self.eval_algo(joint_dict, arms_out_args)
 
 		# arms up?
 		arms_up_args = {
@@ -57,53 +82,6 @@ class FluentNaoTranslator(object):
 		return arms_commands
 
 
-
-
-
-	def eval_algo(self, joint_dict, args):
-		commands = []
-
-		# check both
-		result = self.is_algo_both(joint_dict, args)
-		if result:
-			commands.append(result)
-		else:
-			# check left
-			left = self.is_algo(joint_dict, args['left'])
-			if left:
-				commands.append(left)
-			
-			# check right
-			right = self.is_algo(joint_dict, args['right'])	
-			if right:
-				commands.append(right)
-		return commands
-
-	def is_algo_both(self, joint_dict, args):
-		# check each arm
-		left = self.is_algo(joint_dict, args['left'])
-		right = self.is_algo(joint_dict, args['right'])
-		#print 'left {0}'.format(left)
-		#print 'right {0}'.format(right)
-		# both up?
-		if left and right:
-			
-			# compare offsets
-			l_pitch_offset = left[1][0]
-			l_roll_offset = left[1][1]
-			r_pitch_offset = right[1][0]
-			r_roll_offset = right[1][1]
-
-			# allow within 10 degrees
-			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
-			roll_diff = abs(l_roll_offset - r_roll_offset)
-			if pitch_diff <= 10 and roll_diff <= 10:
-
-				# reduce
-				return (args['both_command'], [l_pitch_offset, l_roll_offset])
-
-		return None
-
 	def is_algo(self, joint_dict, args):
 
 		# left pitch and roll
@@ -121,158 +99,6 @@ class FluentNaoTranslator(object):
 				l_roll_offset = args['offset_roll_lambda'](l_roll)
 				return (args['command'], [l_pitch_offset, l_roll_offset]) 
 		return None
-
-
-	def eval_out(self, joint_dict):
-		commands = []
-
-		# check both arms
-		result = self.is_arms_out(joint_dict)
-		if result:
-			commands.append(result)
-		else:
-			# check left
-			left = self.is_left_arm_out(joint_dict)
-			if left:
-				commands.append(left)
-			
-			# check right
-			right = self.is_right_arm_out(joint_dict)	
-			if right:
-				commands.append(right)
-		return commands
-
-	def is_left_arm_out(self, joint_dict):
-
-		# left arm
-		l_should_pitch = math.degrees(joint_dict['LShoulderPitch'])
-		l_should_roll = math.degrees(joint_dict['LShoulderRoll'])
-
-		# left pitch
-		if -45 <= l_should_pitch <= 45:
-			l_pitch_offset = round(-l_should_pitch)
-
-			# LEFT: match roll
-			if l_should_roll >= 45:
-				l_roll_offset = round(l_should_roll - 90)
-				return ("arms.left_out", [l_pitch_offset, l_roll_offset]) 
-		return None
-
-	def is_right_arm_out(self, joint_dict):
-
-		# right arm
-		r_should_pitch = math.degrees(joint_dict['RShoulderPitch'])
-		r_should_roll = math.degrees(joint_dict['RShoulderRoll'])
-
-		# RIGHT: match pitch
-		if -45 <= r_should_pitch <= 45:
-			r_pitch_offset = round(-r_should_pitch)
-
-			# LEFT: match roll
-			if r_should_roll <= -45:
-				r_roll_offset = round(-r_should_roll - 90)
-				return ("arms.right_out", [r_pitch_offset, r_roll_offset])
-		return None
-
-	def is_arms_out(self, joint_dict):
-		# check each arm
-		left = self.is_left_arm_out(joint_dict)
-		right = self.is_right_arm_out(joint_dict)
-
-		# both out?
-		if left and right:
-			
-			# compare offsets
-			l_pitch_offset = left[1][0]
-			l_roll_offset = left[1][1]
-			r_pitch_offset = right[1][0]
-			r_roll_offset = right[1][1]
-
-			# allow within 10 degrees
-			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
-			roll_diff = abs(l_roll_offset - r_roll_offset)
-			if pitch_diff <= 10 and roll_diff <= 10:
-
-				# reduce
-				return ("arms.out", [l_pitch_offset, l_roll_offset])
-
-		return None
-
-	def eval_up(self, joint_dict):
-		commands = []
-
-		# check both arms
-		result = self.is_arms_up(joint_dict)
-		if result:
-			commands.append(result)
-		else:
-			# check left
-			left = self.is_left_arm_up(joint_dict)
-			if left:
-				commands.append(left)
-			
-			# check right
-			right = self.is_right_arm_up(joint_dict)	
-			if right:
-				commands.append(right)
-		return commands
-
-	def is_left_arm_up(self, joint_dict):
-
-		# left arm
-		l_should_pitch = math.degrees(joint_dict['LShoulderPitch'])
-		l_should_roll = math.degrees(joint_dict['LShoulderRoll'])
-
-		# left pitch range(90)
-		if l_should_pitch <= -45 and l_should_pitch >= -110:
-			l_pitch_offset = round(-90 - l_should_pitch)
-
-			# LEFT: match roll
-			if l_should_roll <= 45:
-				l_roll_offset = round(-l_should_roll)
-				return ("arms.left_up", [l_pitch_offset, l_roll_offset]) 
-		return None
-
-	def is_right_arm_up(self, joint_dict):
-
-		# right arm
-		r_should_pitch = math.degrees(joint_dict['RShoulderPitch'])
-		r_should_roll = math.degrees(joint_dict['RShoulderRoll'])
-
-		# RIGHT: match pitch
-		if r_should_pitch <= -45 and r_should_pitch >= -110:
-			r_pitch_offset = round(-90 - r_should_pitch)
-
-			# LEFT: match roll
-			if r_should_roll >= -45:
-				r_roll_offset = round(r_should_roll)
-				return ("arms.right_up", [r_pitch_offset, r_roll_offset])
-		return None
-
-	def is_arms_up(self, joint_dict):
-		# check each arm
-		left = self.is_left_arm_up(joint_dict)
-		right = self.is_right_arm_up(joint_dict)
-
-		# both up?
-		if left and right:
-			
-			# compare offsets
-			l_pitch_offset = left[1][0]
-			l_roll_offset = left[1][1]
-			r_pitch_offset = right[1][0]
-			r_roll_offset = right[1][1]
-
-			# allow within 10 degrees
-			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
-			roll_diff = abs(l_roll_offset - r_roll_offset)
-			if pitch_diff <= 10 and roll_diff <= 10:
-
-				# reduce
-				return ("arms.up", [l_pitch_offset, l_roll_offset])
-
-		return None
-
 
 	def eval_forward(self, joint_dict):
 		commands = []
@@ -350,6 +176,51 @@ class FluentNaoTranslator(object):
 		return None
 
 
+
+
+	def eval_algo(self, joint_dict, args):
+		commands = []
+
+		# check both
+		result = self.is_algo_both(joint_dict, args)
+		if result:
+			commands.append(result)
+		else:
+			# check left
+			left = self.is_algo(joint_dict, args['left'])
+			if left:
+				commands.append(left)
+			
+			# check right
+			right = self.is_algo(joint_dict, args['right'])	
+			if right:
+				commands.append(right)
+		return commands
+
+	def is_algo_both(self, joint_dict, args):
+		# check each arm
+		left = self.is_algo(joint_dict, args['left'])
+		right = self.is_algo(joint_dict, args['right'])
+		#print 'left {0}'.format(left)
+		#print 'right {0}'.format(right)
+		# both up?
+		if left and right:
+			
+			# compare offsets
+			l_pitch_offset = left[1][0]
+			l_roll_offset = left[1][1]
+			r_pitch_offset = right[1][0]
+			r_roll_offset = right[1][1]
+
+			# allow within 10 degrees
+			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
+			roll_diff = abs(l_roll_offset - r_roll_offset)
+			if pitch_diff <= 10 and roll_diff <= 10:
+
+				# reduce
+				return (args['both_command'], [l_pitch_offset, l_roll_offset])
+
+		return None
 
 #>>> nao.arms.right_forward()
 #'RShoulderRoll': 0
