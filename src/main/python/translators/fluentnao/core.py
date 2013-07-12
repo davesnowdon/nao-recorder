@@ -3,271 +3,195 @@ Created on 6 Jul 2013
 
 @author: davesnowdon
 '''
-import math
+
+import collections
+from sets import Set
+
+from recorder.JointManager import joints_to_degrees
+
+Constraint = collections.namedtuple('Constraint',
+                                    ['predicate', 'parameters'])
+
+Transform = collections.namedtuple('Transform',
+                                   ['operator', 'inval', 'outval', 'parameters'])
+
+CommandSpec = collections.namedtuple('CommandSpec',
+                                     ['command', 'prefix', 'joints', 'transforms',
+									  'constraints', 'parameters'])
+
+
+def linear(value, params):
+	return value * params[0] + params[1]
+
+
+def in_range(joints, params):
+	minval = params[0]
+	maxval = params[1]
+	names = params[2:]
+	for n in names:
+		v = joints[n]
+		if (v < minval) or (v > maxval):
+			return False
+	return True
+
+def less_than(joints, params):
+	maxval = params[0]
+	names = params[1:]
+	for n in names:
+		if joints[n] > maxval:
+			return False
+	return True
+
+def greater_than(joints, params):
+	minval = params[0]
+	names = params[1:]
+	for n in names:
+		if joints[n] <= minval:
+			return False
+	return True
+
+def max_difference(joints, params):
+	max_diff = params[0]
+	first = joints[params[1]]
+	names = params[2:]
+	for n in names:
+		if abs(joints[n] - first) > max_diff:
+			return False
+	return True
+
+
+COMMANDS = [CommandSpec('forward', 'arms',
+						Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+						[Transform(linear, 'LShoulderPitch', 'lpitch', [1, 0]),
+						 Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0]),
+						 Transform(linear, 'RShoulderPitch', 'rpitch', [1, 0]),
+						 Transform(linear, 'RShoulderRoll', 'rroll', [1, 0])],
+						[Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+					 	 Constraint(less_than, [46, 'LShoulderRoll']),
+						 Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+						 Constraint(max_difference, [10, 'lroll', 'rroll'])],
+						['lpitch', 'lroll']
+						),
+		    CommandSpec('out', 'arms',
+						Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+						[Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 0]),
+						 Transform(linear, 'LShoulderRoll', 'lroll', [1, -90]),
+						 Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
+						 Transform(linear, 'RShoulderRoll', 'rroll', [-1, -90])],
+						[Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+					 	 Constraint(greater_than, [44, 'LShoulderRoll']),
+						 Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+						 Constraint(max_difference, [10, 'lroll', 'rroll'])],
+						['lpitch', 'lroll']
+						),
+		    CommandSpec('up', 'arms',
+						Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+						[Transform(linear, 'LShoulderPitch', 'lpitch', [-1, -90]),
+						 Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0]),
+						 Transform(linear, 'RShoulderPitch', 'rpitch', [-1, -90]),
+						 Transform(linear, 'RShoulderRoll', 'rroll', [1, 0])],
+						[Constraint(in_range, [-110, -45, 'LShoulderPitch']),
+					 	 Constraint(less_than, [45, 'LShoulderRoll']),
+						 Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+						 Constraint(max_difference, [10, 'lroll', 'rroll'])],
+						['lpitch', 'lroll']
+						),
+		    CommandSpec('left_forward', 'arms',
+						Set(['LShoulderPitch', 'LShoulderRoll']),
+						[Transform(linear, 'LShoulderPitch', 'lpitch', [1, 0]),
+						 Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0])],
+						[Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+					 	 Constraint(less_than, [45, 'LShoulderRoll'])],
+						['lpitch', 'lroll']
+						),
+		    CommandSpec('right_forward', 'arms',
+						Set(['RShoulderPitch', 'RShoulderRoll']),
+						[Transform(linear, 'RShoulderPitch', 'rpitch', [1, 0]),
+						 Transform(linear, 'RShoulderRoll', 'rroll', [1, 0])],
+						[Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+					 	 Constraint(less_than, [45, 'LShoulderRoll'])],
+						['rpitch', 'rroll']
+						),
+		    CommandSpec('left_out', 'arms',
+						Set(['LShoulderPitch', 'LShoulderRoll']),
+						[Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 0]),
+						 Transform(linear, 'LShoulderRoll', 'lroll', [1, -90])],
+						[Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+					 	 Constraint(greater_than, [45, 'LShoulderRoll'])],
+						['lpitch', 'lroll']
+						),
+		    CommandSpec('right_out', 'arms',
+						Set(['RShoulderPitch', 'RShoulderRoll']),
+						[Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
+						 Transform(linear, 'RShoulderRoll', 'rroll', [-1, -90])],
+						[Constraint(in_range, [-45, 45, 'RShoulderPitch']),
+					 	 Constraint(less_than, [-45, 'RShoulderRoll'])],
+						['rpitch', 'rroll']
+						),
+		    CommandSpec('left_up', 'arms',
+						Set(['LShoulderPitch', 'LShoulderRoll']),
+						[Transform(linear, 'LShoulderPitch', 'lpitch', [-1, -90]),
+						 Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0])],
+						[Constraint(in_range, [-110, -45, 'LShoulderPitch']),
+					 	 Constraint(less_than, [45, 'LShoulderRoll'])],
+						['lpitch', 'lroll']
+						),
+		    CommandSpec('right_up', 'arms',
+						Set(['RShoulderPitch', 'RShoulderRoll']),
+						[Transform(linear, 'RShoulderPitch', 'rpitch', [-1, -90]),
+						 Transform(linear, 'RShoulderRoll', 'rroll', [1, 0])],
+						[Constraint(in_range, [-110, -45, 'LShoulderPitch']),
+					 	 Constraint(less_than, [45, 'LShoulderRoll'])],
+						['rpitch', 'rroll']
+						),
+		   ]
+
+
 
 class FluentNaoTranslator(object):
 
 	def detect_command(self, joint_dict):
+
 		commands = []
 
-		# arms
-		commands = commands + self.detect_arms(joint_dict)
+		joints_degrees = joints_to_degrees(joint_dict, True)
 
-		# return
+		joints_done = Set()
+
+		cur_prefix = None
+
+		for cs in COMMANDS:
+			# ignore all other commands using joints marked as done
+			if not cs.joints.issubset(joints_done):
+
+				cdata = joints_degrees.copy()
+
+				self.do_transforms(cs, cdata)
+
+				if self.constraints_pass(cs, cdata):
+					joints_done = joints_done.union(cs.joints)
+					commands.append(self.generate_command(cs, cur_prefix, cdata))
+					cur_prefix = cs.prefix
+
 		return commands
 
-	def detect_arms(self, joint_dict):
+	def do_transforms(self, cs, cdata):
+		for t in cs.transforms:
+			cdata[t.outval] = round(t.operator(cdata[t.inval], t.parameters))
 
-		# arms forward?
-		arms_commands = self.eval_forward(joint_dict)
 
-		# arms out?
-		arms_commands = arms_commands + self.eval_out(joint_dict)
+	def constraints_pass(self, cs, cdata):
+		for c in cs.constraints:
+			if not c.predicate(cdata, c.parameters):
+				return False
+		return True
 
-		# arms up?
- 		arms_commands = arms_commands + self.eval_up(joint_dict)
+	def generate_command(self, cs, cur_prefix, cdata):
+		command_parameters = []
+		for p in cs.parameters:
+			command_parameters.append(cdata[p])
 
-		# arms back?
-
-		return arms_commands
-
-	def eval_out(self, joint_dict):
-		commands = []
-
-		# check both arms
-		result = self.is_arms_out(joint_dict)
-		if result:
-			commands.append(result)
+		if cur_prefix == cs.prefix:
+			return (cs.command, command_parameters)
 		else:
-			# check left
-			left = self.is_left_arm_out(joint_dict)
-			if left:
-				commands.append(left)
-			
-			# check right
-			right = self.is_right_arm_out(joint_dict)	
-			if right:
-				commands.append(right)
-		return commands
-
-	def is_left_arm_out(self, joint_dict):
-
-		# left arm
-		l_should_pitch = math.degrees(joint_dict['LShoulderPitch'])
-		l_should_roll = math.degrees(joint_dict['LShoulderRoll'])
-
-		# left pitch
-		if -45 <= l_should_pitch <= 45:
-			l_pitch_offset = round(-l_should_pitch)
-
-			# LEFT: match roll
-			if l_should_roll >= 45:
-				l_roll_offset = round(l_should_roll - 90)
-				return ("arms.left_out", [l_pitch_offset, l_roll_offset]) 
-		return None
-
-	def is_right_arm_out(self, joint_dict):
-
-		# right arm
-		r_should_pitch = math.degrees(joint_dict['RShoulderPitch'])
-		r_should_roll = math.degrees(joint_dict['RShoulderRoll'])
-
-		# RIGHT: match pitch
-		if -45 <= r_should_pitch <= 45:
-			r_pitch_offset = round(-r_should_pitch)
-
-			# LEFT: match roll
-			if r_should_roll <= -45:
-				r_roll_offset = round(-r_should_roll - 90)
-				return ("arms.right_out", [r_pitch_offset, r_roll_offset])
-		return None
-
-	def is_arms_out(self, joint_dict):
-		# check each arm
-		left = self.is_left_arm_out(joint_dict)
-		right = self.is_right_arm_out(joint_dict)
-
-		# both out?
-		if left and right:
-			
-			# compare offsets
-			l_pitch_offset = left[1][0]
-			l_roll_offset = left[1][1]
-			r_pitch_offset = right[1][0]
-			r_roll_offset = right[1][1]
-
-			# allow within 10 degrees
-			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
-			roll_diff = abs(l_roll_offset - r_roll_offset)
-			print "{0} {1}".format(pitch_diff, roll_diff)
-			if pitch_diff <= 10 and roll_diff <= 10:
-
-				# reduce
-				return ("arms.out", [l_pitch_offset, l_roll_offset])
-
-		return None
-
-	def eval_up(self, joint_dict):
-		commands = []
-
-		# check both arms
-		result = self.is_arms_up(joint_dict)
-		if result:
-			commands.append(result)
-		else:
-			# check left
-			left = self.is_left_arm_up(joint_dict)
-			if left:
-				commands.append(left)
-			
-			# check right
-			right = self.is_right_arm_up(joint_dict)	
-			if right:
-				commands.append(right)
-		return commands
-
-	def is_left_arm_up(self, joint_dict):
-
-		# left arm
-		l_should_pitch = math.degrees(joint_dict['LShoulderPitch'])
-		l_should_roll = math.degrees(joint_dict['LShoulderRoll'])
-
-		# left pitch range(90)
-		if l_should_pitch <= -45 and l_should_pitch >= -110:
-			l_pitch_offset = round(-90 - l_should_pitch)
-
-			# LEFT: match roll
-			if l_should_roll <= 45:
-				l_roll_offset = round(-l_should_roll)
-				return ("arms.left_up", [l_pitch_offset, l_roll_offset]) 
-		return None
-
-	def is_right_arm_up(self, joint_dict):
-
-		# right arm
-		r_should_pitch = math.degrees(joint_dict['RShoulderPitch'])
-		r_should_roll = math.degrees(joint_dict['RShoulderRoll'])
-
-		# RIGHT: match pitch
-		if r_should_pitch <= -45 and r_should_pitch >= -110:
-			r_pitch_offset = round(-90 - r_should_pitch)
-
-			# LEFT: match roll
-			if r_should_roll >= -45:
-				r_roll_offset = round(r_should_roll)
-				return ("arms.right_up", [r_pitch_offset, r_roll_offset])
-		return None
-
-	def is_arms_up(self, joint_dict):
-		# check each arm
-		left = self.is_left_arm_up(joint_dict)
-		right = self.is_right_arm_up(joint_dict)
-
-		# both up?
-		if left and right:
-			
-			# compare offsets
-			l_pitch_offset = left[1][0]
-			l_roll_offset = left[1][1]
-			r_pitch_offset = right[1][0]
-			r_roll_offset = right[1][1]
-
-			# allow within 10 degrees
-			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
-			roll_diff = abs(l_roll_offset - r_roll_offset)
-			if pitch_diff <= 10 and roll_diff <= 10:
-
-				# reduce
-				return ("arms.up", [l_pitch_offset, l_roll_offset])
-
-		return None
-
-
-	def eval_forward(self, joint_dict):
-		commands = []
-
-		# check both arms
-		result = self.is_arms_forward(joint_dict)
-		if result:
-			commands.append(result)
-		else:
-			# check left
-			left = self.is_left_arm_forward(joint_dict)
-			if left:
-				commands.append(left)
-			
-			# check right
-			right = self.is_right_arm_forward(joint_dict)	
-			if right:
-				commands.append(right)
-		return commands
-
-	def is_left_arm_forward(self, joint_dict):
-
-		# left arm
-		l_should_pitch = math.degrees(joint_dict['LShoulderPitch'])
-		l_should_roll = math.degrees(joint_dict['LShoulderRoll'])
-
-		# left pitch range(90)
-		if l_should_pitch <= 45 and l_should_pitch >= -45:
-			l_pitch_offset = round(l_should_pitch)
-
-			# LEFT: match roll
-			if l_should_roll <= 45:
-				l_roll_offset = round(-l_should_roll)
-				return ("arms.left_forward", [l_pitch_offset, l_roll_offset]) 
-		return None
-
-	def is_right_arm_forward(self, joint_dict):
-
-		# right arm
-		r_should_pitch = math.degrees(joint_dict['RShoulderPitch'])
-		r_should_roll = math.degrees(joint_dict['RShoulderRoll'])
-
-		# RIGHT: match pitch
-		if r_should_pitch <= 45 and r_should_pitch >= -45:
-			r_pitch_offset = round(r_should_pitch)
-
-			# LEFT: match roll
-			if r_should_roll >= -45:
-				r_roll_offset = round(r_should_roll)
-				return ("arms.right_forward", [r_pitch_offset, r_roll_offset])
-		return None
-
-	def is_arms_forward(self, joint_dict):
-		# check each arm
-		left = self.is_left_arm_forward(joint_dict)
-		right = self.is_right_arm_forward(joint_dict)
-
-		# both forward?
-		if left and right:
-
-			# compare offsets
-			l_pitch_offset = left[1][0]
-			l_roll_offset = left[1][1]
-			r_pitch_offset = right[1][0]
-			r_roll_offset = right[1][1]
-
-			# allow within 10 degrees
-			pitch_diff = abs(l_pitch_offset - r_pitch_offset)
-			roll_diff = abs(l_roll_offset - r_roll_offset)
-			if pitch_diff <= 10 and roll_diff <= 10:
-
-				# reduce
-				return ("arms.forward", [l_pitch_offset, l_roll_offset])
-
-		return None
-
-
-
-#>>> nao.arms.right_forward()
-#'RShoulderRoll': 0
-#'RShoulderPitch': 0
-
-#>>> nao.arms.right_out()
-#'RShoulderPitch': 0
-#'RShoulderRoll': -90
-
-#>>> nao.arms.right_up()
-#'RShoulderPitch': -90
-#'RShoulderRoll': 0
+			return ("{}.{}".format(cs.prefix, cs.command), command_parameters)

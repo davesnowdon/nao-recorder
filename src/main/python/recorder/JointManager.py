@@ -4,6 +4,8 @@ Created on Dec 31, 2012
 @author: dns
 '''
 
+import math
+
 from mathutil import FLOAT_CMP_ACCURACY, feq
 
 # joint names in same order as returned by ALMotion.getAngles('Body')
@@ -18,6 +20,16 @@ JOINT_NAMES = ('HeadYaw', 'HeadPitch',
                'RWristYaw', 'RHand')
 
 
+def joints_to_degrees(joints, round_values=True):
+    djoints = {}
+    if round_values:
+        for j, v in joints.iteritems():
+            djoints[j] = round(math.degrees(v))
+    else:
+        for j, v in joints.iteritems():
+            djoints[j] = math.degrees(v)
+    return djoints
+
 class JointManager(object):
     def __init__(self, env, useSensors=True):
         self.env = env
@@ -31,11 +43,15 @@ class JointManager(object):
     def get_joint(self, name):
         return self.joints[name]
         
-    def get_joint_angles(self):
+    def get_joint_angles(self, use_radians=True):
         angles = self.env.motion.getAngles("Body", self.useSensors)
         for n, v in zip(JOINT_NAMES, angles):
             self.joints[n] = v
-        return self.joints
+            
+        if use_radians:
+            return self.joints
+        else:
+            return joints_to_degrees(self.joints, True)
 
     def joint_changes(self, oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
         """
