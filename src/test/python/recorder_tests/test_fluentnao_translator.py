@@ -28,8 +28,6 @@ class TestDetectArms(unittest.TestCase):
         first_tuple = result[0]
 
         # command
-        print 'first: ' + str(first_tuple)
-        print 'cmd: {0}(0, {1},{2})'.format(first_tuple[0], first_tuple[1][0], first_tuple[1][1])
         command = first_tuple[0]
         self.assertEqual("arms.forward", command, "Should detect command arms forward")
 
@@ -56,8 +54,6 @@ class TestDetectArms(unittest.TestCase):
         first_tuple = result[0]
 
         # command
-        print 'first: ' + str(first_tuple)
-        print 'cmd: {0}(0, {1},{2})'.format(first_tuple[0], first_tuple[1][0], first_tuple[1][1])
         command = first_tuple[0]
         self.assertEqual("arms.up", command, "Should detect command arms up")
 
@@ -85,8 +81,6 @@ class TestDetectArms(unittest.TestCase):
         first_tuple = result[0]
 
         # command
-        print 'first: ' + str(first_tuple)
-        print 'cmd: {0}(0, {1},{2})'.format(first_tuple[0], first_tuple[1][0], first_tuple[1][1])
         command = first_tuple[0]
         self.assertEqual("arms.out", command, "Should detect command arms out")
 
