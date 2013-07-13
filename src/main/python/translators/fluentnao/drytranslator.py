@@ -19,22 +19,22 @@ class DryTranslator(object):
 				'pitch_joint':'LShoulderPitch',
 				'pitch_max':45,
 				'pitch_min':-45,
-				'pitch_offset_lambda': lambda x: round(x),
+				'pitch_offset_lambda': lambda x: round(-x),
 				'roll_joint':'LShoulderRoll',
 				'roll_max':45,
 				'roll_min':-90,
-				'roll_offset_lambda': lambda x: round(-x)
+				'roll_offset_lambda': lambda x: round(+x)
 			},
 			'right': {
 				'command': 'arms.right_forward',
 				'pitch_joint':'RShoulderPitch',
 				'pitch_max':45,
 				'pitch_min':-45,
-				'pitch_offset_lambda': lambda x: round(x),
+				'pitch_offset_lambda': lambda x: round(-x),
 				'roll_joint':'RShoulderRoll',
 				'roll_max':90,
 				'roll_min':-45,
-				'roll_offset_lambda': lambda x: round(x)
+				'roll_offset_lambda': lambda x: round(-x)
 			}
 		}
 		arms_commands = arms_commands + self.eval_commands(joint_dict, arms_forward_args)
