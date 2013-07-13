@@ -298,7 +298,7 @@ class NaoRecorderApp(App):
             print output
 
             # display commands
-            self.codeinput.text = self.codeinput.text + "\n" + output
+            self.codeinput.text = self.codeinput.text + "\r\n" + output
 
 
     def on_files(self, instance, values):

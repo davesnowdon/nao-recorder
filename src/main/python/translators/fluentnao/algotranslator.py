@@ -1,8 +1,8 @@
 
 '''
-Created on 6 Jul 2013
+Created on 12 Jul 2013
 
-@author: davesnowdon
+@author: dnajd
 '''
 import math
 
