@@ -3,15 +3,13 @@ Created on 6 Jul 2013
 
 @author: davesnowdon
 '''
-import math
+import algo2translator
+from algo2translator import Algo2Translator
+from drytranslator import DryTranslator
 
 class FluentNaoTranslator(object):
 
 	def detect_command(self, joint_dict):
-		commands = []
+		#return DryTranslator().detect_command(joint_dict)
+		return Algo2Translator().detect_command(joint_dict)
 
-		# arms
-		commands = commands + self.detect_arms(joint_dict)
-
-		# return
-		return commands

@@ -7,7 +7,7 @@ import math
 
 class DryTranslator(object):
 
-	def detect_arms(self, joint_dict):
+	def detect_command(self, joint_dict):
 
 		arms_commands = []
 
