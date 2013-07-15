@@ -10,5 +10,6 @@ if command -v nosetests >/dev/null 2>&1; then
 else
     echo "Running tests using python unittest"
     python -m unittest recorder_tests.test_fluentnao_translator
+    python -m unittest recorder_tests.test_jointmanager
 fi
 
