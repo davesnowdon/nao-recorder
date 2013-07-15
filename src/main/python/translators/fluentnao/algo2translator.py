@@ -150,34 +150,25 @@ COMMANDS = [CommandSpec('forward', 'arms',
 class Algo2Translator(object):
 
     def detect_command(self, joint_dict):
-
-        commands = []
-
         joints_degrees = joints_to_degrees(joint_dict, True)
-
+        commands = []
         joints_done = Set()
-
         cur_prefix = None
 
         for cs in COMMANDS:
             # ignore all other commands using joints marked as done
             if not cs.joints.issubset(joints_done):
-
                 cdata = joints_degrees.copy()
-
                 self.do_transforms(cs, cdata)
-
                 if self.constraints_pass(cs, cdata):
                     joints_done = joints_done.union(cs.joints)
                     commands.append(self.generate_command(cs, cur_prefix, cdata))
                     cur_prefix = cs.prefix
-
         return commands
 
     def do_transforms(self, cs, cdata):
         for t in cs.transforms:
             cdata[t.outval] = round(t.operator(cdata[t.inval], t.parameters))
-
 
     def constraints_pass(self, cs, cdata):
         for c in cs.constraints:
