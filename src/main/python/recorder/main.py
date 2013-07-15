@@ -30,7 +30,7 @@ from naoutil import memory
 import fluentnao.nao as nao
 
 from JointManager import JointManager
-from core import get_translator, commands_to_text
+from core import get_translator
 
 
 main_logger = logging.getLogger("recorder.main")
@@ -182,6 +182,9 @@ class NaoRecorderApp(App):
     def on_start(self):
         self.show_connection_dialog(None)
 
+    def on_stop(self):
+        self.nao_event_unsubscribe()
+
     def add_status(self, text):
         self.status.text = self.status.text + "\n" + text
 
@@ -220,15 +223,25 @@ class NaoRecorderApp(App):
             }
 
             # set up events
-            memory.subscribeToEvent("HandLeftBackTouched", self._back_left_arm)
-            memory.subscribeToEvent("HandRightBackTouched", self._back_right_arm)
-            memory.subscribeToEvent("LeftBumperPressed", self._left_bumper)
-            memory.subscribeToEvent("RightBumperPressed", self._right_bumper)
-            memory.subscribeToEvent("MiddleTactilTouched", self._head_middle)
+            self.nao_event_subscribe()
 
         else:
             self.add_status("Error connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
             self.show_connection_dialog(None)
+
+    def nao_event_subscribe(self):
+        memory.subscribeToEvent("HandLeftBackTouched", self._back_left_arm)
+        memory.subscribeToEvent("HandRightBackTouched", self._back_right_arm)
+        memory.subscribeToEvent("LeftBumperPressed", self._left_bumper)
+        memory.subscribeToEvent("RightBumperPressed", self._right_bumper)
+        memory.subscribeToEvent("MiddleTactilTouched", self._head_middle)
+
+    def nao_event_unsubscribe(self):
+        memory.unsubscribeToEvent("HandLeftBackTouched")
+        memory.unsubscribeToEvent("HandRightBackTouched")
+        memory.unsubscribeToEvent("LeftBumperPressed")
+        memory.unsubscribeToEvent("RightBumperPressed")
+        memory.unsubscribeToEvent("MiddleTactilTouched")
 
     def _back_left_arm(self, dataName, value, message):
         if self.motors_on:
