@@ -5,7 +5,7 @@ Created on 7 Jul 2013
 '''
 
 import kivy
-kivy.require('1.7.1') 
+kivy.require('1.7.1')
 
 from kivy.app import App
 from kivy.extras.highlight import KivyLexer
@@ -25,6 +25,8 @@ import codecs, os
 import logging
 
 import naoutil.naoenv as naoenv
+from naoutil import broker
+from naoutil import memory
 import fluentnao.nao as nao
 
 from JointManager import JointManager
@@ -42,7 +44,7 @@ class LoadDialog(Popup):
     def load(self, path, selection):
         self.choosen_file = [None, ]
         self.choosen_file = selection
-        Window.title = selection[0][selection[0].rfind(os.sep)+1:]
+        Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         self.dismiss()
 
     def cancel(self):
@@ -54,7 +56,7 @@ class SaveDialog(Popup):
     def save(self, path, selection):
         _file = codecs.open(selection, 'w', encoding='utf8')
         _file.write(self.text)
-        Window.title = selection[selection.rfind(os.sep)+1:]
+        Window.title = selection[selection.rfind(os.sep) + 1:]
         _file.close()
         self.dismiss()
 
@@ -135,18 +137,18 @@ class NaoRecorderApp(App):
         # add keyframe
         btn_add_keyframe = Button(text='Add Keyframe')
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
-        
+
 
         # root actions menu
         # TODO Need to fix this!!
         self.standard_positions = {
-            'stand_init': None, 
-            'sit_relax': None, 
-            'stand_zero': None, 
-            'lying_belly': None, 
-            'lying_back': None, 
-            'stand': None, 
-            'crouch': None, 
+            'stand_init': None,
+            'sit_relax': None,
+            'stand_zero': None,
+            'lying_belly': None,
+            'lying_back': None,
+            'stand': None,
+            'crouch': None,
             'sit': None
         }
         robot_actions = Spinner(
@@ -170,7 +172,7 @@ class NaoRecorderApp(App):
             text="nao.say('hi')")
 
         b.add_widget(self.codeinput)
-        
+
         # status window
         self.status = TextInput(text="", readonly=True, multiline=True, size_hint=(1.0, 0.25))
         b.add_widget(self.status)
@@ -190,39 +192,94 @@ class NaoRecorderApp(App):
 
     def do_connect(self, popup):
         print "hostname = " + str(popup.f_hostname.text)
-        print "port = "+ str(popup.f_port.text)
+        print "port = " + str(popup.f_port.text)
         self._make_environment(popup.f_hostname.text, int(popup.f_port.text))
 
     def _make_environment(self, hostname, portnumber):
         main_logger.info("Connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
-        self.env = naoenv.make_environment(None, ipaddr=hostname, port=portnumber)
-        if (self.env):
+
+        self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
+        if (self.broker):
+            self.env = naoenv.make_environment(None)
             self.add_status("Connected to robot at {host}:{port}".format(host=hostname, port=portnumber))
-        
+
             self.joint_manager = JointManager(self.env)
             self.nao = nao.Nao(self.env, None)
             self.is_connected = True
-                
+            self.motors_on = False
+
             self.standard_positions = {
-                'stand_init': self.nao.stand_init, 
-                'sit_relax': self.nao.sit_relax, 
-                'stand_zero': self.nao.stand_zero, 
-                'lying_belly': self.nao.lying_belly, 
-                'lying_back': self.nao.lying_back, 
-                'stand': self.nao.stand, 
-                'crouch': self.nao.crouch, 
+                'stand_init': self.nao.stand_init,
+                'sit_relax': self.nao.sit_relax,
+                'stand_zero': self.nao.stand_zero,
+                'lying_belly': self.nao.lying_belly,
+                'lying_back': self.nao.lying_back,
+                'stand': self.nao.stand,
+                'crouch': self.nao.crouch,
                 'sit': self.nao.sit
             }
-            
+
+            # set up events
+            memory.subscribeToEvent("HandLeftBackTouched", self._back_left_arm)
+            memory.subscribeToEvent("HandRightBackTouched", self._back_right_arm)
+            memory.subscribeToEvent("LeftBumperPressed", self._left_bumper)
+            memory.subscribeToEvent("RightBumperPressed", self._right_bumper)
+            memory.subscribeToEvent("MiddleTactilTouched", self._head_middle)
+
         else:
             self.add_status("Error connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
             self.show_connection_dialog(None)
+
+    def _back_left_arm(self, dataName, value, message):
+        if self.motors_on:
+            if value == 1:
+                self.add_status("left relax")
+                self.nao.arms.left_relax()
+            else:
+                self.add_status("left stiff")
+                self.nao.arms.left_stiff()
+
+    def _back_right_arm(self, dataName, value, message):
+        if self.motors_on:
+            if value == 1:
+                self.add_status("right arm relaxed")
+                self.nao.arms.right_relax()
+            else:
+                self.add_status("right arm stiff")
+                self.nao.arms.right_stiff()
+
+    def _left_bumper(self, dataName, value, message):
+        if self.motors_on:
+            if value == 1:
+                self.add_status("left leg relaxed")
+                self.nao.legs.left_relax()
+            else:
+                self.add_status("left leg stiff")
+                self.nao.legs.left_stiff()
+
+    def _right_bumper(self, dataName, value, message):
+        if self.motors_on:
+            if value == 1:
+                self.add_status("right leg relaxed")
+                self.nao.legs.right_relax()
+            else:
+                self.add_status("right leg stiff")
+                self.nao.legs.right_stiff()
+
+    def _head_middle(self, dataName, value, message):
+        if self.motors_on:
+            if value == 1:
+                self.add_status("head relaxed")
+                self.nao.head.relax()
+            else:
+                self.add_status("head stiff")
+                self.nao.head.stiff()
 
     def _update_size(self, instance, size):
         self.codeinput.font_size = float(size)
 
     def _update_font(self, instance, fnt_name):
-        instance.font_name = self.codeinput.font_name =\
+        instance.font_name = self.codeinput.font_name = \
             fonts.match_font(fnt_name)
 
     def _file_menu_selected(self, instance, value):
@@ -231,7 +288,7 @@ class NaoRecorderApp(App):
         instance.text = 'File'
         if value == 'Connect':
             self.show_connection_dialog(None)
-        
+
         elif value == 'Open':
             if not hasattr(self, 'load_dialog'):
                 self.load_dialog = LoadDialog()
@@ -257,17 +314,19 @@ class NaoRecorderApp(App):
         if self.is_connected:
             self.add_status('Turning NAO motors off')
             self.nao.relax()
+            self.motors_on = False
 
     def _on_motors_on(self, instance):
         if self.is_connected:
             self.add_status('Turning NAO motors on')
             self.nao.stiff()
+            self.motors_on = True
 
     def _on_run_script(self, instance):
         if self.is_connected:
-            # TODO: run only selected code 
-            #code = self.codeinput.selection_text
-            #if not code or len(code) == 0:
+            # TODO: run only selected code
+            # code = self.codeinput.selection_text
+            # if not code or len(code) == 0:
             code = self.codeinput.text
             self.nao.naoscript.run_script(code, '\n')
 
@@ -288,12 +347,12 @@ class NaoRecorderApp(App):
             output = ""
             for command_tuple in commands:
                 # the command
-                output = output + command_tuple[0] + "(0" 
+                output = output + command_tuple[0] + "(0"
 
                 # the arguments
                 for arg in command_tuple[1]:
                     output = output + ", " + str(arg)
-                output = output + ")" 
+                output = output + ")"
 
             print output
 
@@ -315,6 +374,6 @@ class NaoRecorderApp(App):
             except KeyError as e:
                 print e
 
-        
+
 if __name__ == '__main__':
     NaoRecorderApp().run()
