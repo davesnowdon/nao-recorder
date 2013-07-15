@@ -9,6 +9,8 @@ from sets import Set
 
 from recorder.JointManager import joints_to_degrees
 
+DEFAULT_FRAME_TIME = 0
+
 Constraint = collections.namedtuple('Constraint',
                                     ['predicate', 'parameters'])
 
@@ -177,7 +179,7 @@ class Algo2Translator(object):
         return True
 
     def generate_command(self, cs, cur_prefix, cdata):
-        command_parameters = []
+        command_parameters = [DEFAULT_FRAME_TIME]
         for p in cs.parameters:
             command_parameters.append(cdata[p])
 

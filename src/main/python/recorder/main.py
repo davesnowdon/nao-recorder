@@ -30,7 +30,7 @@ from naoutil import memory
 import fluentnao.nao as nao
 
 from JointManager import JointManager
-from core import get_translator
+from core import get_translator, commands_to_text
 
 
 main_logger = logging.getLogger("recorder.main")
@@ -337,27 +337,12 @@ class NaoRecorderApp(App):
             print angles
 
             # translating
-            commands = get_translator().detect_command(angles)
+            translator = get_translator()
+            commands = translator.detect_command(angles)
+            command_str = translator.commands_to_text(commands)
 
-            print "-----"
-            print commands
-            print "-----"
-
-            # covert commands into naoscript w/ args
-            output = ""
-            for command_tuple in commands:
-                # the command
-                output = output + command_tuple[0] + "(0"
-
-                # the arguments
-                for arg in command_tuple[1]:
-                    output = output + ", " + str(arg)
-                output = output + ")"
-
-            print output
-
-            # display commands
-            self.codeinput.text = self.codeinput.text + "\r\n" + output
+            # update code view
+            self.codeinput.text = "{}\r\n{}".format(self.codeinput.text, command_str)
 
 
     def on_files(self, instance, values):
