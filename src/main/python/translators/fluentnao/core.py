@@ -10,7 +10,6 @@ from drytranslator import DryTranslator
 class FluentNaoTranslator(object):
 
     def detect_command(self, joint_dict):
-        # return DryTranslator().detect_command(joint_dict)
         return Algo2Translator().detect_command(joint_dict)
 
     def commands_to_text(self, commands):
@@ -28,4 +27,3 @@ class FluentNaoTranslator(object):
             output = output + command_str
 
         return output
-

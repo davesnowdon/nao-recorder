@@ -7,8 +7,8 @@ import unittest
 import math
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, make_joint_dict
-
+from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_RIGHT_OUT_LEFT_FORWARD, make_joint_dict
+from recorder.JointManager import joints_to_degrees
 
 def get_translator():
     return FluentNaoTranslator()
@@ -115,6 +115,46 @@ class TestDetectArms(unittest.TestCase):
         desired_roll_offset = round(math.degrees(joint_dict['LShoulderRoll']) - 90)
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
+
+
+    def testArmsLeftUpRightOut(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_UP_RIGHT_OUT)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_up and right_out")
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "arms.left_up" and  second_tuple[0] == "right_out") or (first_tuple[0] == "arms.right_out" and  second_tuple[0] == "left_up"):
+            pass
+        else:
+            self.fail("expected arms.left_up.right_out or arms.right_out.left_up")
+
+    def testArmsRightOutLeftForward(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_OUT_LEFT_FORWARD)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_out and left_forward")
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "arms.left_forward" and  second_tuple[0] == "right_out") or (first_tuple[0] == "arms.right_out" and  second_tuple[0] == "left_forward"):
+            pass
+        else:
+            self.fail("expected arms.left_forward.right_out or arms.right_out.left_forward")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
