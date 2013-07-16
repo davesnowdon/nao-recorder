@@ -243,6 +243,21 @@ class NaoRecorderApp(App):
         memory.unsubscribeToEvent("RightBumperPressed")
         memory.unsubscribeToEvent("MiddleTactilTouched")
 
+#    def voice_recog_example:
+#        
+#        # provide word list
+#        words = ['left stiff', 'left relax', 'yes']
+#        nao.env.speechRecognition.setWordListAsVocabulary(words, False)
+#
+#        def callback(dataName, value, message):
+#            word = value[0]
+#            match_percent = value[1]
+#            if match_percent > 0.70:
+#                nao.say(word)
+#                #print word
+#
+#        memory.subscribeToEvent('WordRecognized', callback)
+
     def _back_left_arm(self, dataName, value, message):
         if self.motors_on:
             if value == 1:
