@@ -182,6 +182,9 @@ class NaoRecorderApp(App):
     def on_start(self):
         self.show_connection_dialog(None)
 
+    def on_stop(self):
+        self.nao_event_unsubscribe()
+
     def add_status(self, text):
         self.status.text = self.status.text + "\n" + text
 
@@ -220,15 +223,25 @@ class NaoRecorderApp(App):
             }
 
             # set up events
-            memory.subscribeToEvent("HandLeftBackTouched", self._back_left_arm)
-            memory.subscribeToEvent("HandRightBackTouched", self._back_right_arm)
-            memory.subscribeToEvent("LeftBumperPressed", self._left_bumper)
-            memory.subscribeToEvent("RightBumperPressed", self._right_bumper)
-            memory.subscribeToEvent("MiddleTactilTouched", self._head_middle)
+            self.nao_event_subscribe()
 
         else:
             self.add_status("Error connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
             self.show_connection_dialog(None)
+
+    def nao_event_subscribe(self):
+        memory.subscribeToEvent("HandLeftBackTouched", self._back_left_arm)
+        memory.subscribeToEvent("HandRightBackTouched", self._back_right_arm)
+        memory.subscribeToEvent("LeftBumperPressed", self._left_bumper)
+        memory.subscribeToEvent("RightBumperPressed", self._right_bumper)
+        memory.subscribeToEvent("MiddleTactilTouched", self._head_middle)
+
+    def nao_event_unsubscribe(self):
+        memory.unsubscribeToEvent("HandLeftBackTouched")
+        memory.unsubscribeToEvent("HandRightBackTouched")
+        memory.unsubscribeToEvent("LeftBumperPressed")
+        memory.unsubscribeToEvent("RightBumperPressed")
+        memory.unsubscribeToEvent("MiddleTactilTouched")
 
     def _back_left_arm(self, dataName, value, message):
         if self.motors_on:
@@ -337,27 +350,12 @@ class NaoRecorderApp(App):
             print angles
 
             # translating
-            commands = get_translator().detect_command(angles)
+            translator = get_translator()
+            commands = translator.detect_command(angles)
+            command_str = translator.commands_to_text(commands)
 
-            print "-----"
-            print commands
-            print "-----"
-
-            # covert commands into naoscript w/ args
-            output = ""
-            for command_tuple in commands:
-                # the command
-                output = output + command_tuple[0] + "(0"
-
-                # the arguments
-                for arg in command_tuple[1]:
-                    output = output + ", " + str(arg)
-                output = output + ")"
-
-            print output
-
-            # display commands
-            self.codeinput.text = self.codeinput.text + "\r\n" + output
+            # update code view
+            self.codeinput.text = "{}\r\n{}".format(self.codeinput.text, command_str)
 
 
     def on_files(self, instance, values):
