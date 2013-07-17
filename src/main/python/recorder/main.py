@@ -24,13 +24,8 @@ from pygame import font as fonts
 import codecs, os
 import logging
 
-import naoutil.naoenv as naoenv
-from naoutil import broker
-from naoutil import memory
-import fluentnao.nao as nao
 
-from JointManager import JointManager
-from core import get_translator
+from core import get_translator, robot_connect, robot_disconnect
 
 
 main_logger = logging.getLogger("recorder.main")
@@ -101,7 +96,7 @@ class NaoRecorderApp(App):
     files = ListProperty([None, ])
 
     def build(self):
-        self.is_connected = False
+        self.connection = None
 
 
         # building Kivy Interface
@@ -138,18 +133,33 @@ class NaoRecorderApp(App):
         btn_add_keyframe = Button(text='Add Keyframe')
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
 
+        self.vocabulary = {'left arm stiff': self._left_arm_stiff,
+                           'left arm relax': self._left_arm_relax,
+                           'right arm stiff': self._right_arm_stiff,
+                           'right arm relax': self._right_arm_relax,
+                           'left leg stiff': self._left_leg_stiff,
+                           'left leg relax': self._left_leg_relax,
+                           'right leg stiff': self._right_leg_stiff,
+                           'right leg relax': self._right_leg_relax,
+                           'head stiff': self._head_stiff,
+                           'head relax': self._head_relax,
+                           'nao lie belly': self._lying_belly,
+                           'nao lie back': self._lying_back,
+                           'nao stand': self._stand,
+                           'nao crouch': self._crouch,
+                           'nao sit': self._sit
+                           }
 
         # root actions menu
-        # TODO Need to fix this!!
         self.standard_positions = {
-            'stand_init': None,
-            'sit_relax': None,
-            'stand_zero': None,
-            'lying_belly': None,
-            'lying_back': None,
-            'stand': None,
-            'crouch': None,
-            'sit': None
+                'stand_init': self._stand_init,
+                'sit_relax': self._sit_relax,
+                'stand_zero': self._stand_zero,
+                'lying_belly': self._lying_belly,
+                'lying_back': self._lying_back,
+                'stand': self._stand,
+                'crouch': self._crouch,
+                'sit': self._sit
         }
         robot_actions = Spinner(
             text='Action',
@@ -183,7 +193,8 @@ class NaoRecorderApp(App):
         self.show_connection_dialog(None)
 
     def on_stop(self):
-        self.nao_event_unsubscribe()
+        if self.connection:
+            robot_disconnect(self.connection)
 
     def add_status(self, text):
         self.status.text = self.status.text + "\n" + text
@@ -201,107 +212,125 @@ class NaoRecorderApp(App):
     def _make_environment(self, hostname, portnumber):
         main_logger.info("Connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
 
-        self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
-        if (self.broker):
-            self.env = naoenv.make_environment(None)
+        event_handlers = {
+                          "HandLeftBackTouched": self._back_left_arm,
+                          "HandRightBackTouched": self._back_right_arm,
+                          "LeftBumperPressed": self._left_bumper,
+                          "RightBumperPressed": self._right_bumper,
+                          "MiddleTactilTouched": self._head_middle,
+                          "WordRecognized": self.word_recognised
+                          }
+
+        self.connection = robot_connect(hostname, portnumber, event_handlers, self.vocabulary.keys())
+        if (self.connection):
+            self.nao = self.connection.nao   # quick access to fluentniao
             self.add_status("Connected to robot at {host}:{port}".format(host=hostname, port=portnumber))
-
-            self.joint_manager = JointManager(self.env)
-            self.nao = nao.Nao(self.env, None)
-            self.is_connected = True
             self.motors_on = False
-
-            self.standard_positions = {
-                'stand_init': self.nao.stand_init,
-                'sit_relax': self.nao.sit_relax,
-                'stand_zero': self.nao.stand_zero,
-                'lying_belly': self.nao.lying_belly,
-                'lying_back': self.nao.lying_back,
-                'stand': self.nao.stand,
-                'crouch': self.nao.crouch,
-                'sit': self.nao.sit
-            }
-
-            # set up events
-            self.nao_event_subscribe()
 
         else:
             self.add_status("Error connecting to robot at {host}:{port}".format(host=hostname, port=portnumber))
             self.show_connection_dialog(None)
 
-    def nao_event_subscribe(self):
-        memory.subscribeToEvent("HandLeftBackTouched", self._back_left_arm)
-        memory.subscribeToEvent("HandRightBackTouched", self._back_right_arm)
-        memory.subscribeToEvent("LeftBumperPressed", self._left_bumper)
-        memory.subscribeToEvent("RightBumperPressed", self._right_bumper)
-        memory.subscribeToEvent("MiddleTactilTouched", self._head_middle)
+    def word_recognised(self, dataName, value, message):
+        word = value[0]
+        confidence = value[1]
+        if confidence > 0.7:
+            self.add_status('Recognised: {}'.format(word))
 
-    def nao_event_unsubscribe(self):
-        memory.unsubscribeToEvent("HandLeftBackTouched")
-        memory.unsubscribeToEvent("HandRightBackTouched")
-        memory.unsubscribeToEvent("LeftBumperPressed")
-        memory.unsubscribeToEvent("RightBumperPressed")
-        memory.unsubscribeToEvent("MiddleTactilTouched")
-
-#    def voice_recog_example:
-#        
-#        # provide word list
-#        words = ['left stiff', 'left relax', 'yes']
-#        nao.env.speechRecognition.setWordListAsVocabulary(words, False)
-#
-#        def callback(dataName, value, message):
-#            word = value[0]
-#            match_percent = value[1]
-#            if match_percent > 0.70:
-#                nao.say(word)
-#                #print word
-#
-#        memory.subscribeToEvent('WordRecognized', callback)
 
     def _back_left_arm(self, dataName, value, message):
         if self.motors_on:
             if value == 1:
-                self.add_status("left relax")
-                self.nao.arms.left_relax()
+                self._left_arm_relax()
             else:
-                self.add_status("left stiff")
-                self.nao.arms.left_stiff()
+                self._left_arm_stiff()
 
     def _back_right_arm(self, dataName, value, message):
         if self.motors_on:
             if value == 1:
-                self.add_status("right arm relaxed")
-                self.nao.arms.right_relax()
+                self._right_arm_relax()
             else:
-                self.add_status("right arm stiff")
-                self.nao.arms.right_stiff()
+                self._right_arm_stiff()
 
     def _left_bumper(self, dataName, value, message):
         if self.motors_on:
             if value == 1:
-                self.add_status("left leg relaxed")
-                self.nao.legs.left_relax()
+                self._left_leg_relax()
             else:
-                self.add_status("left leg stiff")
-                self.nao.legs.left_stiff()
+                self._left_leg_stiff()
 
     def _right_bumper(self, dataName, value, message):
         if self.motors_on:
             if value == 1:
-                self.add_status("right leg relaxed")
-                self.nao.legs.right_relax()
+                self._right_leg_relax()
             else:
-                self.add_status("right leg stiff")
-                self.nao.legs.right_stiff()
+                self._right_leg_stiff()
 
     def _head_middle(self, dataName, value, message):
         if self.motors_on:
             if value == 1:
-                self.add_status("head relaxed")
-                self.nao.head.relax()
+                self._head_relax()
             else:
-                self.add_status("head stiff")
-                self.nao.head.stiff()
+                self._head_stiff()
+
+    def _left_arm_stiff(self):
+        self.add_status("left arm stiff")
+        self.nao.arms.left_stiff()
+        self.nao.say("left arm stiff")
+    def _left_arm_relax(self):
+        self.add_status("left arm relaxed")
+        self.nao.arms.left_relax()
+        self.nao.say("left arm relaxed")
+    def _right_arm_stiff(self):
+        self.add_status("right arm stiff")
+        self.nao.arms.right_stiff()
+        self.nao.say("right arm stiff")
+    def _right_arm_relax(self):
+        self.add_status("right arm relaxed")
+        self.nao.arms.right_relax()
+        self.nao.say("right arm relaxed")
+    def _left_leg_stiff(self):
+        self.add_status("left leg stiff")
+        self.nao.legs.left_stiff()
+        self.nao.say("left leg stiff")
+    def _left_leg_relax(self):
+        self.add_status("left leg relaxed")
+        self.nao.legs.left_relax()
+        self.nao.say("left leg relaxed")
+    def _right_leg_stiff(self):
+        self.add_status("right leg stiff")
+        self.nao.legs.right_stiff()
+        self.nao.say("right leg stiff")
+    def _right_leg_relax(self):
+        self.add_status("right leg relaxed")
+        self.nao.legs.right_relax()
+        self.nao.say("right leg relaxed")
+    def _head_stiff(self):
+        self.add_status("head stiff")
+        self.nao.head.stiff()
+        self.nao.say("head stiff")
+    def _head_relax(self):
+        self.add_status("head relaxed")
+        self.nao.head.relax()
+        self.nao.say("head relaxed")
+
+    # wrapper functions so we can create map of standard positions without robot connection
+    def _stand_init(self):
+        self.nao.stand_init()
+    def _sit_relax(self):
+        self.nao.sit_relax()
+    def _stand_zero(self):
+        self.nao.stand_zero()
+    def _lying_belly(self):
+        self.nao.lying_belly()
+    def _lying_back(self):
+        self.nao.lying_back()
+    def _stand(self):
+        self.nao.stand()
+    def _crouch(self):
+        self.nao.crouch()
+    def _sit(self):
+        self.nao.sit()
 
     def _update_size(self, instance, size):
         self.codeinput.font_size = float(size)
@@ -339,19 +368,19 @@ class NaoRecorderApp(App):
 
 
     def _on_motors_off(self, instance):
-        if self.is_connected:
+        if self.connection:
             self.add_status('Turning NAO motors off')
             self.nao.relax()
             self.motors_on = False
 
     def _on_motors_on(self, instance):
-        if self.is_connected:
+        if self.connection:
             self.add_status('Turning NAO motors on')
             self.nao.stiff()
             self.motors_on = True
 
     def _on_run_script(self, instance):
-        if self.is_connected:
+        if self.connection:
             # TODO: run only selected code
             # code = self.codeinput.selection_text
             # if not code or len(code) == 0:
@@ -359,9 +388,9 @@ class NaoRecorderApp(App):
             self.nao.naoscript.run_script(code, '\n')
 
     def _on_add_keyframe(self, instance):
-        if self.is_connected:
+        if self.connection:
             # get angles
-            angles = self.joint_manager.get_joint_angles()
+            angles = self.connection.joint_manager.get_joint_angles()
             print angles
 
             # translating
@@ -381,7 +410,7 @@ class NaoRecorderApp(App):
         _file.close()
 
     def on_action(self, instance, l):
-        if self.is_connected:
+        if self.connection:
             try:
                 self.standard_positions[l]()
             except KeyError as e:
