@@ -147,7 +147,8 @@ class NaoRecorderApp(App):
                            'nao lie back': self._lying_back,
                            'nao stand': self._stand,
                            'nao crouch': self._crouch,
-                           'nao sit': self._sit
+                           'nao sit': self._sit,
+                           'nao key frame': self._on_add_keyframe
                            }
 
         # root actions menu
@@ -218,6 +219,7 @@ class NaoRecorderApp(App):
                           "LeftBumperPressed": self._left_bumper,
                           "RightBumperPressed": self._right_bumper,
                           "MiddleTactilTouched": self._head_middle,
+                          "ChestButtonPressed": self._on_add_keyframe,
                           "WordRecognized": self.word_recognised
                           }
 
@@ -387,7 +389,7 @@ class NaoRecorderApp(App):
             code = self.codeinput.text
             self.nao.naoscript.run_script(code, '\n')
 
-    def _on_add_keyframe(self, instance):
+    def _on_add_keyframe(self, dummy1=None, dummy2=None, dummy=None):
         if self.connection:
             # get angles
             angles = self.connection.joint_manager.get_joint_angles()
