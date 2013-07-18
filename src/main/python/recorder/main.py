@@ -238,6 +238,10 @@ class NaoRecorderApp(App):
         confidence = value[1]
         if confidence > 0.7:
             self.add_status('Recognised: {}'.format(word))
+            try:
+                self.vocabulary[word]()
+            except AttributeError:
+                print "Could not find word {} in vocabulary".format(word)
 
 
     def _back_left_arm(self, dataName, value, message):

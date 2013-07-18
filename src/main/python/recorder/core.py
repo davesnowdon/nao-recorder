@@ -24,15 +24,15 @@ def get_translator(name=None):
     return DEFAULT_TRANSLATOR()
 
 def robot_connect(hostname, portnumber, event_handlers=None, vocabulary=None):
-    broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
-    if (broker):
+    local_broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
+    if (local_broker):
         env = naoenv.make_environment(None)
         joint_manager = JointManager(env)
-        nao = nao.Nao(env, None)
-        do_subscribe(event_handlers)
+        fluentnao = nao.Nao(env, None)
         if event_handlers and vocabulary:
             env.speechRecognition.setWordListAsVocabulary(vocabulary, False)
-        return RobotConnection(env, broker, nao, joint_manager, event_handlers)
+        do_subscribe(event_handlers)
+        return RobotConnection(env, local_broker, fluentnao, joint_manager, event_handlers)
     else:
         return None
 
