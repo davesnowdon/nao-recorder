@@ -40,6 +40,18 @@ def robot_disconnect(connection):
     do_unsubscribe(connection.event_handlers)
     connection.broker.shutdown()
 
+def safe_say(connection, msg):
+    """
+    Gets NAO to say something but disables speech recognition while he says it
+    """
+    if connection:
+        if "WordRecognized" in connection.event_handlers:
+            memory.unsubscribeToEvent("WordRecognized")
+            connection.nao.say(msg)
+            memory.subscribeToEvent("WordRecognized", connection.event_handlers["WordRecognized"])
+        else:
+            connection.nao.say(msg)
+
 def do_subscribe(event_handlers):
     if event_handlers:
         for (key, value) in event_handlers.iteritems():

@@ -24,9 +24,11 @@ from pygame import font as fonts
 import codecs, os
 import logging
 
+from naoutil import memory
 
-from core import get_translator, robot_connect, robot_disconnect
+from core import get_translator, robot_connect, robot_disconnect, safe_say
 
+WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
 main_logger = logging.getLogger("recorder.main")
 
@@ -133,6 +135,7 @@ class NaoRecorderApp(App):
         btn_add_keyframe = Button(text='Add Keyframe')
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
 
+        # using "now" instead of "nao" for better recognition
         self.vocabulary = {'left arm stiff': self._left_arm_stiff,
                            'left arm relax': self._left_arm_relax,
                            'right arm stiff': self._right_arm_stiff,
@@ -143,12 +146,12 @@ class NaoRecorderApp(App):
                            'right leg relax': self._right_leg_relax,
                            'head stiff': self._head_stiff,
                            'head relax': self._head_relax,
-                           'nao lie belly': self._lying_belly,
-                           'nao lie back': self._lying_back,
-                           'nao stand': self._stand,
-                           'nao crouch': self._crouch,
-                           'nao sit': self._sit,
-                           'nao key frame': self._on_add_keyframe
+                           'now lie belly': self._lying_belly,
+                           'now lie back': self._lying_back,
+                           'now stand': self._stand,
+                           'now crouch': self._crouch,
+                           'now sit': self._sit,
+                           'now key frame': self._on_add_keyframe
                            }
 
         # root actions menu
@@ -234,9 +237,11 @@ class NaoRecorderApp(App):
             self.show_connection_dialog(None)
 
     def word_recognised(self, dataName, value, message):
+        print "word_recognised: {}".format(value)
+        main_logger.debug("word_recognised: {}".format(value))
         word = value[0]
         confidence = value[1]
-        if confidence > 0.7:
+        if confidence > WORD_RECOGNITION_MIN_CONFIDENCE:
             self.add_status('Recognised: {}'.format(word))
             try:
                 self.vocabulary[word]()
@@ -282,43 +287,43 @@ class NaoRecorderApp(App):
     def _left_arm_stiff(self):
         self.add_status("left arm stiff")
         self.nao.arms.left_stiff()
-        self.nao.say("left arm stiff")
+        safe_say(self.connection, "left arm stiff")
     def _left_arm_relax(self):
         self.add_status("left arm relaxed")
         self.nao.arms.left_relax()
-        self.nao.say("left arm relaxed")
+        safe_say(self.connection, "left arm relaxed")
     def _right_arm_stiff(self):
         self.add_status("right arm stiff")
         self.nao.arms.right_stiff()
-        self.nao.say("right arm stiff")
+        safe_say(self.connection, "right arm stiff")
     def _right_arm_relax(self):
         self.add_status("right arm relaxed")
         self.nao.arms.right_relax()
-        self.nao.say("right arm relaxed")
+        safe_say(self.connection, "right arm relaxed")
     def _left_leg_stiff(self):
         self.add_status("left leg stiff")
         self.nao.legs.left_stiff()
-        self.nao.say("left leg stiff")
+        safe_say(self.connection, "left leg stiff")
     def _left_leg_relax(self):
         self.add_status("left leg relaxed")
         self.nao.legs.left_relax()
-        self.nao.say("left leg relaxed")
+        safe_say(self.connection, "left leg relaxed")
     def _right_leg_stiff(self):
         self.add_status("right leg stiff")
         self.nao.legs.right_stiff()
-        self.nao.say("right leg stiff")
+        safe_say(self.connection, "right leg stiff")
     def _right_leg_relax(self):
         self.add_status("right leg relaxed")
         self.nao.legs.right_relax()
-        self.nao.say("right leg relaxed")
+        safe_say(self.connection, "right leg relaxed")
     def _head_stiff(self):
         self.add_status("head stiff")
         self.nao.head.stiff()
-        self.nao.say("head stiff")
+        safe_say(self.connection, "head stiff")
     def _head_relax(self):
         self.add_status("head relaxed")
         self.nao.head.relax()
-        self.nao.say("head relaxed")
+        safe_say(self.connection, "head relaxed")
 
     # wrapper functions so we can create map of standard positions without robot connection
     def _stand_init(self):
