@@ -383,12 +383,14 @@ class NaoRecorderApp(App):
             self.add_status('Turning NAO motors off')
             self.nao.relax()
             self.motors_on = False
+            safe_say(self.connection, "Motors off")
 
     def _on_motors_on(self, instance):
         if self.connection:
             self.add_status('Turning NAO motors on')
             self.nao.stiff()
             self.motors_on = True
+            safe_say(self.connection, "Motors on")
 
     def _on_run_script(self, instance):
         if self.connection:
