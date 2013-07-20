@@ -190,13 +190,14 @@ class TestDetectArms(unittest.TestCase):
         else:
             self.fail("expected arms.right_up.left_out or arms.left_out.right_up")
 
-    def testArmsLeftForwardRightOut(self):
+    def testArmsLeftForwardRightDown(self):
 
         # joint positions
         joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN)
-
+        print joints_to_degrees(joint_dict, True)
         # call function
         result = get_translator().detect_command(joint_dict)
+        print result
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_forward")
 
         # expect two tuples
@@ -216,6 +217,7 @@ class TestDetectArms(unittest.TestCase):
 
         # call function
         result = get_translator().detect_command(joint_dict)
+        print result
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_down")
 
         # expect two tuples
