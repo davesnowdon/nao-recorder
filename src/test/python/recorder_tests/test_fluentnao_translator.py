@@ -7,7 +7,7 @@ import unittest
 import math
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_RIGHT_OUT_LEFT_FORWARD, make_joint_dict
+from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_OUT, POSITION_ARMS_RIGHT_FORWARD_LEFT_OUT, make_joint_dict
 from recorder.JointManager import joints_to_degrees
 
 def get_translator():
@@ -136,10 +136,10 @@ class TestDetectArms(unittest.TestCase):
         else:
             self.fail("expected arms.left_up.right_out or arms.right_out.left_up")
 
-    def testArmsRightOutLeftForward(self):
+    def testArmsLeftForwardRightOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_OUT_LEFT_FORWARD)
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_OUT)
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -154,6 +154,25 @@ class TestDetectArms(unittest.TestCase):
             pass
         else:
             self.fail("expected arms.left_forward.right_out or arms.right_out.left_forward")
+
+    def testArmsRightForwardLeftOut(self):
+        
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_OUT)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_out")
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "arms.right_forward" and  second_tuple[0] == "left_out") or (first_tuple[0] == "arms.left_out" and  second_tuple[0] == "right_forward"):
+            pass
+        else:
+            self.fail("expected arms.right_forward.left_out or arms.left_out.right_forward")
 
 
 if __name__ == "__main__":
