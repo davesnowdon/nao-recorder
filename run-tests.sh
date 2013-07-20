@@ -9,7 +9,7 @@ if command -v nosetests >/dev/null 2>&1; then
     nosetests -w src/test/python/recorder_tests
 else
     echo "Running tests using python unittest"
+    python -m unittest recorder_tests.test_core
     python -m unittest recorder_tests.test_fluentnao_translator
-    python -m unittest recorder_tests.test_jointmanager
 fi
 
