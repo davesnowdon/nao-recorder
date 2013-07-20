@@ -7,7 +7,7 @@ Created on 6 Jul 2013
 import collections
 from sets import Set
 
-from recorder.JointManager import joints_to_degrees
+from recorder.core import joints_to_degrees
 
 DEFAULT_FRAME_TIME = 0
 

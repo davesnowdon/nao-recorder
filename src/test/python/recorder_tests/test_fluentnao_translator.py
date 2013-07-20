@@ -8,7 +8,7 @@ import math
 
 from translators.fluentnao.core import FluentNaoTranslator
 from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_RIGHT_OUT_LEFT_FORWARD, make_joint_dict
-from recorder.JointManager import joints_to_degrees
+from recorder.core import joints_to_degrees
 
 def get_translator():
     return FluentNaoTranslator()
