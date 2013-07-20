@@ -7,7 +7,7 @@ import unittest
 import math
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, make_joint_dict
+from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK
 from recorder.JointManager import joints_to_degrees
 
 def get_translator():
@@ -194,10 +194,9 @@ class TestDetectArms(unittest.TestCase):
 
         # joint positions
         joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN)
-        print joints_to_degrees(joint_dict, True)
+
         # call function
         result = get_translator().detect_command(joint_dict)
-        print result
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_forward")
 
         # expect two tuples
@@ -217,7 +216,6 @@ class TestDetectArms(unittest.TestCase):
 
         # call function
         result = get_translator().detect_command(joint_dict)
-        print result
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_down")
 
         # expect two tuples
@@ -229,6 +227,44 @@ class TestDetectArms(unittest.TestCase):
             pass
         else:
             self.fail("expected arms.right_forward.left_down or arms.left_down.right_forward")
+
+    def testArmsRightDownLeftBack(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_DOWN_LEFT_BACK)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_back")
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "arms.left_back" and  second_tuple[0] == "right_down") or (first_tuple[0] == "arms.right_down" and  second_tuple[0] == "left_back"):
+            pass
+        else:
+            self.fail("expected arms.left_back.right_down or arms.right_down.left_back")
+
+    def testArmsLeftDownRightBack(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_DOWN_RIGHT_BACK)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_down and right_back")
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "arms.left_down" and  second_tuple[0] == "right_back") or (first_tuple[0] == "arms.right_back" and  second_tuple[0] == "left_down"):
+            pass
+        else:
+            self.fail("expected arms.left_down.right_back or arms.right_back.left_down")
 
 
 if __name__ == "__main__":

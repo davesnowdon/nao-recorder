@@ -125,6 +125,25 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['lpitch', 'lroll']
                         ),
 
+
+            CommandSpec('left_back', 'arms',
+                        Set(['LShoulderPitch', 'LShoulderRoll']),
+                        [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 119.5]),
+                         Transform(linear, 'LShoulderRoll', 'lroll', [1, 0])],
+                        [Constraint(in_range, [96, 119.5, 'LShoulderPitch']),
+                          Constraint(less_than, [45, 'LShoulderRoll'])],
+                        ['lpitch', 'lroll']
+                        ),
+            
+            CommandSpec('right_back', 'arms',
+                        Set(['RShoulderPitch', 'RShoulderRoll']),
+                        [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 119.5]),
+                         Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
+                        [Constraint(in_range, [96, 119.5, 'RShoulderPitch']),
+                          Constraint(less_than, [45, 'RShoulderRoll'])],
+                        ['rpitch', 'rroll']
+                        ),
+
             CommandSpec('left_down', 'arms',
                         Set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 90]),
@@ -133,7 +152,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                           Constraint(less_than, [45, 'LShoulderRoll'])],
                         ['lpitch', 'lroll']
                         ),
-            
+
             CommandSpec('right_down', 'arms',
                         Set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 90]),
@@ -142,8 +161,6 @@ COMMANDS = [CommandSpec('forward', 'arms',
                           Constraint(less_than, [45, 'RShoulderRoll'])],
                         ['rpitch', 'rroll']
                         ),
-
-
 
             CommandSpec('left_forward', 'arms',
                         Set(['LShoulderPitch', 'LShoulderRoll']),
