@@ -81,9 +81,9 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, -90]),
                          Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, -90])],
-                        [#Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+                        [   # Constraint(in_range, [-45, 45, 'LShoulderPitch']),
                           Constraint(greater_than, [44, 'LShoulderRoll']),
-                         #Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+                         # Constraint(max_difference, [10, 'lpitch', 'rpitch']),
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
@@ -132,7 +132,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         Set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, -90])],
-                        [#Constraint(in_range, [-45, 45, 'RShoulderPitch']),
+                        [   # Constraint(in_range, [-45, 45, 'RShoulderPitch']),
                           Constraint(less_than, [-45, 'RShoulderRoll'])],
                         ['rpitch', 'rroll']
                         ),
@@ -174,7 +174,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         Set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 0]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, -90])],
-                        [#Constraint(in_range, [-45, 45, 'LShoulderPitch']),
+                        [   # Constraint(in_range, [-45, 45, 'LShoulderPitch']),
                           Constraint(greater_than, [45, 'LShoulderRoll'])],
                         ['lpitch', 'lroll']
                         ),
@@ -213,7 +213,23 @@ COMMANDS = [CommandSpec('forward', 'arms',
            ]
 
 
-class Algo2Translator(object):
+class FluentNaoTranslator(object):
+
+    def commands_to_text(self, commands):
+        """
+        Takes a list of commands and converts them to text
+        """
+        output = ""
+        for command_tuple in commands:
+            # the command
+            if not output == "":
+                output = output + "."
+
+            args = [str(p) for p in command_tuple[1]]
+            command_str = "{cmd}({params})".format(cmd=command_tuple[0], params=",".join(args))
+            output = output + command_str
+
+        return output
 
     def detect_command(self, joint_dict):
         joints_degrees = joints_to_degrees(joint_dict, True)
