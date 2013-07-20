@@ -7,7 +7,7 @@ import unittest
 import math
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_OUT, POSITION_ARMS_RIGHT_FORWARD_LEFT_OUT, make_joint_dict
+from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_OUT, POSITION_ARMS_RIGHT_FORWARD_LEFT_OUT, make_joint_dict
 from recorder.JointManager import joints_to_degrees
 
 def get_translator():
@@ -116,6 +116,22 @@ class TestDetectArms(unittest.TestCase):
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
+
+    def testArmsDown(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_DOWN)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 1, "Should get one tuple with arms down")
+
+        # expect one tuple
+        first_tuple = result[0]
+
+        # command
+        command = first_tuple[0]
+        self.assertEqual("arms.down", command, "Should detect command arms down")
 
     def testArmsLeftUpRightOut(self):
 

@@ -98,6 +98,20 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
+            
+            CommandSpec('down', 'arms',
+                        Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+                        [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 90]),
+                         Transform(linear, 'LShoulderRoll', 'lroll', [1, 0]),
+                         Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 90]),
+                         Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
+                        [Constraint(in_range, [46, 95, 'LShoulderPitch']),
+                          Constraint(less_than, [45, 'LShoulderRoll']),
+                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                        ['lpitch', 'lroll']
+                        ),
+
             CommandSpec('left_forward', 'arms',
                         Set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [1, 0]),
