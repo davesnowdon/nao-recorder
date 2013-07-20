@@ -7,7 +7,7 @@ import unittest
 import math
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_OUT, POSITION_ARMS_RIGHT_FORWARD_LEFT_OUT, make_joint_dict
+from testutil import POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, make_joint_dict
 from recorder.JointManager import joints_to_degrees
 
 def get_translator():
@@ -17,13 +17,13 @@ class TestCommandsToText(unittest.TestCase):
     def testEmptyList(self):
         commands = []
         result = get_translator().commands_to_text(commands)
-        print "empty command result = {}".format(result)
+        #print "empty command result = {}".format(result)
         self.assertEqual("", result, "Empty commands should yield empty string")
 
     def testOneCommand(self):
         commands = [("arms.forward", [0, 0, 0])]
         result = get_translator().commands_to_text(commands)
-        print "one command result = {}".format(result)
+        #print "one command result = {}".format(result)
         self.assertEqual("arms.forward(0,0,0)", result,
                          "One command should yield command with parameters")
 
@@ -31,7 +31,7 @@ class TestCommandsToText(unittest.TestCase):
         commands = [("arms.left_forward", [0, 0, 0]),
                     ("right_forward", [0, 0, 0])]
         result = get_translator().commands_to_text(commands)
-        print "two command result = {}".format(result)
+        #print "two command result = {}".format(result)
         self.assertEqual("arms.left_forward(0,0,0).right_forward(0,0,0)", result,
                          "One command should yield command with parameters")
 
@@ -133,6 +133,24 @@ class TestDetectArms(unittest.TestCase):
         command = first_tuple[0]
         self.assertEqual("arms.down", command, "Should detect command arms down")
 
+
+    def testArmsBack(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_BACK)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 1, "Should get one tuple with arms back")
+
+        # expect one tuple
+        first_tuple = result[0]
+
+        # command
+        command = first_tuple[0]
+        self.assertEqual("arms.back", command, "Should detect command arms back")
+
+
     def testArmsLeftUpRightOut(self):
 
         # joint positions
@@ -152,43 +170,63 @@ class TestDetectArms(unittest.TestCase):
         else:
             self.fail("expected arms.left_up.right_out or arms.right_out.left_up")
 
+
+    def testArmsRightUpLeftOut(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_UP_LEFT_OUT)
+
+        # call function
+        result = get_translator().detect_command(joint_dict)
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_up and left_out")
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "arms.right_up" and  second_tuple[0] == "left_out") or (first_tuple[0] == "arms.left_out" and  second_tuple[0] == "right_up"):
+            pass
+        else:
+            self.fail("expected arms.right_up.left_out or arms.left_out.right_up")
+
     def testArmsLeftForwardRightOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_OUT)
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN)
 
         # call function
         result = get_translator().detect_command(joint_dict)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_out and left_forward")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_forward")
 
         # expect two tuples
         first_tuple = result[0]
         second_tuple = result[1]
 
         # command
-        if (first_tuple[0] == "arms.left_forward" and  second_tuple[0] == "right_out") or (first_tuple[0] == "arms.right_out" and  second_tuple[0] == "left_forward"):
+        if (first_tuple[0] == "arms.left_forward" and  second_tuple[0] == "right_down") or (first_tuple[0] == "arms.right_down" and  second_tuple[0] == "left_forward"):
             pass
         else:
-            self.fail("expected arms.left_forward.right_out or arms.right_out.left_forward")
+            self.fail("expected arms.left_forward.right_down or arms.right_down.left_forward")
 
-    def testArmsRightForwardLeftOut(self):
+    def testArmsRightForwardLeftDown(self):
         
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_OUT)
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN)
 
         # call function
         result = get_translator().detect_command(joint_dict)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_out")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_down")
 
         # expect two tuples
         first_tuple = result[0]
         second_tuple = result[1]
 
         # command
-        if (first_tuple[0] == "arms.right_forward" and  second_tuple[0] == "left_out") or (first_tuple[0] == "arms.left_out" and  second_tuple[0] == "right_forward"):
+        if (first_tuple[0] == "arms.right_forward" and  second_tuple[0] == "left_down") or (first_tuple[0] == "arms.left_down" and  second_tuple[0] == "right_forward"):
             pass
         else:
-            self.fail("expected arms.right_forward.left_out or arms.left_out.right_forward")
+            self.fail("expected arms.right_forward.left_down or arms.left_down.right_forward")
 
 
 if __name__ == "__main__":
