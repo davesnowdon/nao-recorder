@@ -60,13 +60,17 @@ def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
     the joint has changed.
     """
     deltas = {}
-    for k in oldangles:
-        j1 = oldangles[k]
-        j2 = newangles[k]
-        if not feq(j1, j2):
-            deltas[k] = Joint(k, j2, True, j2 - j1)
-        else:
-            deltas[k] = Joint(k, j2, False, None)
+    if oldangles:
+        for k in oldangles.keys():
+            j1 = oldangles[k]
+            j2 = newangles[k]
+            if not feq(j1, j2):
+                deltas[k] = Joint(k, j2, True, j2 - j1)
+            else:
+                deltas[k] = Joint(k, j2, False, None)
+    else:
+        for k in newangles.keys():
+            deltas[k] = Joint(k, newangles[k], True, None)
     return deltas
 
 
@@ -79,6 +83,7 @@ class Robot(object):
         self.nao = None
         self._motors_on = False
         self.logger = logging.getLogger("recorder.core.Robot")
+        self.last_keyframe_joints = None
 
         self.joints = { }
         for j in JOINT_NAMES:

@@ -12,6 +12,16 @@ from testutil import POSITION_ZERO, make_joint_dict, make_random_joints
 
 class TestJointChanges(unittest.TestCase):
 
+    def test_no_old_angles(self):
+        curAngles = make_joint_dict(POSITION_ZERO)
+        deltas = joint_changes(None, curAngles)
+        print "deltas = {}".format(deltas)
+        self.assertIsNotNone(deltas,
+                             "joint_changes() should return a dict")
+        nn = filter(lambda x: x.is_changed, deltas.values())
+        print "nn = {}".format(nn)
+        self.assertEqual(len(nn), len(curAngles.values()),
+                         "All joint angles should be marked changed")
 
     def test_no_changed_joints(self):
         # ensure dicts are different objects, but with same values
