@@ -159,12 +159,12 @@ class Robot(object):
             self.enable_speech_recognition()
 
     def enable_speech_recognition(self):
-         if "WordRecognized" in self.event_handlers:
-                memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
+        if "WordRecognized" in self.event_handlers:
+            memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
 
     def disable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
-                memory.unsubscribeToEvent("WordRecognized")
+            memory.unsubscribeToEvent("WordRecognized")
 
     def is_connected(self):
         return self.broker
