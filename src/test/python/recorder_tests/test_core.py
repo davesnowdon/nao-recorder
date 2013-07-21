@@ -21,7 +21,7 @@ class TestJointChanges(unittest.TestCase):
         print "deltas = {}".format(deltas)
         self.assertIsNotNone(deltas,
                              "joint_changes() should return a dict")
-        nn = filter(lambda x: not x is None, deltas.values())
+        nn = filter(lambda x: x.is_changed, deltas.values())
         print "nn = {}".format(nn)
         self.assertEqual(len(nn), 0,
                          "No joint angles should have changed")
@@ -33,7 +33,7 @@ class TestJointChanges(unittest.TestCase):
         self.assertIsNotNone(deltas,
                              "joint_changes() should return a dict")
 
-        nn = filter(lambda x: not x is None, deltas.values())
+        nn = filter(lambda x: x.is_changed, deltas.values())
         self.assertEqual(len(nn), len(j1.values()),
                          "Length of deltas should be same as input values")
 
@@ -47,7 +47,7 @@ class TestJointChanges(unittest.TestCase):
         print "deltas = {}".format(deltas)
         self.assertIsNotNone(deltas,
                              "joint_changes() should return a dict")
-        nn = filter(lambda x: not x is None, deltas.values())
+        nn = filter(lambda x: x.is_changed, deltas.values())
         print "nn = {}".format(nn)
         self.assertEqual(len(nn), 1,
                          "Only HeadYaw should have changed")
@@ -64,7 +64,7 @@ class TestJointChanges(unittest.TestCase):
         print "deltas = {}".format(deltas)
         self.assertIsNotNone(deltas,
                              "joint_changes() should return a dict")
-        nn = filter(lambda x: not x is None, deltas.values())
+        nn = filter(lambda x: x.is_changed, deltas.values())
         print "nn = {}".format(nn)
         self.assertEqual(len(nn), 2,
                          "Only LShoulderPitch and RHipRoll should have changed")

@@ -6,6 +6,7 @@ Created on 6 Jul 2013
 
 import math
 import logging
+import collections
 
 import naoutil.naoenv as naoenv
 from naoutil.general import find_class
@@ -14,6 +15,9 @@ from naoutil import memory
 import fluentnao.nao as nao
 
 from mathutil import FLOAT_CMP_ACCURACY, feq
+
+Joint = collections.namedtuple('Joint',
+                               ['name', 'position', 'is_changed', 'delta'])
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
@@ -52,18 +56,17 @@ def joints_to_degrees(joints, round_values=True):
 
 def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
     """
-    Returns a dict containing the changes in angles. Angles that have not changed have their
-    values set to None. Requires that oldangles and newangles have the same set
-    of keys.
+    Return a dict mapping joint names to tuples containin the current value and whether
+    the joint has changed.
     """
     deltas = {}
     for k in oldangles:
         j1 = oldangles[k]
         j2 = newangles[k]
         if not feq(j1, j2):
-            deltas[k] = j2 - j1
+            deltas[k] = Joint(k, j2, True, j2 - j1)
         else:
-            deltas[k] = None
+            deltas[k] = Joint(k, j2, False, None)
     return deltas
 
 
