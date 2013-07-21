@@ -215,7 +215,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
 
 class FluentNaoTranslator(object):
 
-    def commands_to_text(self, commands):
+    def commands_to_text(self, commands, is_blocking=False, fluentnao=None):
         """
         Takes a list of commands and converts them to text
         """
@@ -228,6 +228,12 @@ class FluentNaoTranslator(object):
             args = [str(p) for p in command_tuple[1]]
             command_str = "{cmd}({params})".format(cmd=command_tuple[0], params=",".join(args))
             output = output + command_str
+
+        if fluentnao:
+            output = fluentnao + output
+
+        if is_blocking:
+            output = output + ".go()"
 
         return output
 

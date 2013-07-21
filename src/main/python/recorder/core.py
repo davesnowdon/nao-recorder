@@ -203,7 +203,7 @@ class Robot(object):
             # translating
             translator = get_translator()
             commands = translator.detect_command(angles)
-            command_str = translator.commands_to_text(commands)
+            command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
             return command_str
         else:
             return None
