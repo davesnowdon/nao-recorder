@@ -154,12 +154,17 @@ class Robot(object):
         Gets NAO to say something but disables speech recognition while he says it
         """
         if self.is_connected():
-            if "WordRecognized" in self.event_handlers:
-                memory.unsubscribeToEvent("WordRecognized")
-                self.nao.say(msg)
+            self.disable_speech_recognition()
+            self.nao.say(msg)
+            self.enable_speech_recognition()
+
+    def enable_speech_recognition(self):
+         if "WordRecognized" in self.event_handlers:
                 memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
-            else:
-                self.nao.say(msg)
+
+    def disable_speech_recognition(self):
+        if "WordRecognized" in self.event_handlers:
+                memory.unsubscribeToEvent("WordRecognized")
 
     def is_connected(self):
         return self.broker
@@ -210,7 +215,9 @@ class Robot(object):
 
     def run_script(self, code):
         if self.is_connected():
+            self.disable_speech_recognition()
             self.nao.naoscript.run_script(code, '\n')
+            self.enable_speech_recognition()
 
     def _word_recognised(self, dataName, value, message):
         print "word_recognised: {}".format(value)
