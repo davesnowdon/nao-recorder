@@ -116,7 +116,8 @@ class Robot(object):
                                "HandRightBackTouched": self._back_right_arm,
                                "LeftBumperPressed": self._left_bumper,
                                "RightBumperPressed": self._right_bumper,
-                               "MiddleTactilTouched": self._head_middle,
+                               "FrontTactilTouched": self._head_front,
+                               "RearTactilTouched": self._head_rear,
                                "ChestButtonPressed": lambda x, y, z: self._add_keyframe(),
                                "WordRecognized": self._word_recognised
                                }
@@ -251,12 +252,16 @@ class Robot(object):
             else:
                 self._right_leg_stiff()
 
-    def _head_middle(self, dataName, value, message):
+    def _head_rear(self, dataName, value, message):
         if self._motors_on:
             if value == 1:
                 self._head_relax()
             else:
                 self._head_stiff()
+
+    def _head_front(self, dataName, value, message):
+        if value == 1:
+            self._add_keyframe()
 
     def _add_keyframe(self):
         code = self.keyframe()
