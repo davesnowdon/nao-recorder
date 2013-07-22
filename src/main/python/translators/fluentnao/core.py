@@ -236,18 +236,11 @@ class FluentNaoTranslator(object):
 
         return output
 
-    def detect_command(self, joint_dict):
-        # convert map with indication if joints have changed into simple map from joint
-        # name to position using a dict comprehension
-        joint_positions = { j.name : j.position for j in joint_dict.values() }
-
-        joints_degrees = joints_to_degrees(joint_positions, True)
+    def detect_command(self, joint_dict, changed_joint_names):
+        joints_degrees = joints_to_degrees(joint_dict, True)
         commands = []
         joints_done = set()
         cur_prefix = None
-
-        # build set of names of the joints that have changed (usign set comprehension)
-        changed_joint_names = { j.name for j in joint_dict.values() if j.is_changed }
 
         for cs in COMMANDS:
             # check whether any of the joints used by this command have changed

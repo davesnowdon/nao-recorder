@@ -39,11 +39,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsForward(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ZERO,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ZERO)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 1, "Should get one tuple with arms forward")
 
         # expect one tuple
@@ -54,23 +54,23 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("arms.forward", command, "Should detect command arms forward")
 
         # pitch offset
-        desired_pitch_offset = round(math.degrees(joint_dict['LShoulderPitch'].position))
+        desired_pitch_offset = round(math.degrees(joint_dict['LShoulderPitch']))
         actual_pitch_offset = first_tuple[1][1]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll'].position))
+        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll']))
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
     def testArmsUp(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_UP,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_UP)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 1, "Should get one tuple with arms up")
 
         # expect one tuple
@@ -81,12 +81,12 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("arms.up", command, "Should detect command arms up")
 
         # pitch offset
-        desired_pitch_offset = round(-90 - math.degrees(joint_dict['LShoulderPitch'].position))
+        desired_pitch_offset = round(-90 - math.degrees(joint_dict['LShoulderPitch']))
         actual_pitch_offset = first_tuple[1][1]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll'].position))
+        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll']))
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
@@ -94,11 +94,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_OUT,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_OUT)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 1, "Should get one tuple with arms out")
 
         # expect one tuple
@@ -109,12 +109,12 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("arms.out", command, "Should detect command arms out")
 
         # pitch offset
-        desired_pitch_offset = round(-math.degrees(joint_dict['LShoulderPitch'].position))
+        desired_pitch_offset = round(-math.degrees(joint_dict['LShoulderPitch']))
         actual_pitch_offset = first_tuple[1][1]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(math.degrees(joint_dict['LShoulderRoll'].position) - 90)
+        desired_roll_offset = round(math.degrees(joint_dict['LShoulderRoll']) - 90)
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
@@ -122,11 +122,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsDown(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_DOWN,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_DOWN)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 1, "Should get one tuple with arms down")
 
         # expect one tuple
@@ -140,11 +140,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsBack(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_BACK,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_BACK)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 1, "Should get one tuple with arms back")
 
         # expect one tuple
@@ -158,11 +158,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsLeftUpRightOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_UP_RIGHT_OUT,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_UP_RIGHT_OUT)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_up and right_out")
 
         # expect two tuples
@@ -179,11 +179,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsRightUpLeftOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_UP_LEFT_OUT,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_UP_LEFT_OUT)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_up and left_out")
 
         # expect two tuples
@@ -199,11 +199,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsLeftForwardRightDown(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_forward")
 
         # expect two tuples
@@ -219,11 +219,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsRightForwardLeftDown(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_down")
 
         # expect two tuples
@@ -239,11 +239,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsRightDownLeftBack(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_DOWN_LEFT_BACK,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_DOWN_LEFT_BACK)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_back")
 
         # expect two tuples
@@ -259,11 +259,11 @@ class TestDetectArms(unittest.TestCase):
     def testArmsLeftDownRightBack(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_DOWN_RIGHT_BACK,
-                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_DOWN_RIGHT_BACK)
 
         # call function
-        result = get_translator().detect_command(joint_dict)
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']))
         self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_down and right_back")
 
         # expect two tuples

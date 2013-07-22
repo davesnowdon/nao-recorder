@@ -6,7 +6,6 @@ Created on 6 Jul 2013
 
 import math
 import logging
-import collections
 
 import naoutil.naoenv as naoenv
 from naoutil.general import find_class
@@ -15,9 +14,6 @@ from naoutil import memory
 import fluentnao.nao as nao
 
 from mathutil import FLOAT_CMP_ACCURACY, feq
-
-Joint = collections.namedtuple('Joint',
-                               ['name', 'position', 'is_changed', 'delta'])
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
@@ -56,22 +52,18 @@ def joints_to_degrees(joints, round_values=True):
 
 def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
     """
-    Return a dict mapping joint names to tuples containin the current value and whether
-    the joint has changed.
+    Return a set containing the names of joints that have changed.
     """
-    deltas = {}
+    changed_joints = set()
     if oldangles:
-        for k in oldangles.keys():
+        for k in newangles.keys():
             j1 = oldangles[k]
             j2 = newangles[k]
             if not feq(j1, j2):
-                deltas[k] = Joint(k, j2, True, j2 - j1)
-            else:
-                deltas[k] = Joint(k, j2, False, None)
+                changed_joints.add(k)
     else:
-        for k in newangles.keys():
-            deltas[k] = Joint(k, newangles[k], True, None)
-    return deltas
+        changed_joints.update(newangles.keys())
+    return changed_joints
 
 
 class Robot(object):
@@ -213,12 +205,12 @@ class Robot(object):
             angles = self.get_joint_angles()
             print angles
 
-            changed_angles = joint_changes(self.last_keyframe_joints, angles)
-            print changed_angles
+            changed_joints = joint_changes(self.last_keyframe_joints, angles)
+            print changed_joints
 
             # translating
             translator = get_translator()
-            commands = translator.detect_command(changed_angles)
+            commands = translator.detect_command(angles, changed_joints)
             command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
             return command_str
         else:
