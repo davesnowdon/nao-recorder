@@ -5,7 +5,6 @@ Created on 6 Jul 2013
 '''
 
 import collections
-from sets import Set
 
 from recorder.core import joints_to_degrees
 
@@ -63,7 +62,7 @@ def max_difference(joints, params):
 
 
 COMMANDS = [CommandSpec('forward', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [1, 0]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0]),
                          Transform(linear, 'RShoulderPitch', 'rpitch', [1, 0]),
@@ -76,7 +75,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ),
 
             CommandSpec('out', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 0]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, -90]),
                          Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
@@ -89,7 +88,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ),
 
             CommandSpec('up', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, -90]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0]),
                          Transform(linear, 'RShoulderPitch', 'rpitch', [-1, -90]),
@@ -102,7 +101,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ),
 
             CommandSpec('down', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 90]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, 0]),
                          Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 90]),
@@ -115,7 +114,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ),
 
             CommandSpec('back', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 119.5]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, 0]),
                          Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 119.5]),
@@ -129,7 +128,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
 
             # right
             CommandSpec('right_out', 'arms',
-                        Set(['RShoulderPitch', 'RShoulderRoll']),
+                        set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, -90])],
                         [   # Constraint(in_range, [-45, 45, 'RShoulderPitch']),
@@ -137,7 +136,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['rpitch', 'rroll']
                         ),
             CommandSpec('right_back', 'arms',
-                        Set(['RShoulderPitch', 'RShoulderRoll']),
+                        set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 119.5]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
                         [Constraint(in_range, [96, 119.5, 'RShoulderPitch']),
@@ -145,7 +144,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['rpitch', 'rroll']
                         ),
             CommandSpec('right_down', 'arms',
-                        Set(['RShoulderPitch', 'RShoulderRoll']),
+                        set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 90]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
                         [Constraint(in_range, [46, 95, 'RShoulderPitch']),
@@ -153,7 +152,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['rpitch', 'rroll']
                         ),
             CommandSpec('right_forward', 'arms',
-                        Set(['RShoulderPitch', 'RShoulderRoll']),
+                        set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [1, 0]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [1, 0])],
                         [Constraint(in_range, [-45, 45, 'RShoulderPitch']),
@@ -161,7 +160,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['rpitch', 'rroll']
                         ),
             CommandSpec('right_up', 'arms',
-                        Set(['RShoulderPitch', 'RShoulderRoll']),
+                        set(['RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'RShoulderPitch', 'rpitch', [-1, -90]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [1, 0])],
                         [Constraint(in_range, [-110, -45, 'RShoulderPitch']),
@@ -171,7 +170,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
 
             # left
             CommandSpec('left_out', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 0]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, -90])],
                         [   # Constraint(in_range, [-45, 45, 'LShoulderPitch']),
@@ -179,7 +178,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('left_back', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 119.5]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, 0])],
                         [Constraint(in_range, [96, 119.5, 'LShoulderPitch']),
@@ -187,7 +186,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('left_down', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 90]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [1, 0])],
                         [Constraint(in_range, [46, 95, 'LShoulderPitch']),
@@ -195,7 +194,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('left_forward', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [1, 0]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0])],
                         [Constraint(in_range, [-45, 45, 'LShoulderPitch']),
@@ -203,7 +202,7 @@ COMMANDS = [CommandSpec('forward', 'arms',
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('left_up', 'arms',
-                        Set(['LShoulderPitch', 'LShoulderRoll']),
+                        set(['LShoulderPitch', 'LShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, -90]),
                          Transform(linear, 'LShoulderRoll', 'lroll', [-1, 0])],
                         [Constraint(in_range, [-110, -45, 'LShoulderPitch']),
@@ -238,20 +237,30 @@ class FluentNaoTranslator(object):
         return output
 
     def detect_command(self, joint_dict):
-        joints_degrees = joints_to_degrees(joint_dict, True)
+        # convert map with indication if joints have changed into simple map from joint
+        # name to position using a dict comprehension
+        joint_positions = { j.name : j.position for j in joint_dict.values() }
+
+        joints_degrees = joints_to_degrees(joint_positions, True)
         commands = []
-        joints_done = Set()
+        joints_done = set()
         cur_prefix = None
 
+        # build set of names of the joints that have changed (usign set comprehension)
+        changed_joint_names = { j.name for j in joint_dict.values() if j.is_changed }
+
         for cs in COMMANDS:
-            # ignore all other commands using joints marked as done
-            if not cs.joints.issubset(joints_done):
-                cdata = joints_degrees.copy()
-                self.do_transforms(cs, cdata)
-                if self.constraints_pass(cs, cdata):
-                    joints_done = joints_done.union(cs.joints)
-                    commands.append(self.generate_command(cs, cur_prefix, cdata))
-                    cur_prefix = cs.prefix
+            # check whether any of the joints used by this command have changed
+            # we take the intersection of the command joints and the changed joints
+            if changed_joint_names & cs.joints:
+                # ignore all other commands using joints marked as done
+                if not cs.joints.issubset(joints_done):
+                    cdata = joints_degrees.copy()
+                    self.do_transforms(cs, cdata)
+                    if self.constraints_pass(cs, cdata):
+                        joints_done = joints_done.union(cs.joints)
+                        commands.append(self.generate_command(cs, cur_prefix, cdata))
+                        cur_prefix = cs.prefix
         return commands
 
     def do_transforms(self, cs, cdata):

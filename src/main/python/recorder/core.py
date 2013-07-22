@@ -213,9 +213,12 @@ class Robot(object):
             angles = self.get_joint_angles()
             print angles
 
+            changed_angles = joint_changes(self.last_keyframe_joints, angles)
+            print changed_angles
+
             # translating
             translator = get_translator()
-            commands = translator.detect_command(angles)
+            commands = translator.detect_command(changed_angles)
             command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
             return command_str
         else:

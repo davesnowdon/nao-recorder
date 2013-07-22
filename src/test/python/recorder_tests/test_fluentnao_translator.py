@@ -8,7 +8,6 @@ import math
 
 from translators.fluentnao.core import FluentNaoTranslator
 from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK
-from recorder.core import joints_to_degrees
 
 def get_translator():
     return FluentNaoTranslator()
@@ -17,13 +16,13 @@ class TestCommandsToText(unittest.TestCase):
     def testEmptyList(self):
         commands = []
         result = get_translator().commands_to_text(commands)
-        #print "empty command result = {}".format(result)
+        # print "empty command result = {}".format(result)
         self.assertEqual("", result, "Empty commands should yield empty string")
 
     def testOneCommand(self):
         commands = [("arms.forward", [0, 0, 0])]
         result = get_translator().commands_to_text(commands)
-        #print "one command result = {}".format(result)
+        # print "one command result = {}".format(result)
         self.assertEqual("arms.forward(0,0,0)", result,
                          "One command should yield command with parameters")
 
@@ -31,7 +30,7 @@ class TestCommandsToText(unittest.TestCase):
         commands = [("arms.left_forward", [0, 0, 0]),
                     ("right_forward", [0, 0, 0])]
         result = get_translator().commands_to_text(commands)
-        #print "two command result = {}".format(result)
+        # print "two command result = {}".format(result)
         self.assertEqual("arms.left_forward(0,0,0).right_forward(0,0,0)", result,
                          "One command should yield command with parameters")
 
@@ -40,7 +39,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsForward(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ZERO)
+        joint_dict = make_joint_dict(POSITION_ZERO,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -54,19 +54,20 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("arms.forward", command, "Should detect command arms forward")
 
         # pitch offset
-        desired_pitch_offset = round(math.degrees(joint_dict['LShoulderPitch']))
+        desired_pitch_offset = round(math.degrees(joint_dict['LShoulderPitch'].position))
         actual_pitch_offset = first_tuple[1][1]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll']))
+        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll'].position))
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
     def testArmsUp(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_UP)
+        joint_dict = make_joint_dict(POSITION_ARMS_UP,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -80,12 +81,12 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("arms.up", command, "Should detect command arms up")
 
         # pitch offset
-        desired_pitch_offset = round(-90 - math.degrees(joint_dict['LShoulderPitch']))
+        desired_pitch_offset = round(-90 - math.degrees(joint_dict['LShoulderPitch'].position))
         actual_pitch_offset = first_tuple[1][1]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll']))
+        desired_roll_offset = round(-math.degrees(joint_dict['LShoulderRoll'].position))
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
@@ -93,7 +94,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_OUT)
+        joint_dict = make_joint_dict(POSITION_ARMS_OUT,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -107,12 +109,12 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("arms.out", command, "Should detect command arms out")
 
         # pitch offset
-        desired_pitch_offset = round(-math.degrees(joint_dict['LShoulderPitch']))
+        desired_pitch_offset = round(-math.degrees(joint_dict['LShoulderPitch'].position))
         actual_pitch_offset = first_tuple[1][1]
         self.assertEqual(desired_pitch_offset, actual_pitch_offset, "Should match pitch offset")
 
         # roll offset
-        desired_roll_offset = round(math.degrees(joint_dict['LShoulderRoll']) - 90)
+        desired_roll_offset = round(math.degrees(joint_dict['LShoulderRoll'].position) - 90)
         actual_roll_offset = first_tuple[1][2]
         self.assertEqual(desired_roll_offset, actual_roll_offset, "Should match roll offset")
 
@@ -120,7 +122,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsDown(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_DOWN)
+        joint_dict = make_joint_dict(POSITION_ARMS_DOWN,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -137,7 +140,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsBack(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_BACK)
+        joint_dict = make_joint_dict(POSITION_ARMS_BACK,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -154,7 +158,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsLeftUpRightOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_UP_RIGHT_OUT)
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_UP_RIGHT_OUT,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -174,7 +179,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsRightUpLeftOut(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_UP_LEFT_OUT)
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_UP_LEFT_OUT,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -193,7 +199,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsLeftForwardRightDown(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN)
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -210,9 +217,10 @@ class TestDetectArms(unittest.TestCase):
             self.fail("expected arms.left_forward.right_down or arms.right_down.left_forward")
 
     def testArmsRightForwardLeftDown(self):
-        
+
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN)
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -231,7 +239,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsRightDownLeftBack(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_DOWN_LEFT_BACK)
+        joint_dict = make_joint_dict(POSITION_ARMS_RIGHT_DOWN_LEFT_BACK,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
@@ -250,7 +259,8 @@ class TestDetectArms(unittest.TestCase):
     def testArmsLeftDownRightBack(self):
 
         # joint positions
-        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_DOWN_RIGHT_BACK)
+        joint_dict = make_joint_dict(POSITION_ARMS_LEFT_DOWN_RIGHT_BACK,
+                                     ['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 
         # call function
         result = get_translator().detect_command(joint_dict)
