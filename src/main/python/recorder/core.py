@@ -100,7 +100,11 @@ class Robot(object):
                            'now sit': self._sit,
                            'now key frame': self._add_keyframe,
                            'now exit': self._nao_exit,
-                           'hello now': self._hello_nao
+                           'hello now': self._hello_nao,
+                           'left hand open': self._left_hand_open,
+                           'left hand close': self._left_hand_close,
+                           'right hand open': self._right_hand_open,
+                           'right hand close': self._right_hand_close
                            }
 
         self.standard_postures = {
@@ -289,55 +293,89 @@ class Robot(object):
     def _hello_nao(self):
         self.safe_say("hello")
 
+    def _left_hand_open(self):
+        msg = "left hand open"
+        self.status_display.add_status(msg)
+        self.nao.hands.left_open()
+        self.safe_say(msg)
+
+    def _left_hand_close(self):
+        msg = "left hand close"
+        self.status_display.add_status(msg)
+        self.nao.hands.left_close()
+        self.safe_say(msg)
+
+    def _right_hand_open(self):
+        msg = "right hand open"
+        self.status_display.add_status(msg)
+        self.nao.hands.right_open()
+        self.safe_say(msg)
+
+    def _right_hand_close(self):
+        msg = "right hand close"
+        self.status_display.add_status(msg)
+        self.nao.hands.right_close()
+        self.safe_say(msg)
+
     def _left_arm_stiff(self):
-        self.status_display.add_status("left arm stiff")
+        msg = "left arm stiff"
+        self.status_display.add_status(msg)
         self.nao.arms.left_stiff()
-        self.safe_say("left arm stiff")
+        self.safe_say(msg)
 
     def _left_arm_relax(self):
-        self.status_display.add_status("left arm relaxed")
+        msg = "left arm relaxed"
+        self.status_display.add_status(msg)
         self.nao.arms.left_relax()
-        self.safe_say("left arm relaxed")
+        self.safe_say(msg)
 
     def _right_arm_stiff(self):
-        self.status_display.add_status("right arm stiff")
+        msg = "right arm stiff"
+        self.status_display.add_status(msg)
         self.nao.arms.right_stiff()
-        self.safe_say("right arm stiff")
+        self.safe_say(msg)
 
     def _right_arm_relax(self):
-        self.status_display.add_status("right arm relaxed")
+        msg = "right arm relaxed"
+        self.status_display.add_status(msg)
         self.nao.arms.right_relax()
-        self.safe_say("right arm relaxed")
+        self.safe_say(msg)
 
     def _left_leg_stiff(self):
-        self.status_display.add_status("left leg stiff")
+        msg = "left leg stiff"
+        self.status_display.add_status(msg)
         self.nao.legs.left_stiff()
-        self.safe_say("left leg stiff")
+        self.safe_say(msg)
 
     def _left_leg_relax(self):
-        self.status_display.add_status("left leg relaxed")
+        msg = "left leg relaxed"
+        self.status_display.add_status(msg)
         self.nao.legs.left_relax()
-        self.safe_say("left leg relaxed")
+        self.safe_say(msg)
 
     def _right_leg_stiff(self):
-        self.status_display.add_status("right leg stiff")
+        msg = "right leg stiff"
+        self.status_display.add_status(msg)
         self.nao.legs.right_stiff()
-        self.safe_say("right leg stiff")
+        self.safe_say(msg)
 
     def _right_leg_relax(self):
-        self.status_display.add_status("right leg relaxed")
+        msg = "right leg relaxed"
+        self.status_display.add_status(msg)
         self.nao.legs.right_relax()
-        self.safe_say("right leg relaxed")
+        self.safe_say(msg)
 
     def _head_stiff(self):
-        self.status_display.add_status("head stiff")
+        msg = "head stiff"
+        self.status_display.add_status(msg)
         self.nao.head.stiff()
-        self.safe_say("head stiff")
+        self.safe_say(msg)
 
     def _head_relax(self):
-        self.status_display.add_status("head relaxed")
+        msg = "head relaxed"
+        self.status_display.add_status(msg)
         self.nao.head.relax()
-        self.safe_say("head relaxed")
+        self.safe_say(msg)
 
     # wrapper functions so we can create map of standard positions without robot connection
     def _stand_init(self):

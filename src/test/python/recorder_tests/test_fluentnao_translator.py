@@ -305,6 +305,10 @@ class TestDetectArms(unittest.TestCase):
         # call function
         result = get_translator().detect_command(joint_dict,
                                                  set(['LHand', 'RHand']))
+        print ""
+        print "LHand: {0}".format(joint_dict['LHand'])
+        print "RHand: {0}".format(joint_dict['RHand'])
+        print result
         self.assertEqual(len(result), 2, "Should get two tuples with command hands.right_open().left_close()")
 
     def testHandsLeftOpenRightClose(self):
