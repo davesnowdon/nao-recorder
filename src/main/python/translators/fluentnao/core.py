@@ -209,6 +209,50 @@ COMMANDS = [CommandSpec('forward', 'arms',
                           Constraint(less_than, [45, 'LShoulderRoll'])],
                         ['lpitch', 'lroll']
                         ),
+
+            CommandSpec('open', 'hands',
+                        set(['LHand', 'RHand']),
+                        [],
+                        [Constraint(greater_than, [.5, 'LHand']),
+                          Constraint(greater_than, [.5, 'RHand'])],
+                        []
+                        ),
+
+            CommandSpec('close', 'hands',
+                        set(['LHand', 'RHand']),
+                        [],
+                        [Constraint(less_than, [.3, 'RHand'])],
+                        []
+                        ),
+
+            CommandSpec('right_open', 'hands',
+                        set(['RHand']),
+                        [],
+                        [Constraint(greater_than, [.5, 'RHand'])],
+                        []
+                        ),
+
+            CommandSpec('right_close', 'hands',
+                        set(['RHand']),
+                        [],
+                        [Constraint(less_than, [.3, 'LHand']),
+                          Constraint(less_than, [.3, 'RHand'])],
+                        []
+                        ),
+
+            CommandSpec('left_open', 'hands',
+                        set(['LHand']),
+                        [],
+                        [Constraint(greater_than, [.5, 'LHand'])],
+                        []
+                        ),
+
+            CommandSpec('left_close', 'hands',
+                        set(['LHand']),
+                        [],
+                        [Constraint(less_than, [.3, 'LHand'])],
+                        []
+                        )
            ]
 
 
