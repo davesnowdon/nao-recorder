@@ -214,6 +214,7 @@ class Robot(object):
             translator = get_translator()
             commands = translator.detect_command(angles, changed_joints)
             command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
+            self.last_keyframe_joints = angles
             return command_str
         else:
             return None
