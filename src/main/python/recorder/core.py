@@ -31,6 +31,7 @@ JOINT_NAMES = ('HeadYaw', 'HeadPitch',
                'RShoulderPitch', 'RShoulderRoll', 'RElbowYaw', 'RElbowRoll',
                'RWristYaw', 'RHand')
 
+JOINT_MOVE_AMOUNT = math.pi / 180.0
 
 def get_translator(name=None):
     global default_translator
@@ -59,7 +60,7 @@ def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
         for k in newangles.keys():
             j1 = oldangles[k]
             j2 = newangles[k]
-            if not feq(j1, j2):
+            if not feq(j1, j2, threshold):
                 changed_joints.add(k)
     else:
         changed_joints.update(newangles.keys())
@@ -205,14 +206,14 @@ class Robot(object):
             angles = self.get_joint_angles()
             print angles
 
-            changed_joints = joint_changes(self.last_keyframe_joints, angles)
+            changed_joints = joint_changes(self.last_keyframe_joints, angles, JOINT_MOVE_AMOUNT)
             print changed_joints
 
             # translating
             translator = get_translator()
             commands = translator.detect_command(angles, changed_joints)
             command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
-            self.last_keyframe_joints = angles
+            self.last_keyframe_joints = angles.copy()
             return command_str
         else:
             return None
