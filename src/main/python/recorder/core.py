@@ -97,7 +97,9 @@ class Robot(object):
                            'now stand': self._stand,
                            'now crouch': self._crouch,
                            'now sit': self._sit,
-                           'now key frame': self._add_keyframe
+                           'now key frame': self._add_keyframe,
+                           'now exit': self._nao_exit,
+                           'hello now': self._hello_nao
                            }
 
         self.standard_postures = {
@@ -277,6 +279,13 @@ class Robot(object):
         code = self.keyframe()
         if code:
             self.code_display.append_code(code)
+
+    def _nao_exit(self):
+        self.safe_say("bye bye")
+        self.disconnect()
+
+    def _hello_nao(self):
+        self.safe_say("hello")
 
     def _left_arm_stiff(self):
         self.status_display.add_status("left arm stiff")
