@@ -7,7 +7,7 @@ import unittest
 import math
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK
+from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE
 
 def get_translator():
     return FluentNaoTranslator()
@@ -275,7 +275,49 @@ class TestDetectArms(unittest.TestCase):
             pass
         else:
             self.fail("expected arms.left_down.right_back or arms.right_back.left_down")
+    
+    def testHandsClose(self):
 
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HANDS_CLOSE)
+
+        # call function
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LHand', 'RHand']))
+        self.assertEqual(len(result), 1, "Should get one tuple with command hands.close()")
+
+    
+    def testHandsOpen(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HANDS_OPEN)
+
+        # call function
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LHand', 'RHand']))
+        self.assertEqual(len(result), 1, "Should get one tuple with command hands.open()")
+
+    def testHandsRightOpenLeftClose(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE)
+
+        # call function
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LHand', 'RHand']))
+        self.assertEqual(len(result), 2, "Should get two tuples with command hands.right_open().left_close()")
+
+    def testHandsLeftOpenRightClose(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE)
+
+        # call function
+        result = get_translator().detect_command(joint_dict,
+                                                 set(['LHand', 'RHand']))
+        self.assertEqual(len(result), 2, "Should get two tuples with command hands.left_open().right_close()")        
+        
+        
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
