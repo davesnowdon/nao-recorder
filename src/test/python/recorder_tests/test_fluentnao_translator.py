@@ -34,6 +34,12 @@ class TestCommandsToText(unittest.TestCase):
         self.assertEqual("arms.left_forward(0,0,0).right_forward(0,0,0)", result,
                          "One command should yield command with parameters")
 
+    def testNoCommands(self):
+        commands = []
+        result = get_translator().commands_to_text(commands, is_blocking=True, fluentnao="nao.")
+        self.assertEqual("", result, "empty command list should generate empty string")
+
+
 class TestDetectArms(unittest.TestCase):
 
     def testArmsForward(self):

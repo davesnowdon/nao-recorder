@@ -228,11 +228,12 @@ class FluentNaoTranslator(object):
             command_str = "{cmd}({params})".format(cmd=command_tuple[0], params=",".join(args))
             output = output + command_str
 
-        if fluentnao:
-            output = fluentnao + output
+        if commands:
+            if fluentnao:
+                output = fluentnao + output
 
-        if is_blocking:
-            output = output + ".go()"
+            if is_blocking:
+                output = output + ".go()"
 
         return output
 
