@@ -210,10 +210,10 @@ class Robot(object):
         if self.is_connected():
             # get angles
             angles = self.get_joint_angles()
-            print angles
+            #print angles
 
             changed_joints = joint_changes(self.last_keyframe_joints, angles, JOINT_MOVE_AMOUNT)
-            print changed_joints
+            #print changed_joints
 
             # translating
             translator = get_translator()
