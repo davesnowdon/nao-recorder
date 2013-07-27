@@ -213,44 +213,44 @@ COMMANDS = [CommandSpec('forward', 'arms',
             CommandSpec('open', 'hands',
                         set(['LHand', 'RHand']),
                         [],
-                        [Constraint(greater_than, [0.5, 'LHand']),
-                          Constraint(greater_than, [0.5, 'RHand'])],
+                        [Constraint(greater_than, [17, 'LHand']),
+                          Constraint(greater_than, [17, 'RHand'])],
                         []
                         ),
 
             CommandSpec('close', 'hands',
                         set(['LHand', 'RHand']),
                         [],
-                        [Constraint(less_than, [0.5, 'LHand']),
-                          Constraint(less_than, [0.5, 'RHand'])],
+                        [Constraint(less_than, [17, 'LHand']),
+                          Constraint(less_than, [17, 'RHand'])],
                         []
                         ),
 
             CommandSpec('right_open', 'hands',
                         set(['RHand']),
                         [],
-                        [Constraint(greater_than, [0.5, 'RHand'])],
+                        [Constraint(greater_than, [17, 'RHand'])],
                         []
                         ),
 
             CommandSpec('right_close', 'hands',
                         set(['RHand']),
                         [],
-                        [Constraint(less_than, [0.3, 'RHand'])],
+                        [Constraint(less_than, [17, 'RHand'])],
                         []
                         ),
 
             CommandSpec('left_open', 'hands',
                         set(['LHand']),
                         [],
-                        [Constraint(greater_than, [0.5, 'LHand'])],
+                        [Constraint(greater_than, [17, 'LHand'])],
                         []
                         ),
 
             CommandSpec('left_close', 'hands',
                         set(['LHand']),
                         [],
-                        [Constraint(less_than, [0.3, 'LHand'])],
+                        [Constraint(less_than, [17, 'LHand'])],
                         []
                         )
            ]
@@ -283,6 +283,7 @@ class FluentNaoTranslator(object):
 
     def detect_command(self, joint_dict, changed_joint_names):
         joints_degrees = joints_to_degrees(joint_dict, True)
+
         commands = []
         joints_done = set()
         cur_prefix = None
