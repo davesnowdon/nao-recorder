@@ -73,7 +73,6 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
-
             CommandSpec('out', 'arms',
                         set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 0]),
@@ -86,7 +85,6 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
-
             CommandSpec('up', 'arms',
                         set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, -90]),
@@ -99,7 +97,6 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
-
             CommandSpec('down', 'arms',
                         set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 90]),
@@ -112,7 +109,6 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
-
             CommandSpec('back', 'arms',
                         set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),
                         [Transform(linear, 'LShoulderPitch', 'lpitch', [-1, 119.5]),
@@ -124,6 +120,55 @@ COMMANDS = [CommandSpec('forward', 'arms',
                          Constraint(max_difference, [10, 'lpitch', 'rpitch']),
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
+                        ),
+            CommandSpec('open', 'hands',
+                        set(['LHand', 'RHand']),
+                        [],
+                        [Constraint(greater_than, [17, 'LHand']),
+                          Constraint(greater_than, [17, 'RHand'])],
+                        []
+                        ),
+            CommandSpec('close', 'hands',
+                        set(['LHand', 'RHand']),
+                        [],
+                        [Constraint(less_than, [17, 'LHand']),
+                          Constraint(less_than, [17, 'RHand'])],
+                        []
+                        ),
+            CommandSpec('bent', 'elbows',
+                        set(['LElbowRoll', 'RElbowRoll']),
+                        [],
+                        [Constraint(less_than, [-43, 'LElbowRoll']),
+                          Constraint(greater_than, [43, 'RElbowRoll'])],
+                        []
+                        ),
+            CommandSpec('straight', 'elbows',
+                        set(['LElbowRoll', 'RElbowRoll']),
+                        [],
+                        [Constraint(less_than, [43, 'LElbowRoll']),
+                          Constraint(less_than, [43, 'RElbowRoll'])],
+                        []
+                        ),
+            CommandSpec('turn_up', 'elbows',
+                        set(['LElbowYaw', 'RElbowYaw']),
+                        [],
+                        [Constraint(greater_than, [45, 'RElbowYaw']),
+                          Constraint(less_than, [-45, 'LElbowYaw'])],
+                        []
+                        ),
+            CommandSpec('turn_in', 'elbows',
+                        set(['LElbowYaw', 'RElbowYaw']),
+                        [],
+                        [Constraint(in_range, [-44, 44, 'RElbowYaw']),
+                          Constraint(in_range, [-44, 44, 'LElbowYaw'])],
+                        []
+                        ),
+            CommandSpec('turn_down', 'elbows',
+                        set(['LElbowYaw', 'RElbowYaw']),
+                        [],
+                        [Constraint(less_than, [-45, 'RElbowYaw']),
+                          Constraint(greater_than, [45, 'LElbowYaw'])],
+                        []
                         ),
 
             # right
@@ -167,6 +212,19 @@ COMMANDS = [CommandSpec('forward', 'arms',
                           Constraint(less_than, [45, 'RShoulderRoll'])],
                         ['rpitch', 'rroll']
                         ),
+             CommandSpec('right_open', 'hands',
+                        set(['RHand']),
+                        [],
+                        [Constraint(greater_than, [17, 'RHand'])],
+                        []
+                        ),
+
+            CommandSpec('right_close', 'hands',
+                        set(['RHand']),
+                        [],
+                        [Constraint(less_than, [17, 'RHand'])],
+                        []
+                        ),
 
             # left
             CommandSpec('left_out', 'arms',
@@ -209,37 +267,6 @@ COMMANDS = [CommandSpec('forward', 'arms',
                           Constraint(less_than, [45, 'LShoulderRoll'])],
                         ['lpitch', 'lroll']
                         ),
-
-            CommandSpec('open', 'hands',
-                        set(['LHand', 'RHand']),
-                        [],
-                        [Constraint(greater_than, [17, 'LHand']),
-                          Constraint(greater_than, [17, 'RHand'])],
-                        []
-                        ),
-
-            CommandSpec('close', 'hands',
-                        set(['LHand', 'RHand']),
-                        [],
-                        [Constraint(less_than, [17, 'LHand']),
-                          Constraint(less_than, [17, 'RHand'])],
-                        []
-                        ),
-
-            CommandSpec('right_open', 'hands',
-                        set(['RHand']),
-                        [],
-                        [Constraint(greater_than, [17, 'RHand'])],
-                        []
-                        ),
-
-            CommandSpec('right_close', 'hands',
-                        set(['RHand']),
-                        [],
-                        [Constraint(less_than, [17, 'RHand'])],
-                        []
-                        ),
-
             CommandSpec('left_open', 'hands',
                         set(['LHand']),
                         [],
