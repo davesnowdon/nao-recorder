@@ -1,0 +1,178 @@
+#:kivy 1.0
+#
+
+<NaoJoints>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    RelativeLayout:
+        size: root.size
+
+        
+        # head
+        ToggleButton:
+            text: 'Head'
+            size_hint: 0.25, 0.05
+            pos_hint: { 'x' : 0.375, 'y': 0.95 }
+        ToggleButton:
+            text: 'HeadYaw'
+            size_hint: 0.25, 0.05
+            pos_hint: { 'x' : 0.375, 'y': 0.9 }
+        ToggleButton:
+            text: 'HeadPitch'
+            size_hint: 0.25, 0.05
+            pos_hint: { 'x' : 0.375, 'y': 0.85 }
+
+        # body
+        ToggleButton:
+            text: 'Body'
+            size_hint: 0.2, 0.4
+            pos_hint: { 'x' : 0.4, 'y': 0.4 }
+
+        # left arm
+        ToggleButton:
+            text: 'Left Arm'
+            size_hint: 0.35, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.8 }
+        ToggleButton:
+            text: 'LShoulderPitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.75 }
+        ToggleButton:
+            text: 'LShoulderRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.7 }
+        ToggleButton:
+            text: 'LElbowYaw'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.65 }
+        ToggleButton:
+            text: 'LElbowRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.6 }
+        ToggleButton:
+            text: 'LWristYaw'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.55 }
+        ToggleButton:
+            text: 'LHand'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.5 }
+
+        # right arm
+        ToggleButton:
+            text: 'Right Arm'
+            size_hint: 0.35, 0.05
+            pos_hint: { 'x' : 0.6, 'y': 0.8 }
+        ToggleButton:
+            text: 'LShoulderPitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.75 }
+        ToggleButton:
+            text: 'LShoulderRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.7 }
+        ToggleButton:
+            text: 'LElbowYaw'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.65 }
+        ToggleButton:
+            text: 'LElbowRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.6 }
+        ToggleButton:
+            text: 'LWristYaw'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.55 }
+        ToggleButton:
+            text: 'LHand'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.5 }
+
+        # left leg
+        ToggleButton:
+            text: 'Left Leg'
+            size_hint: 0.35, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.4 }
+        ToggleButton:
+            text: 'LHipYawPitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.35 }
+        ToggleButton:
+            text: 'LHipRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.3 }
+        ToggleButton:
+            text: 'LHipPitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.25 }
+        ToggleButton:
+            text: 'LKneePitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.2 }
+        ToggleButton:
+            text: 'LAnklePitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.15 }
+        ToggleButton:
+            text: 'LAnkleRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.05, 'y': 0.1 }
+
+        # right leg
+        ToggleButton:
+            text: 'Right Leg'
+            size_hint: 0.35, 0.05
+            pos_hint: { 'x' : 0.6, 'y': 0.4 }
+        ToggleButton:
+            text: 'RHipYawPitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.35 }
+        ToggleButton:
+            text: 'RHipRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.3 }
+        ToggleButton:
+            text: 'RHipPitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.25 }
+        ToggleButton:
+            text: 'RKneePitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.2 }
+        ToggleButton:
+            text: 'RAnklePitch'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.15 }
+        ToggleButton:
+            text: 'RAnkleRoll'
+            size_hint: 0.3, 0.05
+            pos_hint: { 'x' : 0.65, 'y': 0.1 }
+
+<ConnectionDialog>:
+    size_hint: .5, .5
+    auto_dismiss: False
+    title: 'Connect to NAO'
+    f_hostname: hostname
+    f_port: port
+    GridLayout:
+        rows: 3
+        cols: 2
+        padding: 10
+        spacing: 10
+        Label:
+            text: 'Address'
+        TextInput:
+            id: hostname
+            text: 'nao.local'
+        Label:
+            text: 'Port number'
+        TextInput:
+            id: port
+            text: '9559'
+        Button:
+            text: 'Connect'
+            on_press: root.dismiss()

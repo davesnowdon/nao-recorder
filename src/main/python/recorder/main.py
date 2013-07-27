@@ -9,6 +9,7 @@ kivy.require('1.7.1')
 
 from kivy.app import App
 from kivy.extras.highlight import KivyLexer
+from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.boxlayout import BoxLayout
@@ -61,35 +62,10 @@ class SaveDialog(Popup):
         self.dismiss()
 
 
-Builder.load_string('''
-<ConnectionDialog>:
-    size_hint: .5, .5
-    auto_dismiss: False
-    title: 'Connect to NAO'
-    f_hostname: hostname
-    f_port: port
-    GridLayout:
-        rows: 3
-        cols: 2
-        padding: 10
-        spacing: 10
-        Label:
-            text: 'Address'
-        TextInput:
-            id: hostname
-            text: 'nao.local'
-        Label:
-            text: 'Port number'
-        TextInput:
-            id: port
-            text: '9559'
-        Button:
-            text: 'Connect'
-            on_press: root.dismiss()
-
-''')
-
 class ConnectionDialog(Popup):
+    pass
+
+class NaoJoints(BoxLayout):
     pass
 
 
@@ -148,17 +124,26 @@ class NaoRecorderApp(App):
         menu.add_widget(robot_actions)
         b.add_widget(menu)
 
+        m = BoxLayout()
+        code_status = BoxLayout(orientation='vertical', size_hint=(0.6, 1))
+
         # code input
         self.codeinput = CodeInput(
             lexer=lexers.PythonLexer(),
             font_name='data/fonts/DroidSansMono.ttf', font_size=12,
             text="nao.say('hi')")
-        b.add_widget(self.codeinput)
+        code_status.add_widget(self.codeinput)
 
         # status window
         self.status = TextInput(text="", readonly=True, multiline=True, size_hint=(1.0, 0.25))
-        b.add_widget(self.status)
+        code_status.add_widget(self.status)
 
+
+        m.add_widget(code_status)
+        self.joints_ui = NaoJoints(size_hint=(0.4, 1))
+        m.add_widget(self.joints_ui)
+
+        b.add_widget(m)
         return b
 
     def on_start(self):
