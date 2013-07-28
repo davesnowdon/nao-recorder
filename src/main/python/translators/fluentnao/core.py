@@ -309,7 +309,7 @@ class FluentNaoTranslator(object):
 
         return output
 
-    def detect_command(self, joint_dict, changed_joint_names):
+    def detect_command(self, joint_dict, changed_joint_names, enabled_joint_names):
         joints_degrees = joints_to_degrees(joint_dict, True)
 
         commands = []
@@ -320,8 +320,9 @@ class FluentNaoTranslator(object):
             # check whether any of the joints used by this command have changed
             # we take the intersection of the command joints and the changed joints
             if changed_joint_names & cs.joints:
+                # we can only produce commands that only depend on enabled joints
                 # ignore all other commands using joints marked as done
-                if not cs.joints.issubset(joints_done):
+                if cs.joints.issubset(enabled_joint_names) and not cs.joints.issubset(joints_done):
                     cdata = joints_degrees.copy()
                     self.do_transforms(cs, cdata)
                     if self.constraints_pass(cs, cdata):

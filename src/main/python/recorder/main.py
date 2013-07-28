@@ -66,6 +66,12 @@ class ConnectionDialog(Popup):
     pass
 
 class NaoJoints(BoxLayout):
+    def __init__(self, **kwargs):
+        # make sure we aren't overriding any important functionality
+        super(NaoJoints, self).__init__(**kwargs)
+
+        self.on_joint_selection = kwargs['on_joint_selection']
+
     def toggle_chain(self, btn, chain_name):
         # print "btn = {}, chain = {} state = {}".format(btn, chain_name, btn.state)
         joints = get_joints_for_chain(chain_name)
@@ -73,26 +79,35 @@ class NaoJoints(BoxLayout):
         sub_chains = get_sub_chains(chain_name)
         # print "sub chains = {}".format(sub_chains)
         for child in self.get_joint_buttons():
-            if child.text in joints or child.text in sub_chains:
+            if self.child_joint_name(child) in joints or child.text in sub_chains:
                 child.state = btn.state
+        self.notify_joint_selection_changed()
 
     def get_joint_buttons(self):
         return self.children[0].children
 
     def toggle_joint(self, btn, joint_name):
         # print "btn = {}, name = {} state = {}".format(btn, joint_name, btn.state)
-        pass
+        self.notify_joint_selection_changed()
+
+    def child_joint_name(self, child):
+        return child.text
 
     def is_selected(self, child):
-        return isinstance(child, ToggleButton) and is_joint(child.text) and child.state == 'down'
+        return isinstance(child, ToggleButton) and \
+               is_joint(self.child_joint_name(child)) and \
+               child.state == 'down'
 
     def get_selected_joints(self):
         selected_joints = set()
         for child in self.get_joint_buttons():
             if self.is_selected(child):
-                selected_joints.add(child.id)
+                selected_joints.add(self.child_joint_name(child))
         return selected_joints
 
+    def notify_joint_selection_changed(self):
+        if self.on_joint_selection:
+            self.on_joint_selection(self.get_selected_joints())
 
 class NaoRecorderApp(App):
 
@@ -165,7 +180,7 @@ class NaoRecorderApp(App):
 
 
         m.add_widget(code_status)
-        self.joints_ui = NaoJoints(size_hint=(0.4, 1))
+        self.joints_ui = NaoJoints(size_hint=(0.4, 1), on_joint_selection=self._on_joint_selection)
         m.add_widget(self.joints_ui)
 
         b.add_widget(m)
@@ -272,6 +287,9 @@ class NaoRecorderApp(App):
         code = self.robot.keyframe()
         if code:
             self.append_code(code)
+
+    def _on_joint_selection(self, enabled_joints):
+        self.robot.set_enabled_joints(enabled_joints)
 
 if __name__ == '__main__':
     NaoRecorderApp().run()

@@ -189,6 +189,8 @@ class Robot(object):
                                "WordRecognized": self._word_recognised
                                }
 
+        self.enabled_joints = set(JOINT_NAMES)
+
     def connect(self, hostname, portnumber):
         self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
         if self.broker:
@@ -273,11 +275,14 @@ class Robot(object):
             # print angles
 
             changed_joints = joint_changes(self.last_keyframe_joints, angles, JOINT_MOVE_AMOUNT)
-            # print changed_joints
+            # print "changed joints = {}".format(changed_joints)
+            # print "enabled joints = {}".format(self.enabled_joints)
+            changed_enabled_joints = self.enabled_joints & changed_joints
+            print "enabled changed joints = {}".format(changed_enabled_joints)
 
             # translating
             translator = get_translator()
-            commands = translator.detect_command(angles, changed_joints)
+            commands = translator.detect_command(angles, changed_enabled_joints, self.enabled_joints)
             command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
             self.last_keyframe_joints = angles.copy()
             return command_str
@@ -289,6 +294,10 @@ class Robot(object):
             self.disable_speech_recognition()
             self.nao.naoscript.run_script(code, '\n')
             self.enable_speech_recognition()
+
+    def set_enabled_joints(self, enabled_joints):
+        self.enabled_joints = set(enabled_joints.copy())
+        print "Enabled joints are now {}".format(self.enabled_joints)
 
     def _word_recognised(self, dataName, value, message):
         print "word_recognised: {}".format(value)
