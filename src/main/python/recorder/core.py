@@ -21,7 +21,7 @@ DEFAULT_TRANSLATOR_NAME = "translators.fluentnao.core.FluentNaoTranslator"
 default_translator = None
 
 # joint names in same order as returned by ALMotion.getAngles('Body')
-JOINT_NAMES = ('HeadYaw', 'HeadPitch',
+JOINT_NAMES = ['HeadYaw', 'HeadPitch',
                'LShoulderPitch', 'LShoulderRoll', 'LElbowYaw', 'LElbowRoll',
                'LWristYaw', 'LHand',
                'LHipYawPitch', 'LHipRoll', 'LHipPitch',
@@ -29,7 +29,38 @@ JOINT_NAMES = ('HeadYaw', 'HeadPitch',
                'RHipYawPitch', 'RHipRoll', 'RHipPitch',
                'RKneePitch', 'RAnklePitch', 'RAnkleRoll',
                'RShoulderPitch', 'RShoulderRoll', 'RElbowYaw', 'RElbowRoll',
-               'RWristYaw', 'RHand')
+               'RWristYaw', 'RHand']
+
+JOINT_CHAIN_BODY = JOINT_NAMES
+
+JOINT_CHAIN_HEAD = ['HeadYaw', 'HeadPitch']
+
+JOINT_CHAIN_LEFT_ARM = ['LShoulderPitch', 'LShoulderRoll', 'LElbowYaw', 'LElbowRoll',
+               'LWristYaw', 'LHand']
+
+JOINT_CHAIN_LEFT_LEG = ['LHipYawPitch', 'LHipRoll', 'LHipPitch',
+               'LKneePitch', 'LAnklePitch', 'LAnkleRoll']
+
+JOINT_CHAIN_RIGHT_ARM = ['RShoulderPitch', 'RShoulderRoll', 'RElbowYaw', 'RElbowRoll',
+               'RWristYaw', 'RHand']
+
+JOINT_CHAIN_RIGHT_LEG = ['RHipYawPitch', 'RHipRoll', 'RHipPitch',
+               'RKneePitch', 'RAnklePitch', 'RAnkleRoll']
+
+JOINT_CHAINS = {'Head': JOINT_CHAIN_HEAD,
+                'Body': JOINT_CHAIN_BODY,
+                'LeftArm': JOINT_CHAIN_LEFT_ARM,
+                'RightArm': JOINT_CHAIN_RIGHT_ARM,
+                'LeftLeg': JOINT_CHAIN_LEFT_LEG,
+                'RightLeg': JOINT_CHAIN_RIGHT_LEG}
+
+JOINT_SUB_CHAINS = {'Head': [],
+                    'Body': ['Head', 'LeftArm', 'RightArm', 'LeftLeg', 'RightLeg'],
+                    'LeftArm': [],
+                    'RightArm': [],
+                    'LeftLeg': [],
+                    'RightLeg': []
+                    }
 
 JOINT_MOVE_AMOUNT = math.pi / 180.0
 
@@ -39,6 +70,35 @@ def get_translator(name=None):
         default_translator = find_class(DEFAULT_TRANSLATOR_NAME)
     return default_translator()
 
+def is_joint(name):
+    global JOINT_NAMES
+    return name in JOINT_NAMES
+
+def is_joint_chain(name):
+    global JOINT_CHAINS
+    return name in JOINT_CHAINS.keys()
+
+def get_sub_chains(name):
+    global JOINT_SUB_CHAINS
+    try:
+        return JOINT_SUB_CHAINS[name]
+    except AttributeError:
+        return []
+
+def get_joints_for_chain(name):
+    '''
+    Return the list of joints for a chain. If there is no chain of that name check whether it's a valid
+    joint name and return that, otherwise None
+    '''
+    global JOINT_CHAINS
+    try:
+        return JOINT_CHAINS[name]
+    except AttributeError:
+        global JOINT_NAMES
+        if name in JOINT_NAMES:
+            return [name]
+        else:
+            return None
 
 def joints_to_degrees(joints, round_values=True):
     djoints = {}
@@ -210,10 +270,10 @@ class Robot(object):
         if self.is_connected():
             # get angles
             angles = self.get_joint_angles()
-            #print angles
+            # print angles
 
             changed_joints = joint_changes(self.last_keyframe_joints, angles, JOINT_MOVE_AMOUNT)
-            #print changed_joints
+            # print changed_joints
 
             # translating
             translator = get_translator()

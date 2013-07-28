@@ -10,147 +10,245 @@
             size: self.size
     RelativeLayout:
         size: root.size
+        id: container
 
         
         # head
         ToggleButton:
+            id: Head
             text: 'Head'
+            state: 'down'
             size_hint: 0.25, 0.05
             pos_hint: { 'x' : 0.375, 'y': 0.95 }
+            on_press: root.toggle_chain(self, 'Head')
         ToggleButton:
+            id: HeadYaw
             text: 'HeadYaw'
+            state: 'down'
             size_hint: 0.25, 0.05
             pos_hint: { 'x' : 0.375, 'y': 0.9 }
+            on_press: root.toggle_joint(self, 'HeadYaw')
+            
         ToggleButton:
+            id: HeadPitch
             text: 'HeadPitch'
+            state: 'down'
             size_hint: 0.25, 0.05
             pos_hint: { 'x' : 0.375, 'y': 0.85 }
+            on_press: root.toggle_joint(self, 'HeadPitch')
 
         # body
         ToggleButton:
+            id: Body
             text: 'Body'
+            state: 'down'
             size_hint: 0.2, 0.4
             pos_hint: { 'x' : 0.4, 'y': 0.4 }
+            on_press: root.toggle_chain(self, 'Body')
 
         # left arm
         ToggleButton:
-            text: 'Left Arm'
+            id: LeftArm
+            text: 'LeftArm'
+            state: 'down'
             size_hint: 0.35, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.8 }
+            on_press: root.toggle_chain(self, 'LeftArm')
         ToggleButton:
+            id: LShoulderPitch
             text: 'LShoulderPitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.75 }
+            on_press: root.toggle_joint(self, 'LShoulderPitch')
         ToggleButton:
+            id: LShoulderRoll
             text: 'LShoulderRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.7 }
+            on_press: root.toggle_joint(self, 'LShoulderRoll')
         ToggleButton:
+            id: LElbowYaw
             text: 'LElbowYaw'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.65 }
+            on_press: root.toggle_joint(self, 'LElbowYaw')
         ToggleButton:
+            id: LElbowRoll
             text: 'LElbowRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.6 }
+            on_press: root.toggle_joint(self, 'LElbowRoll')
         ToggleButton:
+            id: LWristYaw
             text: 'LWristYaw'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.55 }
+            on_press: root.toggle_joint(self, 'LWristYaw')
         ToggleButton:
+            id: LHand
             text: 'LHand'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.5 }
+            on_press: root.toggle_joint(self, 'LHand')
 
         # right arm
         ToggleButton:
-            text: 'Right Arm'
+            id: RightArm
+            text: 'RightArm'
+            state: 'down'
             size_hint: 0.35, 0.05
             pos_hint: { 'x' : 0.6, 'y': 0.8 }
+            on_press: root.toggle_chain(self, 'RightArm')
         ToggleButton:
-            text: 'LShoulderPitch'
+            id: RShoulderPitch
+            text: 'RShoulderPitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.75 }
+            on_press: root.toggle_joint(self, 'RShoulderPitch')
         ToggleButton:
-            text: 'LShoulderRoll'
+            id: RShoulderRoll
+            text: 'RShoulderRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.7 }
+            on_press: root.toggle_joint(self, 'RShoulderRoll')
         ToggleButton:
-            text: 'LElbowYaw'
+            id: RElbowYaw
+            text: 'RElbowYaw'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.65 }
+            on_press: root.toggle_joint(self, 'RElbowYaw')
         ToggleButton:
-            text: 'LElbowRoll'
+            id: RElbowRoll
+            text: 'RElbowRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.6 }
+            on_press: root.toggle_joint(self, 'RElbowRoll')
         ToggleButton:
-            text: 'LWristYaw'
+            id: RWristYaw
+            text: 'RWristYaw'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.55 }
+            on_press: root.toggle_joint(self, 'RWristYaw')
         ToggleButton:
-            text: 'LHand'
+            id: RHand
+            text: 'RHand'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.5 }
+            on_press: root.toggle_joint(self, 'RHand')
 
         # left leg
         ToggleButton:
-            text: 'Left Leg'
+            id: LeftLeg
+            text: 'LeftLeg'
+            state: 'down'
             size_hint: 0.35, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.4 }
+            on_press: root.toggle_chain(self, 'LeftLeg')
         ToggleButton:
+            id: LHipYawPitch
             text: 'LHipYawPitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.35 }
+            on_press: root.toggle_joint(self, 'LHipYawPitch')
         ToggleButton:
+            id: LHipRoll
             text: 'LHipRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.3 }
+            on_press: root.toggle_joint(self, 'LHipRoll')
         ToggleButton:
+            id: LHipPitch
             text: 'LHipPitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.25 }
+            on_press: root.toggle_joint(self, 'LHipPitch')
         ToggleButton:
+            id: LKneePitch
             text: 'LKneePitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.2 }
+            on_press: root.toggle_joint(self, 'LKneePitch')
         ToggleButton:
+            id: LAnklePitch
             text: 'LAnklePitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.15 }
+            on_press: root.toggle_joint(self, 'LAnklePitch')
         ToggleButton:
+            id: LAnkleRoll
             text: 'LAnkleRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.05, 'y': 0.1 }
+            on_press: root.toggle_joint(self, 'LAnkleRoll')
 
         # right leg
         ToggleButton:
-            text: 'Right Leg'
+            id: RightLeg
+            text: 'RightLeg'
+            state: 'down'
             size_hint: 0.35, 0.05
             pos_hint: { 'x' : 0.6, 'y': 0.4 }
+            on_press: root.toggle_chain(self, 'RightLeg')
         ToggleButton:
+            id: RHipYawPitch
             text: 'RHipYawPitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.35 }
+            on_press: root.toggle_joint(self, 'RHipYawPitch')
         ToggleButton:
+            id: RHipRoll
             text: 'RHipRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.3 }
+            on_press: root.toggle_joint(self, 'RHipRoll')
         ToggleButton:
+            id: RHipPitch
             text: 'RHipPitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.25 }
+            on_press: root.toggle_joint(self, 'RHipPitch')
         ToggleButton:
+            id: RKneePitch
             text: 'RKneePitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.2 }
+            on_press: root.toggle_joint(self, 'RKneePitch')
         ToggleButton:
+            id: RAnklePitch
             text: 'RAnklePitch'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.15 }
+            on_press: root.toggle_joint(self, 'RAnklePitch')
         ToggleButton:
+            id: RAnkleRoll
             text: 'RAnkleRoll'
+            state: 'down'
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.1 }
+            on_press: root.toggle_joint(self, 'RAnkleRoll')
 
 <ConnectionDialog>:
     size_hint: .5, .5

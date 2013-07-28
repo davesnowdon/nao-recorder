@@ -11,6 +11,7 @@ from kivy.app import App
 from kivy.extras.highlight import KivyLexer
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
+from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
@@ -25,9 +26,8 @@ from pygame import font as fonts
 import codecs, os
 import logging
 
-from naoutil import memory
 
-from core import Robot, get_translator
+from core import Robot, get_joints_for_chain, is_joint, get_sub_chains
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
@@ -66,7 +66,32 @@ class ConnectionDialog(Popup):
     pass
 
 class NaoJoints(BoxLayout):
-    pass
+    def toggle_chain(self, btn, chain_name):
+        # print "btn = {}, chain = {} state = {}".format(btn, chain_name, btn.state)
+        joints = get_joints_for_chain(chain_name)
+        # print "joints = {}".format(joints)
+        sub_chains = get_sub_chains(chain_name)
+        # print "sub chains = {}".format(sub_chains)
+        for child in self.get_joint_buttons():
+            if child.text in joints or child.text in sub_chains:
+                child.state = btn.state
+
+    def get_joint_buttons(self):
+        return self.children[0].children
+
+    def toggle_joint(self, btn, joint_name):
+        # print "btn = {}, name = {} state = {}".format(btn, joint_name, btn.state)
+        pass
+
+    def is_selected(self, child):
+        return isinstance(child, ToggleButton) and is_joint(child.text) and child.state == 'down'
+
+    def get_selected_joints(self):
+        selected_joints = set()
+        for child in self.get_joint_buttons():
+            if self.is_selected(child):
+                selected_joints.add(child.id)
+        return selected_joints
 
 
 class NaoRecorderApp(App):
