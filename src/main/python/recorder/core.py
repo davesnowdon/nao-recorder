@@ -291,9 +291,14 @@ class Robot(object):
 
     def run_script(self, code):
         if self.is_connected():
-            self.disable_speech_recognition()
-            self.nao.naoscript.run_script(code, '\n')
-            self.enable_speech_recognition()
+            # we disable event handling while a script is running. This is to avoid speech recognition
+            # processing anything the robot says and also to attempt to ignore spurious triggering
+            # of the hand sensors (which can get triggered by the motors)
+            self.do_unsubscribe()
+            try:
+                self.nao.naoscript.run_script(code, '\n')
+            finally:
+                self.do_subscribe()
 
     def set_enabled_joints(self, enabled_joints):
         self.enabled_joints = set(enabled_joints.copy())
