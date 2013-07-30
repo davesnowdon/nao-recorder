@@ -263,11 +263,9 @@ class NaoRecorderApp(App):
         _file.close()
 
     def on_action(self, instance, l):
-        if self.connection:
-            try:
-                self.standard_positions[l]()
-            except KeyError as e:
-                print e
+        if self.robot.is_connected():
+            self.robot.go_to_posture(l)
+
 
     def _on_motors_off(self, instance):
         self.robot.motors_off()

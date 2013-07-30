@@ -241,6 +241,12 @@ class Robot(object):
     def postures(self):
         return self.standard_postures.keys()
 
+    def go_to_posture(self, name):
+        try:
+            self.standard_postures[name]();
+        except KeyError as e:
+            print "Failed to find posture {} exception {e}".format(name, e)
+
     def motors_on(self):
         if self.is_connected():
             self.status_display.add_status('Turning NAO motors on')
