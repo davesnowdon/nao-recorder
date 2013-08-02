@@ -224,7 +224,7 @@ class Robot(object):
         """
         if self.is_connected():
             self.disable_speech_recognition()
-            self.nao.say(msg)
+            self.nao.say_and_block(msg)
             self.enable_speech_recognition()
 
     def enable_speech_recognition(self):
@@ -245,7 +245,7 @@ class Robot(object):
         try:
             self.standard_postures[name]();
         except KeyError as e:
-            print "Failed to find posture {} exception {e}".format(name, e)
+            print "Failed to find posture {} exception {}".format(name, e)
 
     def motors_on(self):
         if self.is_connected():
