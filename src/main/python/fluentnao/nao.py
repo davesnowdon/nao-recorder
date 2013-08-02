@@ -224,7 +224,7 @@ class Nao(object):
     def go(self):
         for taskId in self.jobs:
             #self.log("trying: %s" % (taskId))
-            self.env.motion.wait(taskId, 15000)   
+            self.env.motion.wait(taskId, 3000)   
             #self.log("released: %s" % (taskId))
 
         self.jobs[:] = []
