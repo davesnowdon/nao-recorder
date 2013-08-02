@@ -22,6 +22,7 @@ from fluentnao.core.naoscript import NaoScript
 import almath
 import math
 import time
+from datetime import datetime, timedelta
 
 class Nao(object):
 
@@ -65,15 +66,19 @@ class Nao(object):
 
     def log(self, msg):
         if (self.log_function):
-            self.log_function(msg)
+            self.log_function(str(datetime.now()) + "|" + msg)
         else:
-            self.logger.debug(msg)
+            self.logger.debug(str(datetime.now()) + "|" + msg)
 
     ###################################
     # text to speech
     ###################################        
     def say(self, text):
         self.env.tts.post.say(text)
+        return self;
+
+    def say_and_block(self, text):
+        self.env.tts.say(text)
         return self;
 
     def wait(self, seconds):
@@ -223,12 +228,15 @@ class Nao(object):
     
     def go(self):
         for taskId in self.jobs:
-            #self.log("trying: %s" % (taskId))
-            self.env.motion.wait(taskId, 3000)   
-            #self.log("released: %s" % (taskId))
+            self.log("taskId=%s|action=wait" % (taskId))
+            d1 = datetime.now()
+            self.env.motion.wait(taskId, 15000)   
+            d2 = datetime.now()
+            r = d2 - d1
+            self.log("taskId=%s|action=done|seconds=%s" % (taskId, r.total_seconds()))
 
         self.jobs[:] = []
-        #self.log("done")
+        self.log("done")
         
         return self         
             
@@ -245,12 +253,11 @@ class Nao(object):
 
     def move(self, chain, angleListInRadians, fractionMaxSpeed = 0.3):
         
-        self.log("setting %s to %s" % (chain, angleListInRadians))
-
         # motion w/ blocking call
         taskId = self.env.motion.post.angleInterpolationWithSpeed(chain, angleListInRadians, fractionMaxSpeed)    
 
-        # save task id
+        # log
+        self.log("|taskId=%s|chain=%s|angleList=%s" % (taskId, chain, angleListInRadians))
         self.jobs.append(taskId)
         
 
