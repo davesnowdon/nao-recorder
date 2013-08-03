@@ -122,6 +122,7 @@ COMMANDS = [
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
+
             # arms right
             CommandSpec('right_forward', 'arms',
                         set(['RShoulderPitch', 'RShoulderRoll']),
@@ -314,6 +315,39 @@ COMMANDS = [
                         [Constraint(greater_than, [45, 'LElbowYaw'])],
                         ['lyaw']
                         ),
+
+            # wrists both
+            CommandSpec('center', 'wrists',
+                        set(['LWristYaw', 'RWristYaw']),
+                        [Transform(linear, 'LWristYaw', 'lyaw', [1, 0]),
+                         Transform(linear, 'RWristYaw', 'ryaw', [-1, 0])],
+                        [Constraint(in_range, [-44, 44, 'LWristYaw']),
+                          Constraint(in_range, [-44, 44, 'RWristYaw']),
+                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                        ['ryaw']
+                        ),
+            CommandSpec('turn_out', 'wrists',
+                        set(['LWristYaw', 'RWristYaw']),
+                        [Transform(linear, 'LWristYaw', 'lyaw', [1, -90]),
+                         Transform(linear, 'RWristYaw', 'ryaw', [-1, -90])],
+                        [Constraint(greater_than, [45, 'LWristYaw']),
+                          Constraint(less_than, [-45, 'RWristYaw']),
+                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                        ['ryaw']
+                        ),
+            CommandSpec('turn_in', 'wrists',
+                        set(['LWristYaw', 'RWristYaw']),
+                        [Transform(linear, 'LWristYaw', 'lyaw', [-1, -90]),
+                         Transform(linear, 'RWristYaw', 'ryaw', [1, -90])],
+                        [Constraint(less_than, [-45, 'LWristYaw']),
+                          Constraint(greater_than, [45, 'RWristYaw']),
+                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                        ['ryaw']
+                        ),
+
+            # wrists left
+
+            # wrists right
 
             # hands both
             CommandSpec('open', 'hands',
