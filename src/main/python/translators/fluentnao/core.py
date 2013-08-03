@@ -346,8 +346,44 @@ COMMANDS = [
                         ),
 
             # wrists left
+            CommandSpec('left_center', 'wrists',
+                        set(['LWristYaw']),
+                        [Transform(linear, 'LWristYaw', 'lyaw', [1, 0])],
+                        [Constraint(in_range, [-44, 44, 'LWristYaw'])],
+                        ['lyaw']
+                        ),
+            CommandSpec('left_turn_out', 'wrists',
+                        set(['LWristYaw']),
+                        [Transform(linear, 'LWristYaw', 'lyaw', [1, -90])],
+                        [Constraint(greater_than, [45, 'LWristYaw'])],
+                        ['lyaw']
+                        ),
+            CommandSpec('left_turn_in', 'wrists',
+                        set(['LWristYaw']),
+                        [Transform(linear, 'LWristYaw', 'lyaw', [-1, -90])],
+                        [Constraint(less_than, [-45, 'LWristYaw'])],
+                        ['lyaw']
+                        ),
 
             # wrists right
+            CommandSpec('right_center', 'wrists',
+                        set(['RWristYaw']),
+                        [Transform(linear, 'RWristYaw', 'ryaw', [-1, 0])],
+                        [Constraint(in_range, [-44, 44, 'RWristYaw'])],
+                        ['ryaw']
+                        ),
+            CommandSpec('right_turn_out', 'wrists',
+                        set(['RWristYaw']),
+                        [Transform(linear, 'RWristYaw', 'ryaw', [-1, -90])],
+                        [Constraint(less_than, [-45, 'RWristYaw'])],
+                        ['ryaw']
+                        ),
+            CommandSpec('right_turn_in', 'wrists',
+                        set(['RWristYaw']),
+                        [Transform(linear, 'RWristYaw', 'ryaw', [1, -90])],
+                        [Constraint(greater_than, [45, 'RWristYaw'])],
+                        ['ryaw']
+                        ),
 
             # hands both
             CommandSpec('open', 'hands',
