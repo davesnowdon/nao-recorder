@@ -272,7 +272,7 @@ COMMANDS = [
                         ),
             CommandSpec('right_turn_in', 'elbows',
                         set(['RElbowYaw']),
-                        [Transform(linear, 'RElbowYaw', 'ryaw', [1, 0])],
+                        [Transform(linear, 'RElbowYaw', 'ryaw', [-1, 0])],
                         [Constraint(in_range, [-44, 44, 'RElbowYaw'])],
                         ['ryaw']
                         ),
@@ -286,7 +286,7 @@ COMMANDS = [
             # elbows left
             CommandSpec('left_bent', 'elbows',
                         set(['LElbowRoll']),
-                        [Transform(linear, 'LElbowRoll', 'lroll', [1, 89])],
+                        [Transform(linear, 'LElbowRoll', 'lroll', [-1, -89])],
                         [Constraint(less_than, [-43, 'LElbowRoll'])],
                         ['lroll']
                         ),
@@ -304,7 +304,7 @@ COMMANDS = [
                         ),
             CommandSpec('left_turn_in', 'elbows',
                         set(['LElbowYaw']),
-                        [Transform(linear, 'LElbowYaw', 'lyaw', [-1, 0])],
+                        [Transform(linear, 'LElbowYaw', 'lyaw', [1, 0])],
                         [Constraint(in_range, [-44, 44, 'LElbowYaw'])],
                         ['lyaw']
                         ),

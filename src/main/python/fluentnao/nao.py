@@ -228,7 +228,6 @@ class Nao(object):
     
     def go(self):
         for taskId in self.jobs:
-
             self.log("taskId=%s|action=wait" % (taskId))
             d1 = datetime.now()
             self.env.motion.wait(taskId, 15000)   
