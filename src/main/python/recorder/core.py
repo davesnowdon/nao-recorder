@@ -196,18 +196,23 @@ class Robot(object):
         self.right_arm_debounce = Debounce(self._right_arm_relax, self._right_arm_stiff)
 
     def connect(self, hostname, portnumber):
-        self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
-        if self.broker:
-            self.env = naoenv.make_environment(None)
-            self.nao = nao.Nao(self.env, None)
-            try:
-                if self.event_handlers and self.vocabulary:
-                    self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
-            except RuntimeError as e:
-                print "Error setting speech vocabulary: {}".format(e)
-            self.do_subscribe()
-            return True
-        else:
+        try:
+            self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
+            if self.broker:
+                self.env = naoenv.make_environment(None)
+                self.nao = nao.Nao(self.env, None)
+                try:
+                    if self.event_handlers and self.vocabulary:
+                        self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
+                except RuntimeError as e:
+                    print "Error setting speech vocabulary: {}".format(e)
+                self.do_subscribe()
+                return True
+            else:
+                return None
+        except IOError as e:
+            return None
+        except RuntimeError as e:
             return None
 
     def disconnect(self):
