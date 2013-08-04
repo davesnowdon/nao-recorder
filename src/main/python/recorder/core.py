@@ -242,10 +242,14 @@ class Robot(object):
         return self.standard_postures.keys()
 
     def go_to_posture(self, name):
+        self.do_unsubscribe()
         try:
-            self.standard_postures[name]();
-        except KeyError as e:
-            print "Failed to find posture {} exception {}".format(name, e)
+            try:
+                self.standard_postures[name]();
+            except KeyError as e:
+                print "Failed to find posture {} exception {}".format(name, e)
+        finally:
+            self.do_subscribe()
 
     def motors_on(self):
         if self.is_connected():
