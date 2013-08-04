@@ -40,8 +40,8 @@ class Fnt_SpinnerOption(SpinnerOption):
 class LoadDialog(Popup):
 
     def load(self, path, selection):
-        self.choosen_file = [None, ]
-        self.choosen_file = selection
+        self.chosen_file = [None, ]
+        self.chosen_file = selection
         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         self.dismiss()
 
@@ -239,7 +239,7 @@ class NaoRecorderApp(App):
             if not hasattr(self, 'load_dialog'):
                 self.load_dialog = LoadDialog()
             self.load_dialog.open()
-            self.load_dialog.bind(choosen_file=self.setter('files'))
+            self.load_dialog.bind(chosen_file=self.setter('files'))
         elif value == 'SaveAs':
             if not hasattr(self, 'saveas_dialog'):
                 self.saveas_dialog = SaveDialog()
