@@ -129,10 +129,11 @@ def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
 
 
 class Robot(object):
-    def __init__(self, status_display=None, code_display=None):
+    def __init__(self, status_display=None, code_display=None, on_disconnect=None):
         super(Robot, self).__init__()
         self.status_display = status_display
         self.code_display = code_display
+        self.on_disconnect = on_disconnect
         self.broker = None
         self.nao = None
         self._motors_on = False
@@ -213,6 +214,8 @@ class Robot(object):
         if self.is_connected():
             self.do_unsubscribe()
             self.broker.shutdown()
+            if self.on_disconnect:
+                self.on_disconnect()
 
     def do_subscribe(self):
         if self.event_handlers:
@@ -235,11 +238,17 @@ class Robot(object):
 
     def enable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
-            memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
+            try:
+                memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
+            except RuntimeError as e:
+                print "Error enabling speech recognition: {}".format(e)
 
     def disable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
-            memory.unsubscribeToEvent("WordRecognized")
+            try:
+                memory.unsubscribeToEvent("WordRecognized")
+            except RuntimeError as e:
+                print "Error disabling speech recognition: {}".format(e)
 
     def is_connected(self):
         return self.broker

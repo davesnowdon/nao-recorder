@@ -114,7 +114,7 @@ class NaoRecorderApp(App):
     files = ListProperty([None, ])
 
     def build(self):
-        self.robot = Robot(status_display=self, code_display=self)
+        self.robot = Robot(status_display=self, code_display=self, on_disconnect=self._on_disconnect)
 
         # building Kivy Interface
         b = BoxLayout(orientation='vertical')
@@ -262,10 +262,12 @@ class NaoRecorderApp(App):
         self.codeinput.text = _file.read()
         _file.close()
 
+    def _on_disconnect(self):
+        self.show_connection_dialog(None)
+
     def on_action(self, instance, l):
         if self.robot.is_connected():
             self.robot.go_to_posture(l)
-
 
     def _on_motors_off(self, instance):
         self.robot.motors_off()
