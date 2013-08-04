@@ -199,8 +199,11 @@ class Robot(object):
         if self.broker:
             self.env = naoenv.make_environment(None)
             self.nao = nao.Nao(self.env, None)
-            if self.event_handlers and self.vocabulary:
-                self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
+            try:
+                if self.event_handlers and self.vocabulary:
+                    self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
+            except RuntimeError as e:
+                print "Error setting speech vocabulary: {}".format(e)
             self.do_subscribe()
             return True
         else:
