@@ -14,6 +14,7 @@ from naoutil import memory
 import fluentnao.nao as nao
 
 from mathutil import FLOAT_CMP_ACCURACY, feq
+from debounce import Debounce
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
@@ -190,6 +191,8 @@ class Robot(object):
                                }
 
         self.enabled_joints = set(JOINT_NAMES)
+        self.left_arm_debounce = Debounce(self._left_arm_relax, self._left_arm_stiff)
+        self.right_arm_debounce = Debounce(self._right_arm_relax, self._right_arm_stiff)
 
     def connect(self, hostname, portnumber):
         self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
@@ -328,17 +331,11 @@ class Robot(object):
 
     def _back_left_arm(self, dataName, value, message):
         if self._motors_on:
-            if value == 1:
-                self._left_arm_relax()
-            else:
-                self._left_arm_stiff()
+            self.left_arm_debounce.trigger(dataName, value, message)
 
     def _back_right_arm(self, dataName, value, message):
         if self._motors_on:
-            if value == 1:
-                self._right_arm_relax()
-            else:
-                self._right_arm_stiff()
+            self.right_arm_debounce.trigger(dataName, value, message)
 
     def _left_bumper(self, dataName, value, message):
         if self._motors_on:
