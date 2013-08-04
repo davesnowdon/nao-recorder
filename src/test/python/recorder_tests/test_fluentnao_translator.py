@@ -6,7 +6,7 @@ Created on 6 Jul 2013
 import unittest
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN
+from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT,POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER
 
 def get_translator():
     return FluentNaoTranslator()
@@ -14,6 +14,7 @@ def get_translator():
 SHOULDER_JOINTS = set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll'])
 ELBOW_JOINTS = set(['LElbowYaw', 'RElbowYaw', 'LElbowRoll', 'RElbowRoll'])
 HAND_JOINTS = set(['LHand', 'RHand'])
+WRIST_JOINTS = set(['LWristYaw', 'RWristYaw'])
 
 class TestCommandsToText(unittest.TestCase):
     def testEmptyList(self):
@@ -50,7 +51,7 @@ class TestCommandSelection(unittest.TestCase):
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, enabled_joints)
         command = result[0][0]
-        self.assertEqual("arms.left_forward", command, "Should detect only left shoulder enalbed")
+        self.assertEqual("arms.left_forward", command, "Should detect only left shoulder enalbed; instead got: {0}".format(result))
 
 class TestDetectArms(unittest.TestCase):
 
@@ -61,11 +62,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with arms forward")
+        self.assertEqual(len(result), 1, "Should get one tuple with arms forward; instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("arms.forward", command, "Should detect command arms forward")
+        self.assertEqual("arms.forward", command, "Should detect command arms forward; instead got: {0}".format(result))
 
 
     def testArmsUp(self):
@@ -75,11 +76,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with arms up")
+        self.assertEqual(len(result), 1, "Should get one tuple with arms up; instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("arms.up", command, "Should detect command arms up")
+        self.assertEqual("arms.up", command, "Should detect command arms up; instead got: {0}".format(result))
 
 
     def testArmsOut(self):
@@ -89,11 +90,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with arms out")
+        self.assertEqual(len(result), 1, "Should get one tuple with arms out; instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("arms.out", command, "Should detect command arms out")
+        self.assertEqual("arms.out", command, "Should detect command arms out; instead got: {0}".format(result))
 
 
     def testArmsDown(self):
@@ -103,11 +104,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with arms down")
+        self.assertEqual(len(result), 1, "Should get one tuple with arms down; instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("arms.down", command, "Should detect command arms down")
+        self.assertEqual("arms.down", command, "Should detect command arms down; instead got: {0}".format(result))
 
 
     def testArmsBack(self):
@@ -117,11 +118,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with arms back")
+        self.assertEqual(len(result), 1, "Should get one tuple with arms back; instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("arms.back", command, "Should detect command arms back")
+        self.assertEqual("arms.back", command, "Should detect command arms back; instead got: {0}".format(result))
 
 
     def testArmsLeftUpRightOut(self):
@@ -131,7 +132,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_up and right_out")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_up and right_out; instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -151,7 +152,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_up and left_out")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_up and left_out; instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -170,7 +171,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_forward")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_forward; instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -189,7 +190,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_down")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_forward and left_down; instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -208,7 +209,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_back")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include right_down and left_back; instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -227,7 +228,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  SHOULDER_JOINTS, SHOULDER_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_down and right_back")
+        self.assertEqual(len(result), 2, "Should get two tuples with commands that include left_down and right_back; instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -246,11 +247,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  HAND_JOINTS, HAND_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with command hands.close()")
+        self.assertEqual(len(result), 1, "Should get one tuple with command hands.close(); instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("hands.close", command, "Should detect command hands close")
+        self.assertEqual("hands.close", command, "Should detect command hands close; instead got: {0}".format(result))
 
 
     def testHandsOpen(self):
@@ -260,11 +261,11 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  HAND_JOINTS, HAND_JOINTS)
-        self.assertEqual(len(result), 1, "Should get one tuple with command hands.open()")
+        self.assertEqual(len(result), 1, "Should get one tuple with command hands.open(); instead got: {0}".format(result))
 
         # command
         command = result[0][0]
-        self.assertEqual("hands.open", command, "Should detect command hands open")
+        self.assertEqual("hands.open", command, "Should detect command hands open; instead got: {0}".format(result))
 
     def testHandsRightOpenLeftClose(self):
         # joint positions
@@ -274,7 +275,7 @@ class TestDetectArms(unittest.TestCase):
         result = get_translator().detect_command(joint_dict,
                                                  HAND_JOINTS, HAND_JOINTS)
 
-        self.assertEqual(len(result), 2, "Should get two tuples with command hands.right_open().left_close()")
+        self.assertEqual(len(result), 2, "Should get two tuples with command hands.right_open().left_close(); instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -295,7 +296,7 @@ class TestDetectArms(unittest.TestCase):
         result = get_translator().detect_command(joint_dict,
                                                  HAND_JOINTS, HAND_JOINTS)
 
-        self.assertEqual(len(result), 2, "Should get two tuples with command hands.left_open().right_close()")
+        self.assertEqual(len(result), 2, "Should get two tuples with command hands.left_open().right_close(); instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -314,7 +315,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  ELBOW_JOINTS, ELBOW_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with command elbows.straight().turn_in()")
+        self.assertEqual(len(result), 2, "Should get two tuples with command elbows.straight().turn_in(); instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -334,7 +335,7 @@ class TestDetectArms(unittest.TestCase):
         # call function under test
         result = get_translator().detect_command(joint_dict,
                                                  ELBOW_JOINTS, ELBOW_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with command elbows.bent().turn_up()")
+        self.assertEqual(len(result), 2, "Should get two tuples with command elbows.bent().turn_up(); instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -354,7 +355,7 @@ class TestDetectArms(unittest.TestCase):
 
         result = get_translator().detect_command(joint_dict,
                                                  ELBOW_JOINTS, ELBOW_JOINTS)
-        self.assertEqual(len(result), 2, "Should get two tuples with command elbows.straight().turn_down()")
+        self.assertEqual(len(result), 2, "Should get two tuples with command elbows.straight().turn_down(); instead got: {0}".format(result))
 
         # expect two tuples
         first_tuple = result[0]
@@ -366,6 +367,94 @@ class TestDetectArms(unittest.TestCase):
         else:
             self.fail("expected elbows.straight.turn_down or elbows.turn_down.straight; instead got: {0}".format(result))
 
+
+    def testWristsCenter(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_WRISTS_CENTER)
+
+        # call function under test
+
+        result = get_translator().detect_command(joint_dict,
+                                                 WRIST_JOINTS, WRIST_JOINTS)
+
+        self.assertEqual(len(result), 1, "Should get one tuple(s) with command wrists.center(); instead got: {0}".format(result))
+
+        # command
+        command = result[0][0]
+        self.assertEqual("wrists.center", command, "Should detect command wrists center; instead go: {0}".format(result))
+
+
+    def testWristsCenter(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_WRISTS_TURN_IN)
+
+        # call function under test
+
+        result = get_translator().detect_command(joint_dict,
+                                                 WRIST_JOINTS, WRIST_JOINTS)
+
+        self.assertEqual(len(result), 1, "Should get one tuple(s) with command wrists.turn_in(); instead got: {0}".format(result))
+
+        # command
+        command = result[0][0]
+        self.assertEqual("wrists.turn_in", command, "Should detect command wrists turn in; instead go: {0}".format(result))
+
+
+    def testWristsCenter(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_WRISTS_TURN_OUT)
+
+        # call function under test
+
+        result = get_translator().detect_command(joint_dict,
+                                                 WRIST_JOINTS, WRIST_JOINTS)
+
+        self.assertEqual(len(result), 1, "Should get one tuple(s) with command wrists.turn_out(); instead got: {0}".format(result))
+
+        # command
+        command = result[0][0]
+        self.assertEqual("wrists.turn_out", command, "Should detect command wrists turn out; instead go: {0}".format(result))
+
+    def testWristsRightCenterLeftTurnOut(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT)
+
+        # call function under test
+
+        result = get_translator().detect_command(joint_dict,
+                                                 WRIST_JOINTS, WRIST_JOINTS)
+        self.assertEqual(len(result), 2, "Should get two tuples with command wrists.right_center().left_turn_out(); instead got: {0}".format(result))
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "wrists.right_center" and  second_tuple[0] == "left_turn_out") or (first_tuple[0] == "wrists.left_turn_out" and  second_tuple[0] == "right_center"):
+            pass
+        else:
+            self.fail("expected wrists.right_center().left_turn_out() or wrists.left_turn_out().right_center(); instead got: {0}".format(result))
+
+
+    def testWristsRightTurnInLeftCenter(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER)
+
+        # call function under test
+
+        result = get_translator().detect_command(joint_dict,
+                                                 WRIST_JOINTS, WRIST_JOINTS)
+        self.assertEqual(len(result), 2, "Should get two tuples with command wrists.right_turn_in().left_center(); instead got: {0}".format(result))
+
+        # expect two tuples
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "wrists.right_turn_in" and  second_tuple[0] == "left_center") or (first_tuple[0] == "wrists.left_center" and  second_tuple[0] == "right_turn_in"):
+            pass
+        else:
+            self.fail("expected wrists.right_turn_in().left_center() or wrists.left_center().right_turn_in(); instead got: {0}".format(result))
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
