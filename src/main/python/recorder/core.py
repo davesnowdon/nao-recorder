@@ -14,6 +14,7 @@ from naoutil import memory
 import fluentnao.nao as nao
 
 from mathutil import FLOAT_CMP_ACCURACY, feq
+from debounce import Debounce
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
@@ -128,10 +129,11 @@ def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
 
 
 class Robot(object):
-    def __init__(self, status_display=None, code_display=None):
+    def __init__(self, status_display=None, code_display=None, on_disconnect=None):
         super(Robot, self).__init__()
         self.status_display = status_display
         self.code_display = code_display
+        self.on_disconnect = on_disconnect
         self.broker = None
         self.nao = None
         self._motors_on = False
@@ -190,23 +192,35 @@ class Robot(object):
                                }
 
         self.enabled_joints = set(JOINT_NAMES)
+        self.left_arm_debounce = Debounce(self._left_arm_relax, self._left_arm_stiff)
+        self.right_arm_debounce = Debounce(self._right_arm_relax, self._right_arm_stiff)
 
     def connect(self, hostname, portnumber):
-        self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
-        if self.broker:
-            self.env = naoenv.make_environment(None)
-            self.nao = nao.Nao(self.env, None)
-            if self.event_handlers and self.vocabulary:
-                self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
-            self.do_subscribe()
-            return True
-        else:
+        try:
+            self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
+            if self.broker:
+                self.env = naoenv.make_environment(None)
+                self.nao = nao.Nao(self.env, None)
+                try:
+                    if self.event_handlers and self.vocabulary:
+                        self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
+                except RuntimeError as e:
+                    print "Error setting speech vocabulary: {}".format(e)
+                self.do_subscribe()
+                return True
+            else:
+                return None
+        except IOError as e:
+            return None
+        except RuntimeError as e:
             return None
 
     def disconnect(self):
         if self.is_connected():
             self.do_unsubscribe()
             self.broker.shutdown()
+            if self.on_disconnect:
+                self.on_disconnect()
 
     def do_subscribe(self):
         if self.event_handlers:
@@ -229,11 +243,17 @@ class Robot(object):
 
     def enable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
-            memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
+            try:
+                memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
+            except RuntimeError as e:
+                print "Error enabling speech recognition: {}".format(e)
 
     def disable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
-            memory.unsubscribeToEvent("WordRecognized")
+            try:
+                memory.unsubscribeToEvent("WordRecognized")
+            except RuntimeError as e:
+                print "Error disabling speech recognition: {}".format(e)
 
     def is_connected(self):
         return self.broker
@@ -242,10 +262,14 @@ class Robot(object):
         return self.standard_postures.keys()
 
     def go_to_posture(self, name):
+        self.do_unsubscribe()
         try:
-            self.standard_postures[name]();
-        except KeyError as e:
-            print "Failed to find posture {} exception {}".format(name, e)
+            try:
+                self.standard_postures[name]();
+            except KeyError as e:
+                print "Failed to find posture {} exception {}".format(name, e)
+        finally:
+            self.do_subscribe()
 
     def motors_on(self):
         if self.is_connected():
@@ -324,17 +348,11 @@ class Robot(object):
 
     def _back_left_arm(self, dataName, value, message):
         if self._motors_on:
-            if value == 1:
-                self._left_arm_relax()
-            else:
-                self._left_arm_stiff()
+            self.left_arm_debounce.trigger(dataName, value, message)
 
     def _back_right_arm(self, dataName, value, message):
         if self._motors_on:
-            if value == 1:
-                self._right_arm_relax()
-            else:
-                self._right_arm_stiff()
+            self.right_arm_debounce.trigger(dataName, value, message)
 
     def _left_bumper(self, dataName, value, message):
         if self._motors_on:
@@ -400,62 +418,62 @@ class Robot(object):
     def _left_arm_stiff(self):
         msg = "left arm stiff"
         self.status_display.add_status(msg)
-        self.nao.arms.left_stiff()
         self.safe_say(msg)
+        self.nao.arms.left_stiff()
 
     def _left_arm_relax(self):
         msg = "left arm relaxed"
         self.status_display.add_status(msg)
-        self.nao.arms.left_relax()
         self.safe_say(msg)
+        self.nao.arms.left_relax()
 
     def _right_arm_stiff(self):
         msg = "right arm stiff"
         self.status_display.add_status(msg)
-        self.nao.arms.right_stiff()
         self.safe_say(msg)
+        self.nao.arms.right_stiff()
 
     def _right_arm_relax(self):
         msg = "right arm relaxed"
         self.status_display.add_status(msg)
-        self.nao.arms.right_relax()
         self.safe_say(msg)
+        self.nao.arms.right_relax()
 
     def _left_leg_stiff(self):
         msg = "left leg stiff"
         self.status_display.add_status(msg)
-        self.nao.legs.left_stiff()
         self.safe_say(msg)
+        self.nao.legs.left_stiff()
 
     def _left_leg_relax(self):
         msg = "left leg relaxed"
         self.status_display.add_status(msg)
-        self.nao.legs.left_relax()
         self.safe_say(msg)
+        self.nao.legs.left_relax()
 
     def _right_leg_stiff(self):
         msg = "right leg stiff"
         self.status_display.add_status(msg)
-        self.nao.legs.right_stiff()
         self.safe_say(msg)
+        self.nao.legs.right_stiff()
 
     def _right_leg_relax(self):
         msg = "right leg relaxed"
         self.status_display.add_status(msg)
-        self.nao.legs.right_relax()
         self.safe_say(msg)
+        self.nao.legs.right_relax()
 
     def _head_stiff(self):
         msg = "head stiff"
         self.status_display.add_status(msg)
-        self.nao.head.stiff()
         self.safe_say(msg)
+        self.nao.head.stiff()
 
     def _head_relax(self):
         msg = "head relaxed"
         self.status_display.add_status(msg)
-        self.nao.head.relax()
         self.safe_say(msg)
+        self.nao.head.relax()
 
     # wrapper functions so we can create map of standard positions without robot connection
     def _stand_init(self):

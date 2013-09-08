@@ -40,8 +40,8 @@ class Fnt_SpinnerOption(SpinnerOption):
 class LoadDialog(Popup):
 
     def load(self, path, selection):
-        self.choosen_file = [None, ]
-        self.choosen_file = selection
+        self.chosen_file = [None, ]
+        self.chosen_file = selection
         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         self.dismiss()
 
@@ -114,7 +114,7 @@ class NaoRecorderApp(App):
     files = ListProperty([None, ])
 
     def build(self):
-        self.robot = Robot(status_display=self, code_display=self)
+        self.robot = Robot(status_display=self, code_display=self, on_disconnect=self._on_disconnect)
 
         # building Kivy Interface
         b = BoxLayout(orientation='vertical')
@@ -239,7 +239,7 @@ class NaoRecorderApp(App):
             if not hasattr(self, 'load_dialog'):
                 self.load_dialog = LoadDialog()
             self.load_dialog.open()
-            self.load_dialog.bind(choosen_file=self.setter('files'))
+            self.load_dialog.bind(chosen_file=self.setter('files'))
         elif value == 'SaveAs':
             if not hasattr(self, 'saveas_dialog'):
                 self.saveas_dialog = SaveDialog()
@@ -262,10 +262,12 @@ class NaoRecorderApp(App):
         self.codeinput.text = _file.read()
         _file.close()
 
+    def _on_disconnect(self):
+        self.show_connection_dialog(None)
+
     def on_action(self, instance, l):
         if self.robot.is_connected():
             self.robot.go_to_posture(l)
-
 
     def _on_motors_off(self, instance):
         self.robot.motors_off()
