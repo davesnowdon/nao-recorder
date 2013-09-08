@@ -85,7 +85,7 @@ COMMANDS = [
 
             CommandSpec('up', 'head',
                         set(['HeadPitch']),
-                        [Transform(linear, 'HeadPitch', 'headPitch', [-1, -38)],
+                        [Transform(linear, 'HeadPitch', 'headPitch', [-1, -38])],
                         [Constraint(in_range, [-38, -10, 'HeadPitch'])],
                         ['headPitch']
                         ),
