@@ -51,7 +51,7 @@
             Button:
                 text: "Save"
                 on_release: root.save(filechooser.path, text_input.text)
-                
+
 <NaoJoints>:
     canvas:
         Color:
@@ -63,7 +63,7 @@
         size: root.size
         id: container
 
-        
+
         # head
         ToggleButton:
             id: Head
@@ -79,7 +79,7 @@
             size_hint: 0.25, 0.05
             pos_hint: { 'x' : 0.375, 'y': 0.9 }
             on_press: root.toggle_joint(self, 'HeadYaw')
-            
+
         ToggleButton:
             id: HeadPitch
             text: 'HeadPitch'
@@ -87,6 +87,15 @@
             size_hint: 0.25, 0.05
             pos_hint: { 'x' : 0.375, 'y': 0.85 }
             on_press: root.toggle_joint(self, 'HeadPitch')
+
+        # head stiffness control
+        ToggleButton:
+            id: HeadStiffness
+            state: 'normal'
+            size_hint: 0.025, 0.15
+            pos_hint: { 'x' : 0.35, 'y': 0.85 }
+            background_color: (0, 1, 0, 1) if self.state == 'normal' else (1, 0, 0 , 1)
+            #on_press: root.toggle_joint(self, 'LHand')
 
         # body
         ToggleButton:
@@ -148,6 +157,14 @@
             pos_hint: { 'x' : 0.05, 'y': 0.5 }
             on_press: root.toggle_joint(self, 'LHand')
 
+        # left arm stiffness control
+        ToggleButton:
+            id: LArmStiffness
+            state: 'normal'
+            size_hint: 0.025, 0.35
+            pos_hint: { 'x' : 0.025, 'y': 0.5 }
+            #on_press: root.toggle_joint(self, 'LHand')
+
         # right arm
         ToggleButton:
             id: RightArm
@@ -198,6 +215,14 @@
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.5 }
             on_press: root.toggle_joint(self, 'RHand')
+
+        # right arm stiffness control
+        ToggleButton:
+            id: RArmStiffness
+            state: 'normal'
+            size_hint: 0.025, 0.35
+            pos_hint: { 'x' : 0.95, 'y': 0.5 }
+            #on_press: root.toggle_joint(self, 'LHand')
 
         # left leg
         ToggleButton:
@@ -250,6 +275,14 @@
             pos_hint: { 'x' : 0.05, 'y': 0.1 }
             on_press: root.toggle_joint(self, 'LAnkleRoll')
 
+        # left left stiffness control
+        ToggleButton:
+            id: LLegStiffness
+            state: 'normal'
+            size_hint: 0.025, 0.35
+            pos_hint: { 'x' : 0.025, 'y': 0.1 }
+            #on_press: root.toggle_joint(self, 'LHand')
+
         # right leg
         ToggleButton:
             id: RightLeg
@@ -300,6 +333,14 @@
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.1 }
             on_press: root.toggle_joint(self, 'RAnkleRoll')
+
+        # right leg stiffness control
+        ToggleButton:
+            id: RLegStiffness
+            state: 'normal'
+            size_hint: 0.025, 0.35
+            pos_hint: { 'x' : 0.95, 'y': 0.1 }
+            #on_press: root.toggle_joint(self, 'LHand')
 
 <ConnectionDialog>:
     size_hint: .5, .5
