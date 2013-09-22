@@ -94,7 +94,8 @@
             state: 'normal'
             size_hint: 0.025, 0.15
             pos_hint: { 'x' : 0.35, 'y': 0.85 }
-            background_color: (0, 1, 0, 1) if self.state == 'normal' else (1, 0, 0 , 1)
+            background_down: 'stiff.png'
+            background_normal: 'relaxed.png'
             #on_press: root.toggle_joint(self, 'LHand')
 
         # body
@@ -163,6 +164,8 @@
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.025, 'y': 0.5 }
+            background_down: 'stiff.png'
+            background_normal: 'relaxed.png'
             #on_press: root.toggle_joint(self, 'LHand')
 
         # right arm
@@ -222,6 +225,8 @@
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.95, 'y': 0.5 }
+            background_down: 'stiff.png'
+            background_normal: 'relaxed.png'
             #on_press: root.toggle_joint(self, 'LHand')
 
         # left leg
@@ -281,6 +286,8 @@
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.025, 'y': 0.1 }
+            background_down: 'stiff.png'
+            background_normal: 'relaxed.png'
             #on_press: root.toggle_joint(self, 'LHand')
 
         # right leg
@@ -340,6 +347,8 @@
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.95, 'y': 0.1 }
+            background_down: 'stiff.png'
+            background_normal: 'relaxed.png'
             #on_press: root.toggle_joint(self, 'LHand')
 
 <ConnectionDialog>:
