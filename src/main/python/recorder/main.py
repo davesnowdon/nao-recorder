@@ -17,6 +17,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
 from kivy.uix.textinput import TextInput
 from kivy.uix.popup import Popup
+from kivy.properties import ObjectProperty
 from kivy.properties import ListProperty
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -27,7 +28,7 @@ import codecs, os
 import logging
 
 
-from core import Robot, get_joints_for_chain, is_joint, get_sub_chains
+from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
@@ -66,11 +67,18 @@ class ConnectionDialog(Popup):
     pass
 
 class NaoJoints(BoxLayout):
+    f_head_stiffness = ObjectProperty()
+    f_left_arm_stiffness = ObjectProperty()
+    f_right_arm_stiffness = ObjectProperty()
+    f_left_leg_stiffness = ObjectProperty()
+    f_right_leg_stiffness = ObjectProperty()
+
     def __init__(self, **kwargs):
         # make sure we aren't overriding any important functionality
         super(NaoJoints, self).__init__(**kwargs)
 
         self.on_joint_selection = kwargs['on_joint_selection']
+        self.on_chain_stiffness = kwargs['on_chain_stiffness']
 
     def toggle_chain(self, btn, chain_name):
         # print "btn = {}, chain = {} state = {}".format(btn, chain_name, btn.state)
@@ -84,11 +92,39 @@ class NaoJoints(BoxLayout):
         self.notify_joint_selection_changed()
 
     def get_joint_buttons(self):
-        return self.children[0].children
+        '''
+            Joint buttons have non-empty text
+        '''
+        return [c for c in self.children[0].children if c.text]
+
+    def get_chain_stiffness_buttons(self):
+        return [ self.f_head_stiffness, self.f_left_arm_stiffness, self.f_right_arm_stiffness,
+                 self.f_left_leg_stiffness, self.f_right_leg_stiffness ]
 
     def toggle_joint(self, btn, joint_name):
         # print "btn = {}, name = {} state = {}".format(btn, joint_name, btn.state)
         self.notify_joint_selection_changed()
+
+    def set_chain_stiffness(self, stiff_chain_names):
+        '''
+            Called to update UI to show chain as stiff or relaxed
+        '''
+        name_to_chain = { 'Head' : self.f_head_stiffness,
+                          'LeftArm' : self.f_left_arm_stiffness,
+                          'RightArm' : self.f_right_arm_stiffness,
+                          'LeftLeg' : self.f_left_leg_stiffness,
+                          'RightLeg' : self.f_right_leg_stiffness
+                        }
+        try:
+            # ignore 'Body' since we don't have a button for the whole robot
+            stiff_chains = { name_to_chain[name] for name in stiff_chain_names if name != 'Body' }
+            for chain in self.get_chain_stiffness_buttons():
+                chain.state = 'down' if chain in stiff_chains else 'normal'
+        except KeyError:
+            pass
+
+    def toggle_chain_stiffness(self, btn, chain_name):
+        self.notify_stiffness_changed()
 
     def child_joint_name(self, child):
         return child.text
@@ -96,6 +132,22 @@ class NaoJoints(BoxLayout):
     def is_selected(self, child):
         return isinstance(child, ToggleButton) and \
                is_joint(self.child_joint_name(child)) and \
+               child.state == 'down'
+
+    def child_stiffness_chain_name(self, child):
+        try:
+            return { self.f_head_stiffness : 'Head',
+                     self.f_left_arm_stiffness : 'LeftArm',
+                     self.f_right_arm_stiffness : 'RightArm',
+                     self.f_left_leg_stiffness : 'LeftLeg',
+                     self.f_right_leg_stiffness : 'RightLeg'
+                   }[child]
+        except AttributeError:
+            return None
+
+    def is_stiff(self, child):
+        return isinstance(child, ToggleButton) and \
+               is_joint_chain(self.child_stiffness_chain_name(child)) and \
                child.state == 'down'
 
     def get_selected_joints(self):
@@ -109,12 +161,26 @@ class NaoJoints(BoxLayout):
         if self.on_joint_selection:
             self.on_joint_selection(self.get_selected_joints())
 
+    def get_stiff_chains(self):
+        stiff_chains = set()
+        for child in self.get_chain_stiffness_buttons():
+            if self.is_stiff(child):
+                stiff_chains.add(self.child_stiffness_chain_name(child))
+        return stiff_chains
+
+    def notify_stiffness_changed(self):
+        if self.on_chain_stiffness:
+            self.on_chain_stiffness(self.get_stiff_chains())
+
+
 class NaoRecorderApp(App):
 
     files = ListProperty([None, ])
 
     def build(self):
-        self.robot = Robot(status_display=self, code_display=self, on_disconnect=self._on_disconnect)
+        self.robot = Robot(status_display=self, code_display=self,
+                           on_disconnect=self._on_disconnect,
+                           on_stiffness=self._on_chain_stiffness_from_robot)
 
         # building Kivy Interface
         b = BoxLayout(orientation='vertical')
@@ -180,7 +246,9 @@ class NaoRecorderApp(App):
 
 
         m.add_widget(code_status)
-        self.joints_ui = NaoJoints(size_hint=(0.4, 1), on_joint_selection=self._on_joint_selection)
+        self.joints_ui = NaoJoints(size_hint=(0.4, 1),
+                                   on_joint_selection=self._on_joint_selection,
+                                   on_chain_stiffness=self._on_chain_stiffness)
         m.add_widget(self.joints_ui)
 
         b.add_widget(m)
@@ -290,6 +358,14 @@ class NaoRecorderApp(App):
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)
+
+    # callback from NAO joints when button changes
+    def _on_chain_stiffness(self, chain_names):
+        self.robot.set_chains_with_motors_on(chain_names)
+
+    # callback from Robot when stiffness changes
+    def _on_chain_stiffness_from_robot(self, stiff_chains):
+        self.joints_ui.set_chain_stiffness(stiff_chains)
 
 if __name__ == '__main__':
     NaoRecorderApp().run()

@@ -53,6 +53,11 @@
                 on_release: root.save(filechooser.path, text_input.text)
 
 <NaoJoints>:
+    f_head_stiffness: HeadStiffness
+    f_left_arm_stiffness: LArmStiffness
+    f_right_arm_stiffness: RArmStiffness
+    f_left_leg_stiffness: LLegStiffness
+    f_right_leg_stiffness: RLegStiffness
     canvas:
         Color:
             rgba: 1, 1, 1, 1
@@ -96,7 +101,7 @@
             pos_hint: { 'x' : 0.35, 'y': 0.85 }
             background_down: 'stiff.png'
             background_normal: 'relaxed.png'
-            #on_press: root.toggle_joint(self, 'LHand')
+            on_press: root.toggle_chain_stiffness(self, 'Head')
 
         # body
         ToggleButton:
@@ -166,7 +171,7 @@
             pos_hint: { 'x' : 0.025, 'y': 0.5 }
             background_down: 'stiff.png'
             background_normal: 'relaxed.png'
-            #on_press: root.toggle_joint(self, 'LHand')
+            on_press: root.toggle_chain_stiffness(self, 'LeftArm')
 
         # right arm
         ToggleButton:
@@ -227,7 +232,7 @@
             pos_hint: { 'x' : 0.95, 'y': 0.5 }
             background_down: 'stiff.png'
             background_normal: 'relaxed.png'
-            #on_press: root.toggle_joint(self, 'LHand')
+            on_press: root.toggle_chain_stiffness(self, 'RightArm')
 
         # left leg
         ToggleButton:
@@ -288,7 +293,7 @@
             pos_hint: { 'x' : 0.025, 'y': 0.1 }
             background_down: 'stiff.png'
             background_normal: 'relaxed.png'
-            #on_press: root.toggle_joint(self, 'LHand')
+            on_press: root.toggle_chain_stiffness(self, 'LeftLeg')
 
         # right leg
         ToggleButton:
@@ -349,7 +354,7 @@
             pos_hint: { 'x' : 0.95, 'y': 0.1 }
             background_down: 'stiff.png'
             background_normal: 'relaxed.png'
-            #on_press: root.toggle_joint(self, 'LHand')
+            on_press: root.toggle_chain_stiffness(self, 'RightLeg')
 
 <ConnectionDialog>:
     size_hint: .5, .5
