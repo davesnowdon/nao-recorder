@@ -198,7 +198,7 @@ class Robot(object):
 
     def connect(self, hostname, portnumber):
         try:
-            self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
+            self.broker = broker.Broker('NaoRecorder', nao_id=hostname, nao_port=portnumber)
             if self.broker:
                 self.env = naoenv.make_environment(None)
                 self.nao = nao.Nao(self.env, None)
@@ -310,7 +310,8 @@ class Robot(object):
         '''
         stiff_chains = set()
         joint_stiffnesses = self.get_joint_stiffnesses()
-        chain_names = [n for n in JOINT_CHAINS.keys() if n != 'Head']
+        print "joint stiffnesses = {}/n".format(joint_stiffnesses)
+        chain_names = [n for n in JOINT_CHAINS.keys() if n != 'Body']
         for n in chain_names:
             stiff_joint_count = 0;
             for j in JOINT_CHAINS[n]:
@@ -320,6 +321,7 @@ class Robot(object):
                     stiff_chains.add(n)
         if len(stiff_chains) == len(chain_names):
             stiff_chains.add('Body')
+        print "stiff chains = {}\n".format(stiff_chains)
         return stiff_chains
 
     def get_joint(self, name):
@@ -361,38 +363,36 @@ class Robot(object):
         self.enabled_joints = set(enabled_joints.copy())
         print "Enabled joints are now {}".format(self.enabled_joints)
 
-    def set_chains_with_motors_on(self, chain_names):
+    def set_chains_with_motors_on(self, stiff_chain_names):
         '''
             Turn all the named motor chains on. Any chains not in the provided collection
             have their motors turned off
         '''
-        # TODO remove repetition. Use dictionary to map chains to functions
-        if 'Head' in chain_names:
-            self._head_stiff()
-        else:
-            self._head_relax()
+        chain_names = [n for n in JOINT_CHAINS.keys() if n != 'Body']
 
-        if 'LeftArm' in chain_names:
-            self._left_arm_stiff()
-        else:
-            self._left_arm_relax()
+        name_map = {'Head': 'Head',
+                    'Body': 'Body',
+                    'LeftArm': 'LArm',
+                    'RightArm': 'RArm',
+                    'LeftLeg': 'LLeg',
+                    'RightLeg': 'RLeg'}
 
-        if 'RightArm' in chain_names:
-            self._right_arm_relax()
-        else:
-            self._right_arm_relax()
+        # ensure is a list not a set
+        stiff_chains = [ name_map[n] for n in stiff_chain_names]
+        print "set_chains_with_motors_on = {}".format(stiff_chains)
 
-        if 'LeftLeg' in chain_names:
-            self._left_leg_stiff()
-        else:
-            self._left_leg_relax()
+        relaxed_chains = [ name_map[n] for n in chain_names if n not in stiff_chain_names]
+        print "set_chains_with_motors_off = {}".format(relaxed_chains)
 
-        if 'RightLeg' in chain_names:
-            self._right_leg_stiff()
-        else:
-            self._right_leg_relax()
+        pStiffness = 1.0
+        pRelaxed = 0.0
+        pTimeLists = 0.5
+        if stiff_chains:
+            self.env.motion.stiffnessInterpolation(stiff_chains, pStiffness, pTimeLists)
+        if relaxed_chains:
+            self.env.motion.stiffnessInterpolation(relaxed_chains, pRelaxed, pTimeLists)
 
-        self.notify_stiffness_changed()
+        # self.notify_stiffness_changed()
 
     def notify_stiffness_changed(self):
         if self.on_stiffness:
@@ -421,23 +421,24 @@ class Robot(object):
     def _left_bumper(self, dataName, value, message):
         if self._motors_on:
             if value == 1:
-                self._left_leg_relax()
+                self.left_leg_relax()
             else:
-                self._left_leg_stiff()
+                self.left_leg_stiff()
 
     def _right_bumper(self, dataName, value, message):
         if self._motors_on:
             if value == 1:
-                self._right_leg_relax()
+                self.right_leg_relax()
             else:
-                self._right_leg_stiff()
+                self.right_leg_stiff()
 
     def _head_rear(self, dataName, value, message):
+        print "head rear"
         if self._motors_on:
             if value == 1:
-                self._head_relax()
+                self.head_relax()
             else:
-                self._head_stiff()
+                self.head_stiff()
 
     def _head_front(self, dataName, value, message):
         if value == 1:

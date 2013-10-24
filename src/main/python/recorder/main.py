@@ -115,6 +115,7 @@ class NaoJoints(BoxLayout):
                           'LeftLeg' : self.f_left_leg_stiffness,
                           'RightLeg' : self.f_right_leg_stiffness
                         }
+        print "Stiff chain names = {}\n".format(stiff_chain_names)
         try:
             # ignore 'Body' since we don't have a button for the whole robot
             stiff_chains = { name_to_chain[name] for name in stiff_chain_names if name != 'Body' }
@@ -124,6 +125,7 @@ class NaoJoints(BoxLayout):
             pass
 
     def toggle_chain_stiffness(self, btn, chain_name):
+        print "toggle_chain_stiffness = {}\n".format(chain_name)
         self.notify_stiffness_changed()
 
     def child_joint_name(self, child):
@@ -166,6 +168,7 @@ class NaoJoints(BoxLayout):
         for child in self.get_chain_stiffness_buttons():
             if self.is_stiff(child):
                 stiff_chains.add(self.child_stiffness_chain_name(child))
+        print "stiff chains (from UI) = {}".format(stiff_chains)
         return stiff_chains
 
     def notify_stiffness_changed(self):
