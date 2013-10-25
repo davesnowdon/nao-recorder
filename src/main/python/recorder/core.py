@@ -129,11 +129,12 @@ def joint_changes(oldangles, newangles, threshold=FLOAT_CMP_ACCURACY):
 
 
 class Robot(object):
-    def __init__(self, status_display=None, code_display=None, on_disconnect=None):
+    def __init__(self, status_display=None, code_display=None, on_disconnect=None, on_stiffness=None):
         super(Robot, self).__init__()
         self.status_display = status_display
         self.code_display = code_display
         self.on_disconnect = on_disconnect
+        self.on_stiffness = on_stiffness
         self.broker = None
         self.nao = None
         self._motors_on = False
@@ -145,16 +146,16 @@ class Robot(object):
             self.joints[j] = 0
 
         # using "now" instead of "nao" for better recognition
-        self.vocabulary = {'left arm stiff': self._left_arm_stiff,
-                           'left arm relax': self._left_arm_relax,
-                           'right arm stiff': self._right_arm_stiff,
-                           'right arm relax': self._right_arm_relax,
-                           'left leg stiff': self._left_leg_stiff,
-                           'left leg relax': self._left_leg_relax,
-                           'right leg stiff': self._right_leg_stiff,
-                           'right leg relax': self._right_leg_relax,
-                           'head stiff': self._head_stiff,
-                           'head relax': self._head_relax,
+        self.vocabulary = {'left arm stiff': self.left_arm_stiff,
+                           'left arm relax': self.left_arm_relax,
+                           'right arm stiff': self.right_arm_stiff,
+                           'right arm relax': self.right_arm_relax,
+                           'left leg stiff': self.left_leg_stiff,
+                           'left leg relax': self.left_leg_relax,
+                           'right leg stiff': self.right_leg_stiff,
+                           'right leg relax': self.right_leg_relax,
+                           'head stiff': self.head_stiff,
+                           'head relax': self.head_relax,
                            'now lie belly': self._lying_belly,
                            'now lie back': self._lying_back,
                            'now stand': self._stand,
@@ -192,12 +193,12 @@ class Robot(object):
                                }
 
         self.enabled_joints = set(JOINT_NAMES)
-        self.left_arm_debounce = Debounce(self._left_arm_relax, self._left_arm_stiff)
-        self.right_arm_debounce = Debounce(self._right_arm_relax, self._right_arm_stiff)
+        self.left_arm_debounce = Debounce(self.left_arm_relax, self.left_arm_stiff)
+        self.right_arm_debounce = Debounce(self.right_arm_relax, self.right_arm_stiff)
 
     def connect(self, hostname, portnumber):
         try:
-            self.broker = broker.Broker('NaoRecorder', naoIp=hostname, naoPort=portnumber)
+            self.broker = broker.Broker('NaoRecorder', nao_id=hostname, nao_port=portnumber)
             if self.broker:
                 self.env = naoenv.make_environment(None)
                 self.nao = nao.Nao(self.env, None)
@@ -276,6 +277,7 @@ class Robot(object):
             self.status_display.add_status('Turning NAO motors on')
             self.nao.stiff()
             self._motors_on = True
+            self.notify_stiffness_changed()
             self.safe_say("Motors on")
 
     def motors_off(self):
@@ -283,6 +285,7 @@ class Robot(object):
             self.status_display.add_status('Turning NAO motors off')
             self.nao.relax()
             self._motors_on = False
+            self.notify_stiffness_changed()
             self.safe_say("Motors off")
 
     def get_joint_angles(self, use_radians=True):
@@ -294,6 +297,32 @@ class Robot(object):
             return self.joints
         else:
             return joints_to_degrees(self.joints, True)
+
+    def get_joint_stiffnesses(self):
+        '''
+            Get the stiffness values for individual joints
+        '''
+        return { n : v for n, v in zip(JOINT_NAMES, self.env.motion.getStiffnesses("Body")) }
+
+    def get_stiff_chains(self, threshold=0.2):
+        '''
+            Get whether joint chains are stiff or not
+        '''
+        stiff_chains = set()
+        joint_stiffnesses = self.get_joint_stiffnesses()
+        print "joint stiffnesses = {}/n".format(joint_stiffnesses)
+        chain_names = [n for n in JOINT_CHAINS.keys() if n != 'Body']
+        for n in chain_names:
+            stiff_joint_count = 0;
+            for j in JOINT_CHAINS[n]:
+                if joint_stiffnesses[j] > threshold:
+                    stiff_joint_count = stiff_joint_count + 1
+                if stiff_joint_count > 0:
+                    stiff_chains.add(n)
+        if len(stiff_chains) == len(chain_names):
+            stiff_chains.add('Body')
+        print "stiff chains = {}\n".format(stiff_chains)
+        return stiff_chains
 
     def get_joint(self, name):
         return self.joints[name]
@@ -334,6 +363,41 @@ class Robot(object):
         self.enabled_joints = set(enabled_joints.copy())
         print "Enabled joints are now {}".format(self.enabled_joints)
 
+    def set_chains_with_motors_on(self, stiff_chain_names):
+        '''
+            Turn all the named motor chains on. Any chains not in the provided collection
+            have their motors turned off
+        '''
+        chain_names = [n for n in JOINT_CHAINS.keys() if n != 'Body']
+
+        name_map = {'Head': 'Head',
+                    'Body': 'Body',
+                    'LeftArm': 'LArm',
+                    'RightArm': 'RArm',
+                    'LeftLeg': 'LLeg',
+                    'RightLeg': 'RLeg'}
+
+        # ensure is a list not a set
+        stiff_chains = [ name_map[n] for n in stiff_chain_names]
+        print "set_chains_with_motors_on = {}".format(stiff_chains)
+
+        relaxed_chains = [ name_map[n] for n in chain_names if n not in stiff_chain_names]
+        print "set_chains_with_motors_off = {}".format(relaxed_chains)
+
+        pStiffness = 1.0
+        pRelaxed = 0.0
+        pTimeLists = 0.5
+        if stiff_chains:
+            self.env.motion.stiffnessInterpolation(stiff_chains, pStiffness, pTimeLists)
+        if relaxed_chains:
+            self.env.motion.stiffnessInterpolation(relaxed_chains, pRelaxed, pTimeLists)
+
+        # self.notify_stiffness_changed()
+
+    def notify_stiffness_changed(self):
+        if self.on_stiffness:
+            self.on_stiffness(self.get_stiff_chains())
+
     def _word_recognised(self, dataName, value, message):
         print "word_recognised: {}".format(value)
         self.logger.debug("word_recognised: {}".format(value))
@@ -357,23 +421,24 @@ class Robot(object):
     def _left_bumper(self, dataName, value, message):
         if self._motors_on:
             if value == 1:
-                self._left_leg_relax()
+                self.left_leg_relax()
             else:
-                self._left_leg_stiff()
+                self.left_leg_stiff()
 
     def _right_bumper(self, dataName, value, message):
         if self._motors_on:
             if value == 1:
-                self._right_leg_relax()
+                self.right_leg_relax()
             else:
-                self._right_leg_stiff()
+                self.right_leg_stiff()
 
     def _head_rear(self, dataName, value, message):
+        print "head rear"
         if self._motors_on:
             if value == 1:
-                self._head_relax()
+                self.head_relax()
             else:
-                self._head_stiff()
+                self.head_stiff()
 
     def _head_front(self, dataName, value, message):
         if value == 1:
@@ -415,64 +480,70 @@ class Robot(object):
         self.nao.hands.right_close()
         self.safe_say(msg)
 
-    def _left_arm_stiff(self):
-        msg = "left arm stiff"
+    def _stiffness_change(self, msg, updateFunc):
         self.status_display.add_status(msg)
         self.safe_say(msg)
+        updateFunc()
+        self.notify_stiffness_changed()
+
+    def left_arm_stiff(self):
+        self._stiffness_change("left arm stiff", self._left_arm_stiff)
+
+    def _left_arm_stiff(self):
         self.nao.arms.left_stiff()
 
+    def left_arm_relax(self):
+        self._stiffness_change("left arm relaxed", self._left_arm_relax)
+
     def _left_arm_relax(self):
-        msg = "left arm relaxed"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.arms.left_relax()
 
+    def right_arm_stiff(self):
+        self._stiffness_change("right arm stiff", self._right_arm_stiff)
+
     def _right_arm_stiff(self):
-        msg = "right arm stiff"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.arms.right_stiff()
 
+    def right_arm_relax(self):
+        self._stiffness_change("right arm relaxed", self._right_arm_relax)
+
     def _right_arm_relax(self):
-        msg = "right arm relaxed"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.arms.right_relax()
 
+    def left_leg_stiff(self):
+        self._stiffness_change("left leg stiff", self._left_leg_stiff)
+
     def _left_leg_stiff(self):
-        msg = "left leg stiff"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.legs.left_stiff()
 
+    def left_leg_relax(self):
+        self._stiffness_change("left leg relaxed", self._left_leg_relax)
+
     def _left_leg_relax(self):
-        msg = "left leg relaxed"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.legs.left_relax()
 
+    def right_leg_stiff(self):
+        self._stiffness_change("right leg stiff", self._right_leg_stiff)
+
     def _right_leg_stiff(self):
-        msg = "right leg stiff"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.legs.right_stiff()
 
+    def right_leg_relax(self):
+        self._stiffness_change("right leg relaxed", self._right_leg_relax)
+
     def _right_leg_relax(self):
-        msg = "right leg relaxed"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.legs.right_relax()
 
+    def head_stiff(self):
+        self._stiffness_change("head stiff", self._head_stiff)
+
     def _head_stiff(self):
-        msg = "head stiff"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.head.stiff()
 
+    def head_relax(self):
+        self._stiffness_change("head relaxed", self._head_relax)
+
     def _head_relax(self):
-        msg = "head relaxed"
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
         self.nao.head.relax()
 
     # wrapper functions so we can create map of standard positions without robot connection
