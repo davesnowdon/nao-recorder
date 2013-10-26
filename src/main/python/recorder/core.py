@@ -226,12 +226,12 @@ class Robot(object):
     def do_subscribe(self):
         if self.event_handlers:
             for (key, value) in self.event_handlers.iteritems():
-                memory.subscribeToEvent(key, value)
+                memory.subscribe_to_event(key, value)
 
     def do_unsubscribe(self):
         if self.event_handlers:
             for key in self.event_handlers.keys():
-                memory.unsubscribeToEvent(key)
+                memory.unsubscribe_to_event(key)
 
     def safe_say(self, msg):
         """
@@ -245,14 +245,14 @@ class Robot(object):
     def enable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
             try:
-                memory.subscribeToEvent("WordRecognized", self.event_handlers["WordRecognized"])
+                memory.subscribe_to_event("WordRecognized", self.event_handlers["WordRecognized"])
             except RuntimeError as e:
                 print "Error enabling speech recognition: {}".format(e)
 
     def disable_speech_recognition(self):
         if "WordRecognized" in self.event_handlers:
             try:
-                memory.unsubscribeToEvent("WordRecognized")
+                memory.unsubscribe_to_event("WordRecognized")
             except RuntimeError as e:
                 print "Error disabling speech recognition: {}".format(e)
 
