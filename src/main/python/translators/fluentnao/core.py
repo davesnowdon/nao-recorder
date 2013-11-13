@@ -63,6 +63,45 @@ def max_difference(joints, params):
 
 COMMANDS = [
 
+            # head
+            CommandSpec('forward', 'head',
+                        set(['HeadYaw']),
+                        [Transform(linear, 'HeadYaw', 'headYaw', [1, 0])],
+                        [Constraint(in_range, [-45, 45, 'HeadYaw'])],
+                        ['headYaw']
+                        ),
+            CommandSpec('right', 'head',
+                        set(['HeadYaw']),
+                        [Transform(linear, 'HeadYaw', 'headYaw', [-1, -90])],
+                        [Constraint(in_range, [-90, -46, 'HeadYaw'])],
+                        ['headYaw']
+                        ),
+            CommandSpec('left', 'head',
+                        set(['HeadYaw']),
+                        [Transform(linear, 'HeadYaw', 'headYaw', [1, -90])],
+                        [Constraint(in_range, [45, 90, 'HeadYaw'])],
+                        ['headYaw']
+                        ),
+
+            CommandSpec('up', 'head',
+                        set(['HeadPitch']),
+                        [Transform(linear, 'HeadPitch', 'headPitch', [-1, -38])],
+                        [Constraint(in_range, [-38, -10, 'HeadPitch'])],
+                        ['headPitch']
+                        ),
+            CommandSpec('down', 'head',
+                        set(['HeadPitch']),
+                        [Transform(linear, 'HeadPitch', 'headPitch', [1, -29])],
+                        [Constraint(in_range, [10, 29, 'HeadPitch'])],
+                        ['headPitch']
+                        ),
+            CommandSpec('center', 'head',
+                        set(['HeadPitch']),
+                        [Transform(linear, 'HeadPitch', 'headPitch', [1, 0])],
+                        [Constraint(in_range, [-11, 9, 'HeadPitch'])],
+                        ['headPitch']
+                        ),
+
             # arms both
             CommandSpec('forward', 'arms',
                         set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RShoulderRoll']),

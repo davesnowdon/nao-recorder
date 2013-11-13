@@ -6,7 +6,7 @@ Created on 6 Jul 2013
 import unittest
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT,POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER
+from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT,POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER, POSITION_HEAD_DOWN_HEAD_FORWARD, POSITION_HEAD_UP_HEAD_RIGHT, POSITION_HEAD_CENTER_HEAD_LEFT
 
 def get_translator():
     return FluentNaoTranslator()
@@ -15,6 +15,7 @@ SHOULDER_JOINTS = set(['LShoulderPitch', 'LShoulderRoll', 'RShoulderPitch', 'RSh
 ELBOW_JOINTS = set(['LElbowYaw', 'RElbowYaw', 'LElbowRoll', 'RElbowRoll'])
 HAND_JOINTS = set(['LHand', 'RHand'])
 WRIST_JOINTS = set(['LWristYaw', 'RWristYaw'])
+HEAD_JOINTS = set(['HeadYaw', 'HeadPitch'])
 
 class TestCommandsToText(unittest.TestCase):
     def testEmptyList(self):
@@ -455,6 +456,65 @@ class TestDetectArms(unittest.TestCase):
             pass
         else:
             self.fail("expected wrists.right_turn_in().left_center() or wrists.left_center().right_turn_in(); instead got: {0}".format(result))
+
+
+    def testHeadDownHeadForward(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HEAD_DOWN_HEAD_FORWARD)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 HEAD_JOINTS, HEAD_JOINTS)
+        self.assertEqual(len(result), 2, "Should get 2 tuple(s) ; instead got: {0}".format(len(result)))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "head.down" and  second_tuple[0] == "forward") or (first_tuple[0] == "head.forward" and  second_tuple[0] == "down"):
+            pass
+        else:
+            self.fail("expected head.down().forward() or head.forward().down(); instead got: {0}".format(result))
+
+    def testHeadUpHeadRight(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HEAD_UP_HEAD_RIGHT)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 HEAD_JOINTS, HEAD_JOINTS)
+        self.assertEqual(len(result), 2, "Should get 2 tuple(s) ; instead got: {0}".format(len(result)))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "head.up" and  second_tuple[0] == "right") or (first_tuple[0] == "head.right" and  second_tuple[0] == "up"):
+            pass
+        else:
+            self.fail("expected head.up().right() or head.right().up(); instead got: {0}".format(result))
+
+    def testHeadCenterHeadLeft(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_HEAD_CENTER_HEAD_LEFT)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 HEAD_JOINTS, HEAD_JOINTS)
+        self.assertEqual(len(result), 2, "Should get 2 tuple(s) ; instead got: {0}".format(len(result)))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "head.center" and  second_tuple[0] == "left") or (first_tuple[0] == "head.left" and  second_tuple[0] == "center"):
+            pass
+        else:
+            self.fail("expected head.center().left() or head.left().center(); instead got: {0}".format(result))
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
