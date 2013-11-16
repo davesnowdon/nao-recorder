@@ -204,11 +204,10 @@ class NaoRecorderApp(App):
         mnu_file.bind(text=self._file_menu_selected)
 
         # motors on/off
-        btn_motors_on = Button(text='Motors On')
-        btn_motors_on.bind(on_press=self._on_motors_on)
-
-        btn_motors_off = Button(text='Motors Off')
-        btn_motors_off.bind(on_press=self._on_motors_off)
+        btn_motors = ToggleButton(text='Motors On', state='normal',
+                                  background_down='stiff.png',
+                                  background_normal='relaxed.png')
+        btn_motors.bind(on_press=self._on_motors)
 
         # run script
         btn_run_script = Button(text='Run Script')
@@ -227,8 +226,7 @@ class NaoRecorderApp(App):
         # add to menu
         menu.add_widget(mnu_file)
         menu.add_widget(btn_add_keyframe)
-        menu.add_widget(btn_motors_on)
-        menu.add_widget(btn_motors_off)
+        menu.add_widget(btn_motors)
         menu.add_widget(btn_run_script)
         menu.add_widget(robot_actions)
         b.add_widget(menu)
@@ -340,11 +338,13 @@ class NaoRecorderApp(App):
         if self.robot.is_connected():
             self.robot.go_to_posture(l)
 
-    def _on_motors_off(self, instance):
-        self.robot.motors_off()
-
-    def _on_motors_on(self, instance):
-        self.robot.motors_on()
+    def _on_motors(self, motor_button):
+        if motor_button.state == 'down':
+            motor_button.text = 'Motors off'
+            self.robot.motors_on()
+        else:
+            motor_button.text = 'Motors on'
+            self.robot.motors_off()
 
     def _on_run_script(self, instance):
         if self.robot.is_connected():
