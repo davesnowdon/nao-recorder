@@ -348,6 +348,13 @@ class Robot(object):
         else:
             return None
 
+    def update_joints(self):
+        '''
+        Updates the current set of joint angles so that we can track changes from a known point
+        '''
+        if self.is_connected():
+            self.last_keyframe_joints = self.get_joint_angles()
+
     def run_script(self, code):
         if self.is_connected():
             # we disable event handling while a script is running. This is to avoid speech recognition

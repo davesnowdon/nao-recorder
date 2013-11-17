@@ -217,6 +217,10 @@ class NaoRecorderApp(App):
         btn_add_keyframe = Button(text='Add Keyframe')
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
 
+        # set read joint angles to enable animation to start from known position
+        btn_update_joints = Button(text='Read joints')
+        btn_update_joints.bind(on_press=self._on_read_joints)
+
         # root actions menu
         robot_actions = Spinner(
             text='Action',
@@ -226,6 +230,7 @@ class NaoRecorderApp(App):
         # add to menu
         menu.add_widget(mnu_file)
         menu.add_widget(btn_add_keyframe)
+        menu.add_widget(btn_update_joints)
         menu.add_widget(btn_motors)
         menu.add_widget(btn_run_script)
         menu.add_widget(robot_actions)
@@ -358,6 +363,9 @@ class NaoRecorderApp(App):
         code = self.robot.keyframe()
         if code:
             self.append_code(code)
+
+    def _on_read_joints(self, instance):
+        self.robot.update_joints()
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)
