@@ -80,6 +80,7 @@ class NaoJoints(BoxLayout):
 
         self.on_joint_selection = kwargs['on_joint_selection']
         self.on_chain_stiffness = kwargs['on_chain_stiffness']
+        self.on_hand_open_close = kwargs['on_hand_open_close']
 
     def toggle_chain(self, btn, chain_name):
         # print "btn = {}, chain = {} state = {}".format(btn, chain_name, btn.state)
@@ -176,6 +177,10 @@ class NaoJoints(BoxLayout):
         if self.on_chain_stiffness:
             self.on_chain_stiffness(self.get_stiff_chains())
 
+    def toggle_hand(self, btn, hand_name):
+        if self.on_hand_open_close:
+            is_open = btn.state == 'down'
+            self.on_hand_open_close(hand_name, is_open)
 
 class NaoRecorderApp(App):
 
@@ -273,7 +278,8 @@ class NaoRecorderApp(App):
         m.add_widget(code_status)
         self.joints_ui = NaoJoints(size_hint=(0.4, 1),
                                    on_joint_selection=self._on_joint_selection,
-                                   on_chain_stiffness=self._on_chain_stiffness)
+                                   on_chain_stiffness=self._on_chain_stiffness,
+                                   on_hand_open_close=self._on_hand_open_close)
         m.add_widget(self.joints_ui)
 
         b.add_widget(m)
@@ -413,6 +419,12 @@ class NaoRecorderApp(App):
     # callback from Robot when stiffness changes
     def _on_chain_stiffness_from_robot(self, stiff_chains):
         self.joints_ui.set_chain_stiffness(stiff_chains)
+
+    def _on_hand_open_close(self, hand_name, is_open):
+        '''
+        Callback from NAO joints when hand buttons change state
+        '''
+        self.robot.hand_open(hand_name, is_open)
 
 if __name__ == '__main__':
     NaoRecorderApp().run()

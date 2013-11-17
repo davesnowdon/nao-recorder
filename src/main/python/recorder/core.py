@@ -429,6 +429,19 @@ class Robot(object):
         if self.on_stiffness:
             self.on_stiffness(self.get_stiff_chains())
 
+    def hand_open(self, hand_name, is_open):
+        if hand_name == 'LHand':
+            if is_open:
+                self._left_hand_open()
+            else:
+                self._left_hand_close()
+
+        if hand_name == 'RHand':
+            if is_open:
+                self._right_hand_open()
+            else:
+                self._right_hand_close()
+
     def _word_recognised(self, dataName, value, message):
         print "word_recognised: {}".format(value)
         self.logger.debug("word_recognised: {}".format(value))

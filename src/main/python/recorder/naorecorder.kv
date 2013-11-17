@@ -163,6 +163,15 @@
             pos_hint: { 'x' : 0.05, 'y': 0.5 }
             on_press: root.toggle_joint(self, 'LHand')
 
+        ToggleButton:
+            id: LHandOpenClose
+            state: 'normal'
+            size_hint: 0.15, 0.02
+            pos_hint: { 'x' : 0.12, 'y': 0.48 }
+            background_down: 'hand_open.png'
+            background_normal: 'hand_closed.png'
+            on_press: root.toggle_hand(self, 'LHand')
+
         # left arm stiffness control
         ToggleButton:
             id: LArmStiffness
@@ -223,6 +232,15 @@
             size_hint: 0.3, 0.05
             pos_hint: { 'x' : 0.65, 'y': 0.5 }
             on_press: root.toggle_joint(self, 'RHand')
+
+        ToggleButton:
+            id: RHandOpenClose
+            state: 'normal'
+            size_hint: 0.15, 0.02
+            pos_hint: { 'x' : 0.7, 'y': 0.48 }
+            background_down: 'hand_open.png'
+            background_normal: 'hand_closed.png'
+            on_press: root.toggle_hand(self, 'RHand')
 
         # right arm stiffness control
         ToggleButton:
