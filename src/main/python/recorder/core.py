@@ -140,6 +140,7 @@ class Robot(object):
         self._motors_on = False
         self.logger = logging.getLogger("recorder.core.Robot")
         self.last_keyframe_joints = None
+        self.keyframe_duration = 1.0
 
         self.joints = { }
         for j in JOINT_NAMES:
@@ -342,7 +343,8 @@ class Robot(object):
             # translating
             translator = get_translator()
             commands = translator.detect_command(angles, changed_enabled_joints, self.enabled_joints)
-            command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.")
+            command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.",
+                                                      keyframe_duration=self.keyframe_duration)
             self.last_keyframe_joints = angles.copy()
             return command_str
         else:

@@ -10,6 +10,7 @@ kivy.require('1.7.1')
 from kivy.app import App
 from kivy.extras.highlight import KivyLexer
 from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.spinner import Spinner, SpinnerOption
@@ -236,6 +237,19 @@ class NaoRecorderApp(App):
         menu.add_widget(robot_actions)
         b.add_widget(menu)
 
+        controls = BoxLayout(
+            size_hint_y=None,
+            height='30pt')
+
+        kf_duration_label = Label(text='Keyframe duration:')
+        controls.add_widget(kf_duration_label)
+
+        kf_duration_input = TextInput(text=str(self.robot.keyframe_duration), multiline=False)
+        kf_duration_input.bind(text=self._on_keyframe_duration)
+        controls.add_widget(kf_duration_input)
+
+        b.add_widget(controls)
+
         m = BoxLayout()
         code_status = BoxLayout(orientation='vertical', size_hint=(0.6, 1))
 
@@ -366,6 +380,14 @@ class NaoRecorderApp(App):
 
     def _on_read_joints(self, instance):
         self.robot.update_joints()
+
+    def _on_keyframe_duration(self, instance, value):
+        try:
+            kf_duration = float(instance.text)
+            self.robot.keyframe_duration = kf_duration
+            print "Keyframe duration set to {}".format(kf_duration)
+        except ValueError:
+            self.robot.keyframe_duration = 1.0
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)

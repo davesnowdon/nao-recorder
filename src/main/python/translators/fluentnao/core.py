@@ -472,7 +472,7 @@ COMMANDS = [
 
 class FluentNaoTranslator(object):
 
-    def commands_to_text(self, commands, is_blocking=False, fluentnao=None):
+    def commands_to_text(self, commands, is_blocking=False, fluentnao=None, keyframe_duration=None):
         """
         Takes a list of commands and converts them to text
         """
@@ -487,8 +487,14 @@ class FluentNaoTranslator(object):
             output = output + command_str
 
         if commands:
+            prefix = ''
             if fluentnao:
-                output = fluentnao + output
+                prefix = fluentnao
+
+            if keyframe_duration:
+                prefix = prefix + "set_duration({duration}).".format(duration=keyframe_duration)
+
+            output = prefix + output
 
             if is_blocking:
                 output = output + ".go()"
