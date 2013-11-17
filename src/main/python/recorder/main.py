@@ -209,6 +209,7 @@ class NaoRecorderApp(App):
                                   background_down='stiff.png',
                                   background_normal='relaxed.png')
         btn_motors.bind(on_press=self._on_motors)
+        self._motor_toggle_button = btn_motors
 
         # run script
         btn_run_script = Button(text='Run Script')
@@ -406,6 +407,7 @@ class NaoRecorderApp(App):
 
     # callback from NAO joints when button changes
     def _on_chain_stiffness(self, chain_names):
+        self._motor_toggle_button.state = 'down' if chain_names else 'normal'
         self.robot.set_chains_with_motors_on(chain_names)
 
     # callback from Robot when stiffness changes

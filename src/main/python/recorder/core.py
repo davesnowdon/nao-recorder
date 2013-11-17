@@ -419,6 +419,10 @@ class Robot(object):
         if relaxed_chains:
             self.env.motion.stiffnessInterpolation(relaxed_chains, pRelaxed, pTimeLists)
 
+        if self._motors_on != bool(stiff_chains):
+            self._motors_on = bool(stiff_chains)
+            self.safe_say('Motors on' if self._motors_on else 'Motors off')
+
         # self.notify_stiffness_changed()
 
     def notify_stiffness_changed(self):
