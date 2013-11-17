@@ -248,6 +248,10 @@ class NaoRecorderApp(App):
         kf_duration_input.bind(text=self._on_keyframe_duration)
         controls.add_widget(kf_duration_input)
 
+        btn_enable_speech = ToggleButton(text='Disable speech recognition', state='down')
+        btn_enable_speech.bind(on_press=self._on_toggle_speech_recognition)
+        controls.add_widget(btn_enable_speech)
+
         b.add_widget(controls)
 
         m = BoxLayout()
@@ -388,6 +392,14 @@ class NaoRecorderApp(App):
             print "Keyframe duration set to {}".format(kf_duration)
         except ValueError:
             self.robot.keyframe_duration = 1.0
+
+    def _on_toggle_speech_recognition(self, instance):
+        self.robot.enable_speech_recognition(instance.state == 'down')
+        print "Speech recognition enabled = {}".format(self.robot.is_speech_recognition_enabled)
+        if self.robot.is_speech_recognition_enabled:
+            instance.text = "Disable speech recognition"
+        else:
+            instance.text = "Enable speech recognition"
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)

@@ -63,6 +63,8 @@ JOINT_SUB_CHAINS = {'Head': [],
                     'RightLeg': []
                     }
 
+SPEECH_RECOGNITION_KEY = "WordRecognized"
+
 JOINT_MOVE_AMOUNT = math.pi / 180.0
 
 def get_translator(name=None):
@@ -141,6 +143,7 @@ class Robot(object):
         self.logger = logging.getLogger("recorder.core.Robot")
         self.last_keyframe_joints = None
         self.keyframe_duration = 1.0
+        self.is_speech_recognition_enabled = True
 
         self.joints = { }
         for j in JOINT_NAMES:
@@ -190,7 +193,7 @@ class Robot(object):
                                "FrontTactilTouched": self._head_front,
                                "RearTactilTouched": self._head_rear,
                                "ChestButtonPressed": lambda x, y, z: self._add_keyframe(),
-                               "WordRecognized": self._word_recognised
+                               SPEECH_RECOGNITION_KEY: self._word_recognised
                                }
 
         self.enabled_joints = set(JOINT_NAMES)
@@ -227,7 +230,11 @@ class Robot(object):
     def do_subscribe(self):
         if self.event_handlers:
             for (key, value) in self.event_handlers.iteritems():
-                memory.subscribe_to_event(key, value)
+                if key == SPEECH_RECOGNITION_KEY:
+                    if self.is_speech_recognition_enabled:
+                        memory.subscribe_to_event(key, value)
+                else:
+                    memory.subscribe_to_event(key, value)
 
     def do_unsubscribe(self):
         if self.event_handlers:
@@ -239,21 +246,32 @@ class Robot(object):
         Gets NAO to say something but disables speech recognition while he says it
         """
         if self.is_connected():
-            self.disable_speech_recognition()
+            self._disable_speech_recognition()
             self.nao.say_and_block(msg)
-            self.enable_speech_recognition()
+            if self.is_speech_recognition_enabled:
+                self._enable_speech_recognition()
 
-    def enable_speech_recognition(self):
-        if "WordRecognized" in self.event_handlers:
+    def enable_speech_recognition(self, is_enabled):
+        if self.is_speech_recognition_enabled != is_enabled:
+            if is_enabled:
+                self._enable_speech_recognition()
+            else:
+                self._disable_speech_recognition()
+        self.is_speech_recognition_enabled = is_enabled
+        print "Speech recognition is {}".format("enabled" if is_enabled else "disabled")
+        return is_enabled
+
+    def _enable_speech_recognition(self):
+        if SPEECH_RECOGNITION_KEY in self.event_handlers:
             try:
-                memory.subscribe_to_event("WordRecognized", self.event_handlers["WordRecognized"])
+                memory.subscribe_to_event(SPEECH_RECOGNITION_KEY, self.event_handlers[SPEECH_RECOGNITION_KEY])
             except RuntimeError as e:
                 print "Error enabling speech recognition: {}".format(e)
 
-    def disable_speech_recognition(self):
-        if "WordRecognized" in self.event_handlers:
+    def _disable_speech_recognition(self):
+        if SPEECH_RECOGNITION_KEY in self.event_handlers:
             try:
-                memory.unsubscribe_to_event("WordRecognized")
+                memory.unsubscribe_to_event(SPEECH_RECOGNITION_KEY)
             except RuntimeError as e:
                 print "Error disabling speech recognition: {}".format(e)
 
