@@ -17,11 +17,11 @@
             size_hint_y: None
             height: 30
             Button:
-                text: "Cancel"
+                text: root.localized_text('cancel')
                 on_release: root.cancel()
 
             Button:
-                text: "Load"
+                text: root.localized_text('file_load')
                 on_release: root.load(filechooser.path, filechooser.selection)
 
 <SaveDialog>:
@@ -45,11 +45,11 @@
             size_hint_y: None
             height: 30
             Button:
-                text: "Cancel"
+                text: root.localized_text('cancel')
                 on_release: root.cancel()
 
             Button:
-                text: "Save"
+                text: root.localized_text('file_save')
                 on_release: root.save(filechooser.path, text_input.text)
 
 <NaoJoints>:
@@ -377,7 +377,7 @@
 <ConnectionDialog>:
     size_hint: .5, .5
     auto_dismiss: False
-    title: 'Connect to NAO'
+    title: root.localized_text('connection_title')
     f_hostname: hostname
     f_port: port
     GridLayout:
@@ -386,15 +386,15 @@
         padding: 10
         spacing: 10
         Label:
-            text: 'Address'
+            text: root.localized_text('connection_address')
         TextInput:
             id: hostname
-            text: 'nao.local'
+            text: root.localized_text('connection_default_address')
         Label:
-            text: 'Port number'
+            text: root.localized_text('connection_port_number')
         TextInput:
             id: port
             text: '9559'
         Button:
-            text: 'Connect'
+            text: root.localized_text('connection_connect')
             on_press: root.dismiss()

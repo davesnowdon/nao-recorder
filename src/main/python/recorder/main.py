@@ -27,7 +27,10 @@ from pygments import lexers
 from pygame import font as fonts
 import codecs, os
 import logging
+import locale
+import inspect
 
+from naoutil import i18n
 
 from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain
 
@@ -35,11 +38,44 @@ WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
 main_logger = logging.getLogger("recorder.main")
 
+
+
+def get_system_language_code():
+    """
+    Get the current language code or default to English (en)
+    """
+    (code, _) = locale.getlocale()
+    if not code:
+        (code, _) = locale.getdefaultlocale()
+    if not code:
+        code = 'en_GB'
+    (lang, _) = code.split('_')
+    return lang
+
+language_code = get_system_language_code()
+
+resource_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+def localized_text(property_name):
+    global resource_dir
+    global language_code
+    lt = i18n.get_property(resource_dir,
+                            'naorecorder',
+                            language_code,
+                            property_name)
+    main_logger.debug("Property '{name}' resolved to text '{value}' in language '{lang}'"
+                      .format(name=property_name, value=lt, lang=language_code))
+    return lt
+
+
+
 class Fnt_SpinnerOption(SpinnerOption):
     pass
 
 
 class LoadDialog(Popup):
+    def localized_text(self, property_name):
+        return localized_text(property_name)
 
     def load(self, path, selection):
         self.chosen_file = [None, ]
@@ -52,6 +88,8 @@ class LoadDialog(Popup):
 
 
 class SaveDialog(Popup):
+    def localized_text(self, property_name):
+        return localized_text(property_name)
 
     def save(self, path, selection):
         _file = codecs.open(selection, 'w', encoding='utf8')
@@ -65,7 +103,8 @@ class SaveDialog(Popup):
 
 
 class ConnectionDialog(Popup):
-    pass
+    def localized_text(self, property_name):
+        return localized_text(property_name)
 
 class NaoJoints(BoxLayout):
     f_head_stiffness = ObjectProperty()
@@ -206,31 +245,36 @@ class NaoRecorderApp(App):
         # file menu
         mnu_file = Spinner(
             text='File',
-            values=('Connect', 'Open', 'SaveAs', 'Save', 'Close'))
+            values=(localized_text('file_connect'),
+                    localized_text('file_open'),
+                    localized_text('file_save_as'),
+                    localized_text('file_save'),
+                    localized_text('file_close')))
         mnu_file.bind(text=self._file_menu_selected)
 
         # motors on/off
-        btn_motors = ToggleButton(text='Motors On', state='normal',
+        btn_motors = ToggleButton(text=localized_text('motors_on'),
+                                  state='normal',
                                   background_down='stiff.png',
                                   background_normal='relaxed.png')
         btn_motors.bind(on_press=self._on_motors)
         self._motor_toggle_button = btn_motors
 
         # run script
-        btn_run_script = Button(text='Run Script')
+        btn_run_script = Button(text=localized_text('run_script'))
         btn_run_script.bind(on_press=self._on_run_script)
 
         # add keyframe
-        btn_add_keyframe = Button(text='Add Keyframe')
+        btn_add_keyframe = Button(text=localized_text('add_keyframe'))
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
 
         # set read joint angles to enable animation to start from known position
-        btn_update_joints = Button(text='Read joints')
+        btn_update_joints = Button(text=localized_text('add_keyframe'))
         btn_update_joints.bind(on_press=self._on_read_joints)
 
         # root actions menu
         robot_actions = Spinner(
-            text='Action',
+            text=localized_text('action_menu_title'),
             values=sorted(self.robot.postures()))
         robot_actions.bind(text=self.on_action)
 
@@ -247,14 +291,15 @@ class NaoRecorderApp(App):
             size_hint_y=None,
             height='30pt')
 
-        kf_duration_label = Label(text='Keyframe duration:')
+        kf_duration_label = Label(text=localized_text('keyframe_duration_colon'))
         controls.add_widget(kf_duration_label)
 
         kf_duration_input = TextInput(text=str(self.robot.keyframe_duration), multiline=False)
         kf_duration_input.bind(text=self._on_keyframe_duration)
         controls.add_widget(kf_duration_input)
 
-        btn_enable_speech = ToggleButton(text='Disable speech recognition', state='down')
+        btn_enable_speech = ToggleButton(text=localized_text('disable_speech_recognition'),
+                                         state='down')
         btn_enable_speech.bind(on_press=self._on_toggle_speech_recognition)
         controls.add_widget(btn_enable_speech)
 
@@ -370,10 +415,10 @@ class NaoRecorderApp(App):
 
     def _on_motors(self, motor_button):
         if motor_button.state == 'down':
-            motor_button.text = 'Motors off'
+            motor_button.text = localized_text('motors_off')
             self.robot.motors_on()
         else:
-            motor_button.text = 'Motors on'
+            motor_button.text = localized_text('motors_on')
             self.robot.motors_off()
 
     def _on_run_script(self, instance):
@@ -404,9 +449,9 @@ class NaoRecorderApp(App):
         self.robot.enable_speech_recognition(instance.state == 'down')
         print "Speech recognition enabled = {}".format(self.robot.is_speech_recognition_enabled)
         if self.robot.is_speech_recognition_enabled:
-            instance.text = "Disable speech recognition"
+            instance.text = localized_text('disable_speech_recognition')
         else:
-            instance.text = "Enable speech recognition"
+            instance.text = localized_text('enable_speech_recognition')
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)
