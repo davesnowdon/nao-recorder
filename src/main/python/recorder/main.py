@@ -269,7 +269,7 @@ class NaoRecorderApp(App):
         btn_add_keyframe.bind(on_press=self._on_add_keyframe)
 
         # set read joint angles to enable animation to start from known position
-        btn_update_joints = Button(text=localized_text('add_keyframe'))
+        btn_update_joints = Button(text=localized_text('read_joints'))
         btn_update_joints.bind(on_press=self._on_read_joints)
 
         # root actions menu
