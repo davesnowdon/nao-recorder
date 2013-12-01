@@ -186,7 +186,7 @@ class NaoJoints(BoxLayout):
     def child_stiffness_chain_name(self, child):
         for name in [n for n in get_joint_chain_names() if n != 'Body' ]:
             chain = self.find_child("{}Stiffness".format(name))
-            if child == chain:
+            if child.kvid == chain.kvid:
                 return name
         return None
 
