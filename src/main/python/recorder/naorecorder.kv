@@ -53,11 +53,6 @@
                 on_release: root.save(filechooser.path, text_input.text)
 
 <NaoJoints>:
-    f_head_stiffness: HeadStiffness
-    f_left_arm_stiffness: LArmStiffness
-    f_right_arm_stiffness: RArmStiffness
-    f_left_leg_stiffness: LLegStiffness
-    f_right_leg_stiffness: RLegStiffness
     canvas:
         Color:
             rgba: 1, 1, 1, 1
@@ -72,6 +67,7 @@
         # head
         ToggleButton:
             id: Head
+            kvid: 'Head'
             text: 'Head'
             state: 'down'
             size_hint: 0.25, 0.05
@@ -79,6 +75,7 @@
             on_press: root.toggle_chain(self, 'Head')
         ToggleButton:
             id: HeadYaw
+            kvid: 'HeadYaw'
             text: 'HeadYaw'
             state: 'down'
             size_hint: 0.25, 0.05
@@ -87,6 +84,7 @@
 
         ToggleButton:
             id: HeadPitch
+            kvid: 'HeadPitch'
             text: 'HeadPitch'
             state: 'down'
             size_hint: 0.25, 0.05
@@ -96,6 +94,7 @@
         # head stiffness control
         ToggleButton:
             id: HeadStiffness
+            kvid: 'HeadStiffness'
             state: 'normal'
             size_hint: 0.025, 0.15
             pos_hint: { 'x' : 0.35, 'y': 0.85 }
@@ -106,6 +105,7 @@
         # body
         ToggleButton:
             id: Body
+            kvid: 'Body'
             text: 'Body'
             state: 'down'
             size_hint: 0.2, 0.4
@@ -115,6 +115,7 @@
         # left arm
         ToggleButton:
             id: LeftArm
+            kvid: 'LeftArm'
             text: 'LeftArm'
             state: 'down'
             size_hint: 0.35, 0.05
@@ -122,6 +123,7 @@
             on_press: root.toggle_chain(self, 'LeftArm')
         ToggleButton:
             id: LShoulderPitch
+            kvid: 'LShoulderPitch'
             text: 'LShoulderPitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -129,6 +131,7 @@
             on_press: root.toggle_joint(self, 'LShoulderPitch')
         ToggleButton:
             id: LShoulderRoll
+            kvid: 'LShoulderRoll'
             text: 'LShoulderRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -136,6 +139,7 @@
             on_press: root.toggle_joint(self, 'LShoulderRoll')
         ToggleButton:
             id: LElbowYaw
+            kvid: 'LElbowYaw'
             text: 'LElbowYaw'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -143,6 +147,7 @@
             on_press: root.toggle_joint(self, 'LElbowYaw')
         ToggleButton:
             id: LElbowRoll
+            kvid: 'LElbowRoll'
             text: 'LElbowRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -150,6 +155,7 @@
             on_press: root.toggle_joint(self, 'LElbowRoll')
         ToggleButton:
             id: LWristYaw
+            kvid: 'LWristYaw'
             text: 'LWristYaw'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -157,6 +163,7 @@
             on_press: root.toggle_joint(self, 'LWristYaw')
         ToggleButton:
             id: LHand
+            kvid: 'LHand'
             text: 'LHand'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -165,6 +172,7 @@
 
         ToggleButton:
             id: LHandOpenClose
+            kvid: 'LHandOpenClose'
             state: 'normal'
             size_hint: 0.15, 0.02
             pos_hint: { 'x' : 0.12, 'y': 0.48 }
@@ -174,7 +182,8 @@
 
         # left arm stiffness control
         ToggleButton:
-            id: LArmStiffness
+            id: LeftArmStiffness
+            kvid: 'LeftArmStiffness'
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.025, 'y': 0.5 }
@@ -185,6 +194,7 @@
         # right arm
         ToggleButton:
             id: RightArm
+            kvid: 'RightArm'
             text: 'RightArm'
             state: 'down'
             size_hint: 0.35, 0.05
@@ -192,6 +202,7 @@
             on_press: root.toggle_chain(self, 'RightArm')
         ToggleButton:
             id: RShoulderPitch
+            kvid: 'RShoulderPitch'
             text: 'RShoulderPitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -199,6 +210,7 @@
             on_press: root.toggle_joint(self, 'RShoulderPitch')
         ToggleButton:
             id: RShoulderRoll
+            kvid: 'RShoulderRoll'
             text: 'RShoulderRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -206,6 +218,7 @@
             on_press: root.toggle_joint(self, 'RShoulderRoll')
         ToggleButton:
             id: RElbowYaw
+            kvid: 'RElbowYaw'
             text: 'RElbowYaw'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -213,6 +226,7 @@
             on_press: root.toggle_joint(self, 'RElbowYaw')
         ToggleButton:
             id: RElbowRoll
+            kvid: 'RElbowRoll'
             text: 'RElbowRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -220,6 +234,7 @@
             on_press: root.toggle_joint(self, 'RElbowRoll')
         ToggleButton:
             id: RWristYaw
+            kvid: 'RWristYaw'
             text: 'RWristYaw'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -227,6 +242,7 @@
             on_press: root.toggle_joint(self, 'RWristYaw')
         ToggleButton:
             id: RHand
+            kvid: 'RHand'
             text: 'RHand'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -235,6 +251,7 @@
 
         ToggleButton:
             id: RHandOpenClose
+            kvid: 'RHandOpenClose'
             state: 'normal'
             size_hint: 0.15, 0.02
             pos_hint: { 'x' : 0.7, 'y': 0.48 }
@@ -244,7 +261,8 @@
 
         # right arm stiffness control
         ToggleButton:
-            id: RArmStiffness
+            id: RightArmStiffness
+            kvid: 'RightArmStiffness'
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.95, 'y': 0.5 }
@@ -255,6 +273,7 @@
         # left leg
         ToggleButton:
             id: LeftLeg
+            kvid: 'LeftLeg'
             text: 'LeftLeg'
             state: 'down'
             size_hint: 0.35, 0.05
@@ -262,6 +281,7 @@
             on_press: root.toggle_chain(self, 'LeftLeg')
         ToggleButton:
             id: LHipYawPitch
+            kvid: 'LHipYawPitch'
             text: 'LHipYawPitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -269,6 +289,7 @@
             on_press: root.toggle_joint(self, 'LHipYawPitch')
         ToggleButton:
             id: LHipRoll
+            kvid: 'LHipRoll'
             text: 'LHipRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -276,6 +297,7 @@
             on_press: root.toggle_joint(self, 'LHipRoll')
         ToggleButton:
             id: LHipPitch
+            kvid: 'LHipPitch'
             text: 'LHipPitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -283,6 +305,7 @@
             on_press: root.toggle_joint(self, 'LHipPitch')
         ToggleButton:
             id: LKneePitch
+            kvid: 'LKneePitch'
             text: 'LKneePitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -290,6 +313,7 @@
             on_press: root.toggle_joint(self, 'LKneePitch')
         ToggleButton:
             id: LAnklePitch
+            kvid: 'LAnklePitch'
             text: 'LAnklePitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -297,6 +321,7 @@
             on_press: root.toggle_joint(self, 'LAnklePitch')
         ToggleButton:
             id: LAnkleRoll
+            kvid: 'LAnkleRoll'
             text: 'LAnkleRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -305,7 +330,8 @@
 
         # left left stiffness control
         ToggleButton:
-            id: LLegStiffness
+            id: LeftLegStiffness
+            kvid: 'LeftLegStiffness'
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.025, 'y': 0.1 }
@@ -316,6 +342,7 @@
         # right leg
         ToggleButton:
             id: RightLeg
+            kvid: 'RightLeg'
             text: 'RightLeg'
             state: 'down'
             size_hint: 0.35, 0.05
@@ -323,6 +350,7 @@
             on_press: root.toggle_chain(self, 'RightLeg')
         ToggleButton:
             id: RHipYawPitch
+            kvid: 'RHipYawPitch'
             text: 'RHipYawPitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -330,6 +358,7 @@
             on_press: root.toggle_joint(self, 'RHipYawPitch')
         ToggleButton:
             id: RHipRoll
+            kvid: 'RHipRoll'
             text: 'RHipRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -337,6 +366,7 @@
             on_press: root.toggle_joint(self, 'RHipRoll')
         ToggleButton:
             id: RHipPitch
+            kvid: 'RHipPitch'
             text: 'RHipPitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -344,6 +374,7 @@
             on_press: root.toggle_joint(self, 'RHipPitch')
         ToggleButton:
             id: RKneePitch
+            kvid: 'RKneePitch'
             text: 'RKneePitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -351,6 +382,7 @@
             on_press: root.toggle_joint(self, 'RKneePitch')
         ToggleButton:
             id: RAnklePitch
+            kvid: 'RAnklePitch'
             text: 'RAnklePitch'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -358,6 +390,7 @@
             on_press: root.toggle_joint(self, 'RAnklePitch')
         ToggleButton:
             id: RAnkleRoll
+            kvid: 'RAnkleRoll'
             text: 'RAnkleRoll'
             state: 'down'
             size_hint: 0.3, 0.05
@@ -366,7 +399,8 @@
 
         # right leg stiffness control
         ToggleButton:
-            id: RLegStiffness
+            id: RightLegStiffness
+            kvid: 'RightLegStiffness'
             state: 'normal'
             size_hint: 0.025, 0.35
             pos_hint: { 'x' : 0.95, 'y': 0.1 }

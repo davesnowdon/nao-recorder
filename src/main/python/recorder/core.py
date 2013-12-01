@@ -88,6 +88,9 @@ def get_sub_chains(name):
     except AttributeError:
         return []
 
+def get_joint_chain_names():
+    return JOINT_CHAINS.keys()
+
 def get_joints_for_chain(name):
     '''
     Return the list of joints for a chain. If there is no chain of that name check whether it's a valid

@@ -32,7 +32,7 @@ import inspect
 
 from naoutil import i18n
 
-from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain
+from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain, get_joint_chain_names
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
@@ -107,11 +107,6 @@ class ConnectionDialog(Popup):
         return localized_text(property_name)
 
 class NaoJoints(BoxLayout):
-    f_head_stiffness = ObjectProperty()
-    f_left_arm_stiffness = ObjectProperty()
-    f_right_arm_stiffness = ObjectProperty()
-    f_left_leg_stiffness = ObjectProperty()
-    f_right_leg_stiffness = ObjectProperty()
 
     def __init__(self, **kwargs):
         # make sure we aren't overriding any important functionality
@@ -120,6 +115,26 @@ class NaoJoints(BoxLayout):
         self.on_joint_selection = kwargs['on_joint_selection']
         self.on_chain_stiffness = kwargs['on_chain_stiffness']
         self.on_hand_open_close = kwargs['on_hand_open_close']
+
+    def _make_child_dict(self):
+        return {c.kvid : c for c in self.children[0].children if c.kvid}
+
+    def make_child_dict(self):
+        try:
+            if not self.child_dict:
+                self.child_dict = self._make_child_dict()
+        except AttributeError:
+            self.child_dict = self._make_child_dict()
+
+    def find_child(self, kvid):
+        '''
+        Find a child element using the kvid property
+        '''
+        self.make_child_dict()
+        try:
+            return self.child_dict[kvid]
+        except KeyError:
+            return None
 
     def toggle_chain(self, btn, chain_name):
         # print "btn = {}, chain = {} state = {}".format(btn, chain_name, btn.state)
@@ -139,8 +154,7 @@ class NaoJoints(BoxLayout):
         return [c for c in self.children[0].children if c.text]
 
     def get_chain_stiffness_buttons(self):
-        return [ self.f_head_stiffness, self.f_left_arm_stiffness, self.f_right_arm_stiffness,
-                 self.f_left_leg_stiffness, self.f_right_leg_stiffness ]
+        return [self.find_child("{}Stiffness".format(n)) for n in get_joint_chain_names() if n != 'Body' ]
 
     def toggle_joint(self, btn, joint_name):
         # print "btn = {}, name = {} state = {}".format(btn, joint_name, btn.state)
@@ -150,20 +164,12 @@ class NaoJoints(BoxLayout):
         '''
             Called to update UI to show chain as stiff or relaxed
         '''
-        name_to_chain = { 'Head' : self.f_head_stiffness,
-                          'LeftArm' : self.f_left_arm_stiffness,
-                          'RightArm' : self.f_right_arm_stiffness,
-                          'LeftLeg' : self.f_left_leg_stiffness,
-                          'RightLeg' : self.f_right_leg_stiffness
-                        }
         print "Stiff chain names = {}\n".format(stiff_chain_names)
-        try:
-            # ignore 'Body' since we don't have a button for the whole robot
-            stiff_chains = { name_to_chain[name] for name in stiff_chain_names if name != 'Body' }
-            for chain in self.get_chain_stiffness_buttons():
-                chain.state = 'down' if chain in stiff_chains else 'normal'
-        except KeyError:
-            pass
+        # ignore 'Body' since we don't have a button for the whole robot
+        for name in [n for n in get_joint_chain_names() if n != 'Body' ]:
+            chain = self.find_child("{}Stiffness".format(name))
+            if chain:
+                chain.state = 'down' if name in stiff_chain_names else 'normal'
 
     def toggle_chain_stiffness(self, btn, chain_name):
         print "toggle_chain_stiffness = {}\n".format(chain_name)
@@ -178,15 +184,11 @@ class NaoJoints(BoxLayout):
                child.state == 'down'
 
     def child_stiffness_chain_name(self, child):
-        try:
-            return { self.f_head_stiffness : 'Head',
-                     self.f_left_arm_stiffness : 'LeftArm',
-                     self.f_right_arm_stiffness : 'RightArm',
-                     self.f_left_leg_stiffness : 'LeftLeg',
-                     self.f_right_leg_stiffness : 'RightLeg'
-                   }[child]
-        except AttributeError:
-            return None
+        for name in [n for n in get_joint_chain_names() if n != 'Body' ]:
+            chain = self.find_child("{}Stiffness".format(name))
+            if child == chain:
+                return name
+        return None
 
     def is_stiff(self, child):
         return isinstance(child, ToggleButton) and \
