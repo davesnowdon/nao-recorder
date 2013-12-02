@@ -18,7 +18,9 @@ from debounce import Debounce
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
-DEFAULT_TRANSLATOR_NAME = "translators.fluentnao.core.FluentNaoTranslator"
+TRANSLATOR_NAMES = ['FluentNAO', 'JSON']
+
+DEFAULT_TRANSLATOR_CLASS = "translators.fluentnao.core.FluentNaoTranslator"
 default_translator = None
 
 # joint names in same order as returned by ALMotion.getAngles('Body')
@@ -70,8 +72,11 @@ JOINT_MOVE_AMOUNT = math.pi / 180.0
 def get_translator(name=None):
     global default_translator
     if not default_translator:
-        default_translator = find_class(DEFAULT_TRANSLATOR_NAME)
+        default_translator = find_class(DEFAULT_TRANSLATOR_CLASS)
     return default_translator()
+
+def get_translator_names():
+    return TRANSLATOR_NAMES
 
 def is_joint(name):
     global JOINT_NAMES

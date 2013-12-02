@@ -32,7 +32,7 @@ import inspect
 
 from naoutil import i18n
 
-from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain, get_joint_chain_names
+from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain, get_joint_chain_names, get_translator_names
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
@@ -262,17 +262,13 @@ class NaoRecorderApp(App):
         btn_motors.bind(on_press=self._on_motors)
         self._motor_toggle_button = btn_motors
 
+        btn_speech = ToggleButton(text=localized_text('speech_recognition'),
+                                         state='down')
+        btn_speech.bind(on_press=self._on_toggle_speech_recognition)
+
         # run script
         btn_run_script = Button(text=localized_text('run_script'))
         btn_run_script.bind(on_press=self._on_run_script)
-
-        # add keyframe
-        btn_add_keyframe = Button(text=localized_text('add_keyframe'))
-        btn_add_keyframe.bind(on_press=self._on_add_keyframe)
-
-        # set read joint angles to enable animation to start from known position
-        btn_update_joints = Button(text=localized_text('read_joints'))
-        btn_update_joints.bind(on_press=self._on_read_joints)
 
         # root actions menu
         robot_actions = Spinner(
@@ -282,8 +278,7 @@ class NaoRecorderApp(App):
 
         # add to menu
         menu.add_widget(mnu_file)
-        menu.add_widget(btn_add_keyframe)
-        menu.add_widget(btn_update_joints)
+        menu.add_widget(btn_speech)
         menu.add_widget(btn_motors)
         menu.add_widget(btn_run_script)
         menu.add_widget(robot_actions)
@@ -293,6 +288,16 @@ class NaoRecorderApp(App):
             size_hint_y=None,
             height='30pt')
 
+        # add keyframe
+        btn_add_keyframe = Button(text=localized_text('add_keyframe'))
+        btn_add_keyframe.bind(on_press=self._on_add_keyframe)
+        controls.add_widget(btn_add_keyframe)
+
+        # set read joint angles to enable animation to start from known position
+        btn_update_joints = Button(text=localized_text('read_joints'))
+        btn_update_joints.bind(on_press=self._on_read_joints)
+        controls.add_widget(btn_update_joints)
+
         kf_duration_label = Label(text=localized_text('keyframe_duration_colon'))
         controls.add_widget(kf_duration_label)
 
@@ -300,10 +305,12 @@ class NaoRecorderApp(App):
         kf_duration_input.bind(text=self._on_keyframe_duration)
         controls.add_widget(kf_duration_input)
 
-        btn_enable_speech = ToggleButton(text=localized_text('disable_speech_recognition'),
-                                         state='down')
-        btn_enable_speech.bind(on_press=self._on_toggle_speech_recognition)
-        controls.add_widget(btn_enable_speech)
+        # allow user to select which translator to use
+        active_translator = Spinner(
+            text=get_translator_names()[0],
+            values=get_translator_names())
+        active_translator.bind(text=self._on_mode_changed)
+        controls.add_widget(active_translator)
 
         b.add_widget(controls)
 
@@ -415,6 +422,10 @@ class NaoRecorderApp(App):
         if self.robot.is_connected():
             self.robot.go_to_posture(l)
 
+    def _on_mode_changed(self, instance, l):
+        # TODO change translation mode
+        pass
+
     def _on_motors(self, motor_button):
         if motor_button.state == 'down':
             motor_button.text = localized_text('motors_off')
@@ -450,10 +461,6 @@ class NaoRecorderApp(App):
     def _on_toggle_speech_recognition(self, instance):
         self.robot.enable_speech_recognition(instance.state == 'down')
         print "Speech recognition enabled = {}".format(self.robot.is_speech_recognition_enabled)
-        if self.robot.is_speech_recognition_enabled:
-            instance.text = localized_text('disable_speech_recognition')
-        else:
-            instance.text = localized_text('enable_speech_recognition')
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)
