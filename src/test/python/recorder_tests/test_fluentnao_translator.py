@@ -6,7 +6,7 @@ Created on 6 Jul 2013
 import unittest
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT, POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER, POSITION_HEAD_DOWN_HEAD_FORWARD, POSITION_HEAD_UP_HEAD_RIGHT, POSITION_HEAD_CENTER_HEAD_LEFT
+from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT, POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER, POSITION_HEAD_DOWN_HEAD_FORWARD, POSITION_HEAD_UP_HEAD_RIGHT, POSITION_HEAD_CENTER_HEAD_LEFT, POSITION_FEET_POINT_TOES, POSITION_FEET_RAISE_TOES, POSITION_FEET_TURN_OUT, POSITION_FEET_TURN_IN, POSITION_FEET_CENTER
 
 def get_translator():
     return FluentNaoTranslator()
@@ -16,6 +16,7 @@ ELBOW_JOINTS = set(['LElbowYaw', 'RElbowYaw', 'LElbowRoll', 'RElbowRoll'])
 HAND_JOINTS = set(['LHand', 'RHand'])
 WRIST_JOINTS = set(['LWristYaw', 'RWristYaw'])
 HEAD_JOINTS = set(['HeadYaw', 'HeadPitch'])
+FEET_JOINTS = set(['LAnkleRoll', 'LAnklePitch', 'RAnkleRoll', 'RAnklePitch'])
 
 class TestCommandsToText(unittest.TestCase):
     def testEmptyList(self):
@@ -528,6 +529,21 @@ class TestDetectArms(unittest.TestCase):
             pass
         else:
             self.fail("expected head.center().left() or head.left().center(); instead got: {0}".format(result))
+
+    # POSITION_FEET_POINT_TOES, POSITION_FEET_RAISE_TOES, POSITION_FEET_TURN_OUT, POSITION_FEET_TURN_IN, 
+    def testFeetCenter(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_FEET_CENTER)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 FEET_JOINTS, FEET_JOINTS)
+
+        self.assertEqual(len(result), 1, "Should get one tuple(s) with command feet.center(); instead got: {0}".format(result))
+
+        # command
+        command = result[0][0]
+        self.assertEqual("feet.center", command, "Should detect command feet center; instead go: {0}".format(result))
 
 
 if __name__ == "__main__":
