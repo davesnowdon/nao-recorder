@@ -1,3 +1,3 @@
 #! /bin/sh
-export PYTHONPATH=${PYTHONPATH}:src/main/python
+export PYTHONPATH=src/main/python:${PYTHONPATH}
 python src/main/python/recorder/main.py
