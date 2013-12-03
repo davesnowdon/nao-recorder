@@ -263,8 +263,12 @@ class NaoRecorderApp(App):
         self._motor_toggle_button = btn_motors
 
         btn_speech = ToggleButton(text=localized_text('speech_recognition'),
-                                         state='down')
+                                         state='down' if self.robot.is_speech_recognition_enabled else 'normal')
         btn_speech.bind(on_press=self._on_toggle_speech_recognition)
+
+        btn_touch_sensors = ToggleButton(text=localized_text('touch_sensors'),
+                                         state='down' if self.robot.is_touch_sensors_enabled else 'normal')
+        btn_touch_sensors.bind(on_press=self._on_toggle_touch_sensors)
 
         # run script
         btn_run_script = Button(text=localized_text('run_script'))
@@ -279,6 +283,7 @@ class NaoRecorderApp(App):
         # add to menu
         menu.add_widget(mnu_file)
         menu.add_widget(btn_speech)
+        menu.add_widget(btn_touch_sensors)
         menu.add_widget(btn_motors)
         menu.add_widget(btn_run_script)
         menu.add_widget(robot_actions)
@@ -461,6 +466,10 @@ class NaoRecorderApp(App):
     def _on_toggle_speech_recognition(self, instance):
         self.robot.enable_speech_recognition(instance.state == 'down')
         print "Speech recognition enabled = {}".format(self.robot.is_speech_recognition_enabled)
+
+    def _on_toggle_touch_sensors(self, instance):
+        self.robot.enable_touch_sensors(instance.state == 'down')
+        print "Touch sensors enabled = {}".format(self.robot.is_touch_sensors_enabled)
 
     def _on_joint_selection(self, enabled_joints):
         self.robot.set_enabled_joints(enabled_joints)

@@ -67,6 +67,9 @@ JOINT_SUB_CHAINS = {'Head': [],
 
 SPEECH_RECOGNITION_KEY = "WordRecognized"
 
+TOUCH_SENSOR_KEYS = [ "HandLeftBackTouched", "HandRightBackTouched", "LeftBumperPressed",
+                      "RightBumperPressed", "FrontTactilTouched", "RearTactilTouched" ]
+
 JOINT_MOVE_AMOUNT = math.pi / 180.0
 
 def get_translator(name=None):
@@ -152,6 +155,7 @@ class Robot(object):
         self.last_keyframe_joints = None
         self.keyframe_duration = 1.0
         self.is_speech_recognition_enabled = True
+        self.is_touch_sensors_enabled = True
 
         self.joints = { }
         for j in JOINT_NAMES:
@@ -193,16 +197,12 @@ class Robot(object):
                                   'sit': self._sit
                                   }
 
-        self.event_handlers = {
-                               "HandLeftBackTouched": self._back_left_arm,
-                               "HandRightBackTouched": self._back_right_arm,
-                               "LeftBumperPressed": self._left_bumper,
-                               "RightBumperPressed": self._right_bumper,
-                               "FrontTactilTouched": self._head_front,
-                               "RearTactilTouched": self._head_rear,
-                               "ChestButtonPressed": lambda x, y, z: self._add_keyframe(),
-                               SPEECH_RECOGNITION_KEY: self._word_recognised
-                               }
+        self.event_handlers = { }
+        if self.is_touch_sensors_enabled:
+            self.event_handlers.update(self._touch_handler_dict())
+
+        if self.is_speech_recognition_enabled:
+            self.event_handlers.update(self._speech_handler_dict())
 
         self.enabled_joints = set(JOINT_NAMES)
         self.left_arm_debounce = Debounce(self.left_arm_relax, self.left_arm_stiff)
@@ -249,6 +249,23 @@ class Robot(object):
             for key in self.event_handlers.keys():
                 memory.unsubscribe_to_event(key)
 
+    def _enable_handlers(self, handlers):
+        for key, handler in handlers.iteritems():
+            try:
+                memory.subscribe_to_event(key, handler)
+            except RuntimeError as e:
+                print "Error enabling callback: {}".format(e)
+        self.event_handlers.update(handlers)
+
+    def _disable_handlers(self, keys):
+        for key in keys:
+            if key in self.event_handlers:
+                try:
+                    memory.unsubscribe_to_event(key)
+                    self.event_handlers.pop(key)
+                except RuntimeError as e:
+                    print "Error disabling callback: {}".format(e)
+
     def safe_say(self, msg):
         """
         Gets NAO to say something but disables speech recognition while he says it
@@ -262,26 +279,49 @@ class Robot(object):
     def enable_speech_recognition(self, is_enabled):
         if self.is_speech_recognition_enabled != is_enabled:
             if is_enabled:
+                self.status_display.add_status('Enabling speech recognition')
                 self._enable_speech_recognition()
             else:
+                self.status_display.add_status('Disabling speech recognition')
                 self._disable_speech_recognition()
         self.is_speech_recognition_enabled = is_enabled
-        print "Speech recognition is {}".format("enabled" if is_enabled else "disabled")
+        self.safe_say("Speech recognition is {}".format("enabled" if is_enabled else "disabled"))
         return is_enabled
 
     def _enable_speech_recognition(self):
-        if SPEECH_RECOGNITION_KEY in self.event_handlers:
-            try:
-                memory.subscribe_to_event(SPEECH_RECOGNITION_KEY, self.event_handlers[SPEECH_RECOGNITION_KEY])
-            except RuntimeError as e:
-                print "Error enabling speech recognition: {}".format(e)
+        self._enable_handlers(self._speech_handler_dict())
 
     def _disable_speech_recognition(self):
-        if SPEECH_RECOGNITION_KEY in self.event_handlers:
-            try:
-                memory.unsubscribe_to_event(SPEECH_RECOGNITION_KEY)
-            except RuntimeError as e:
-                print "Error disabling speech recognition: {}".format(e)
+        self._disable_handlers(self._speech_handler_dict().keys())
+
+    def enable_touch_sensors(self, is_enabled):
+        if self.is_touch_sensors_enabled != is_enabled:
+            if is_enabled:
+                self.status_display.add_status('Enabling touch sensors')
+                self._enable_touch_sensors()
+            else:
+                self.status_display.add_status('Disabling touch sensors')
+                self._disable_touch_sensors()
+        self.is_touch_sensors_enabled = is_enabled
+        self.safe_say("Touch sensors are {}".format("enabled" if is_enabled else "disabled"))
+        return is_enabled
+
+    def _enable_touch_sensors(self):
+        self._enable_handlers(self._touch_handler_dict())
+
+    def _disable_touch_sensors(self):
+        self._disable_handlers(self._touch_handler_dict().keys())
+
+    def _touch_handler_dict(self):
+        return { "HandLeftBackTouched": self._back_left_arm,
+                 "HandRightBackTouched": self._back_right_arm,
+                 "LeftBumperPressed": self._left_bumper,
+                 "RightBumperPressed": self._right_bumper,
+                 "FrontTactilTouched": self._head_front,
+                 "RearTactilTouched": self._head_rear }
+
+    def _speech_handler_dict(self):
+        return { SPEECH_RECOGNITION_KEY: self._word_recognised }
 
     def is_connected(self):
         return self.broker

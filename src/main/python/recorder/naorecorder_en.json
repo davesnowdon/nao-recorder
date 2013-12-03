@@ -15,6 +15,7 @@
    "action_menu_title" : "Action",
    "keyframe_duration_colon" : "Keyframe duration:",
    "speech_recognition" : "Speech recognition",
+   "touch_sensors" : "Touch Sensors",
    "connection_title" : "Connect to NAO",
    "connection_address" : "Address",
    "connection_default_address" : "nao.local",
