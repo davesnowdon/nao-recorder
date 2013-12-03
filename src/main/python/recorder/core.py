@@ -6,11 +6,15 @@ Created on 6 Jul 2013
 
 import math
 import logging
+import locale
+import os
+import inspect
 
 import naoutil.naoenv as naoenv
 from naoutil.general import find_class
 from naoutil import broker
 from naoutil import memory
+from naoutil import i18n
 import fluentnao.nao as nao
 
 from mathutil import FLOAT_CMP_ACCURACY, feq
@@ -71,6 +75,36 @@ TOUCH_SENSOR_KEYS = [ "HandLeftBackTouched", "HandRightBackTouched", "LeftBumper
                       "RightBumperPressed", "FrontTactilTouched", "RearTactilTouched" ]
 
 JOINT_MOVE_AMOUNT = math.pi / 180.0
+
+core_logger = logging.getLogger("recorder.core")
+
+def get_system_language_code():
+    """
+    Get the current language code or default to English (en)
+    """
+    (code, _) = locale.getlocale()
+    if not code:
+        (code, _) = locale.getdefaultlocale()
+    if not code:
+        code = 'en_GB'
+    (lang, _) = code.split('_')
+    return lang
+
+language_code = get_system_language_code()
+
+resource_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+def localized_text(property_name):
+    global resource_dir
+    global language_code
+    lt = i18n.get_property(resource_dir,
+                            'naorecorder',
+                            language_code,
+                            property_name)
+    core_logger.debug("Property '{name}' resolved to text '{value}' in language '{lang}'"
+                      .format(name=property_name, value=lt, lang=language_code))
+    return lt
+
 
 def get_translator(name=None):
     global default_translator
@@ -218,7 +252,7 @@ class Robot(object):
                     if self.event_handlers and self.vocabulary:
                         self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
                 except RuntimeError as e:
-                    print "Error setting speech vocabulary: {}".format(e)
+                    print localized_text('error_set_vocabulary').format(e)
                 self.do_subscribe()
                 return True
             else:
@@ -254,7 +288,7 @@ class Robot(object):
             try:
                 memory.subscribe_to_event(key, handler)
             except RuntimeError as e:
-                print "Error enabling callback: {}".format(e)
+                print localized_text('error_set_callback').format(e)
         self.event_handlers.update(handlers)
 
     def _disable_handlers(self, keys):
@@ -264,7 +298,7 @@ class Robot(object):
                     memory.unsubscribe_to_event(key)
                     self.event_handlers.pop(key)
                 except RuntimeError as e:
-                    print "Error disabling callback: {}".format(e)
+                    print localized_text('error_disable_callback').format(e)
 
     def safe_say(self, msg):
         """
@@ -279,13 +313,13 @@ class Robot(object):
     def enable_speech_recognition(self, is_enabled):
         if self.is_speech_recognition_enabled != is_enabled:
             if is_enabled:
-                self.status_display.add_status('Enabling speech recognition')
+                self.status_display.add_status(localized_text('status_enable_speech_recognition'))
                 self._enable_speech_recognition()
             else:
-                self.status_display.add_status('Disabling speech recognition')
+                self.status_display.add_status(localized_text('status_disable_speech_recognition'))
                 self._disable_speech_recognition()
         self.is_speech_recognition_enabled = is_enabled
-        self.safe_say("Speech recognition is {}".format("enabled" if is_enabled else "disabled"))
+        self.safe_say(localized_text('status_speech_recogniton_enabled' if is_enabled else 'status_speech_recogniton_disabled'))
         return is_enabled
 
     def _enable_speech_recognition(self):
@@ -297,13 +331,13 @@ class Robot(object):
     def enable_touch_sensors(self, is_enabled):
         if self.is_touch_sensors_enabled != is_enabled:
             if is_enabled:
-                self.status_display.add_status('Enabling touch sensors')
+                self.status_display.add_status(localized_text('status_enable_touch_sensors'))
                 self._enable_touch_sensors()
             else:
-                self.status_display.add_status('Disabling touch sensors')
+                self.status_display.add_status(localized_text('status_disable_touch_sensors'))
                 self._disable_touch_sensors()
         self.is_touch_sensors_enabled = is_enabled
-        self.safe_say("Touch sensors are {}".format("enabled" if is_enabled else "disabled"))
+        self.safe_say(localized_text('status_touch_sensors_enabled' if is_enabled else 'status_touch_sensors_disabled'))
         return is_enabled
 
     def _enable_touch_sensors(self):
@@ -341,19 +375,19 @@ class Robot(object):
 
     def motors_on(self):
         if self.is_connected():
-            self.status_display.add_status('Turning NAO motors on')
+            self.status_display.add_status(localized_text('status_enable_motors'))
             self.nao.stiff()
             self._motors_on = True
             self.notify_stiffness_changed()
-            self.safe_say("Motors on")
+            self.safe_say(localized_text('status_motors_enabled'))
 
     def motors_off(self):
         if self.is_connected():
-            self.status_display.add_status('Turning NAO motors off')
+            self.status_display.add_status(localized_text('status_disable_motors'))
             self.nao.relax()
             self._motors_on = False
             self.notify_stiffness_changed()
-            self.safe_say("Motors off")
+            self.safe_say(localized_text('status_motors_disabled'))
 
     def get_joint_angles(self, use_radians=True):
         angles = self.env.motion.getAngles("Body", True)
@@ -469,7 +503,7 @@ class Robot(object):
 
         if self._motors_on != bool(stiff_chains):
             self._motors_on = bool(stiff_chains)
-            self.safe_say('Motors on' if self._motors_on else 'Motors off')
+            self.safe_say(localized_text('status_motors_enabled' if self._motors_on else 'status_motors_disabled'))
 
         # self.notify_stiffness_changed()
 
@@ -496,7 +530,7 @@ class Robot(object):
         word = value[0]
         confidence = value[1]
         if confidence > WORD_RECOGNITION_MIN_CONFIDENCE:
-            self.status_display.add_status('Recognised: {}'.format(word))
+            self.status_display.add_status(localized_text('status_recognized_command').format(word))
             try:
                 self.vocabulary[word]()
             except AttributeError:
@@ -525,7 +559,6 @@ class Robot(object):
                 self.right_leg_stiff()
 
     def _head_rear(self, dataName, value, message):
-        print "head rear"
         if self._motors_on:
             if value == 1:
                 self.head_relax()
@@ -542,98 +575,99 @@ class Robot(object):
             self.code_display.append_code(code)
 
     def _nao_exit(self):
-        self.safe_say("bye bye")
+        self.safe_say(localized_text('goodbye'))
         self.disconnect()
 
     def _hello_nao(self):
-        self.safe_say("hello")
+        self.safe_say(localized_text('hello'))
 
     def _left_hand_open(self):
-        msg = "left hand open"
+        msg = localized_text("status_left_hand_open")
         self.status_display.add_status(msg)
         self.nao.hands.left_open()
         self.safe_say(msg)
 
     def _left_hand_close(self):
-        msg = "left hand close"
+        msg = localized_text("status_left_hand_close")
         self.status_display.add_status(msg)
         self.nao.hands.left_close()
         self.safe_say(msg)
 
     def _right_hand_open(self):
-        msg = "right hand open"
+        msg = localized_text("status_right_hand_open")
         self.status_display.add_status(msg)
         self.nao.hands.right_open()
         self.safe_say(msg)
 
     def _right_hand_close(self):
-        msg = "right hand close"
+        msg = localized_text("status_right_hand_close")
         self.status_display.add_status(msg)
         self.nao.hands.right_close()
         self.safe_say(msg)
 
     def _stiffness_change(self, msg, updateFunc):
-        self.status_display.add_status(msg)
-        self.safe_say(msg)
+        l10n_msg = localized_text(msg)
+        self.status_display.add_status(l10n_msg)
+        self.safe_say(l10n_msg)
         updateFunc()
         self.notify_stiffness_changed()
 
     def left_arm_stiff(self):
-        self._stiffness_change("left arm stiff", self._left_arm_stiff)
+        self._stiffness_change("status_left_arm_stiff", self._left_arm_stiff)
 
     def _left_arm_stiff(self):
         self.nao.arms.left_stiff()
 
     def left_arm_relax(self):
-        self._stiffness_change("left arm relaxed", self._left_arm_relax)
+        self._stiffness_change("status_left_arm_relaxed", self._left_arm_relax)
 
     def _left_arm_relax(self):
         self.nao.arms.left_relax()
 
     def right_arm_stiff(self):
-        self._stiffness_change("right arm stiff", self._right_arm_stiff)
+        self._stiffness_change("status_right_arm_stiff", self._right_arm_stiff)
 
     def _right_arm_stiff(self):
         self.nao.arms.right_stiff()
 
     def right_arm_relax(self):
-        self._stiffness_change("right arm relaxed", self._right_arm_relax)
+        self._stiffness_change("status_right_arm_relaxed", self._right_arm_relax)
 
     def _right_arm_relax(self):
         self.nao.arms.right_relax()
 
     def left_leg_stiff(self):
-        self._stiffness_change("left leg stiff", self._left_leg_stiff)
+        self._stiffness_change("status_left_leg_stiff", self._left_leg_stiff)
 
     def _left_leg_stiff(self):
         self.nao.legs.left_stiff()
 
     def left_leg_relax(self):
-        self._stiffness_change("left leg relaxed", self._left_leg_relax)
+        self._stiffness_change("status_left_leg_relaxed", self._left_leg_relax)
 
     def _left_leg_relax(self):
         self.nao.legs.left_relax()
 
     def right_leg_stiff(self):
-        self._stiffness_change("right leg stiff", self._right_leg_stiff)
+        self._stiffness_change("status_right_leg_stiff", self._right_leg_stiff)
 
     def _right_leg_stiff(self):
         self.nao.legs.right_stiff()
 
     def right_leg_relax(self):
-        self._stiffness_change("right leg relaxed", self._right_leg_relax)
+        self._stiffness_change("status_right_leg_relaxed", self._right_leg_relax)
 
     def _right_leg_relax(self):
         self.nao.legs.right_relax()
 
     def head_stiff(self):
-        self._stiffness_change("head stiff", self._head_stiff)
+        self._stiffness_change("status_head_stiff", self._head_stiff)
 
     def _head_stiff(self):
         self.nao.head.stiff()
 
     def head_relax(self):
-        self._stiffness_change("head relaxed", self._head_relax)
+        self._stiffness_change("status_head_relaxed", self._head_relax)
 
     def _head_relax(self):
         self.nao.head.relax()

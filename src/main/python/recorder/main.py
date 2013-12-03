@@ -27,46 +27,12 @@ from pygments import lexers
 from pygame import font as fonts
 import codecs, os
 import logging
-import locale
-import inspect
 
-from naoutil import i18n
-
-from core import Robot, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain, get_joint_chain_names, get_translator_names
+from core import Robot, localized_text, get_joints_for_chain, is_joint, get_sub_chains, is_joint_chain, get_joint_chain_names, get_translator_names
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.6
 
 main_logger = logging.getLogger("recorder.main")
-
-
-
-def get_system_language_code():
-    """
-    Get the current language code or default to English (en)
-    """
-    (code, _) = locale.getlocale()
-    if not code:
-        (code, _) = locale.getdefaultlocale()
-    if not code:
-        code = 'en_GB'
-    (lang, _) = code.split('_')
-    return lang
-
-language_code = get_system_language_code()
-
-resource_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
-def localized_text(property_name):
-    global resource_dir
-    global language_code
-    lt = i18n.get_property(resource_dir,
-                            'naorecorder',
-                            language_code,
-                            property_name)
-    main_logger.debug("Property '{name}' resolved to text '{value}' in language '{lang}'"
-                      .format(name=property_name, value=lt, lang=language_code))
-    return lt
-
 
 
 class Fnt_SpinnerOption(SpinnerOption):
