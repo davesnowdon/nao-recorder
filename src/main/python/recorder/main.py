@@ -246,7 +246,7 @@ class NaoRecorderApp(App):
 
         # file menu
         mnu_file = Spinner(
-            text='File',
+            text=localized_text('file_menu_title'),
             values=(localized_text('file_connect'),
                     localized_text('file_open'),
                     localized_text('file_save_as'),
@@ -390,25 +390,25 @@ class NaoRecorderApp(App):
         if value == 'File':
             return
         instance.text = 'File'
-        if value == 'Connect':
+        if value == localized_text('file_connect'):
             self.show_connection_dialog(None)
 
-        elif value == 'Open':
+        elif value == localized_text('file_open'):
             if not hasattr(self, 'load_dialog'):
                 self.load_dialog = LoadDialog()
             self.load_dialog.open()
             self.load_dialog.bind(chosen_file=self.setter('files'))
-        elif value == 'SaveAs':
+        elif value == localized_text('file_save_as'):
             if not hasattr(self, 'saveas_dialog'):
                 self.saveas_dialog = SaveDialog()
             self.saveas_dialog.text = self.codeinput.text
             self.saveas_dialog.open()
-        elif value == 'Save':
+        elif value == localized_text('file_save'):
             if self.files[0]:
                 _file = codecs.open(self.files[0], 'w', encoding='utf8')
                 _file.write(self.codeinput.text)
                 _file.close()
-        elif value == 'Close':
+        elif value == localized_text('file_close'):
             if self.files[0]:
                 self.codeinput.text = ''
                 Window.title = 'untitled'

@@ -1,6 +1,7 @@
 {
    "ok" : "OK",
    "cancel" : "Cancel",
+   "file_menu_title" : "File",
    "file_load" : "Load",
    "file_connect" : "Connect", 
    "file_open" : "Open", 
