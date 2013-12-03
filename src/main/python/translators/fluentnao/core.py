@@ -258,7 +258,7 @@ COMMANDS = [
                         set(['LElbowRoll', 'RElbowRoll']),
                         [Transform(linear, 'LElbowRoll', 'lroll', [1, -0.5]),
                          Transform(linear, 'RElbowRoll', 'rroll', [1, 0.5])],
-                        [Constraint(less_than, [43, 'LElbowRoll']),
+                        [Constraint(greater_than, [-43, 'LElbowRoll']),
                           Constraint(less_than, [43, 'RElbowRoll']),
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['rroll']
