@@ -250,7 +250,7 @@ class Robot(object):
                 self.nao = nao.Nao(self.env, None)
                 try:
                     if self.event_handlers and self.vocabulary:
-                        self.env.speechRecognition.setWordListAsVocabulary(self.vocabulary.keys(), False)
+                        self.env.speechRecognition.setVocabulary(self.vocabulary.keys(), False)
                 except RuntimeError as e:
                     print localized_text('error_set_vocabulary').format(e)
                 self.do_subscribe()
