@@ -476,7 +476,7 @@ COMMANDS = [
                          Transform(linear, 'RAnklePitch', 'rpitch', [-1, 0]),
                          Transform(linear, 'RAnkleRoll', 'rroll', [1, 0])],
                         [Constraint(in_range, [-22, 22, 'LAnklePitch']),
-                          Constraint(less_than, [34, 'LAnkleRoll']),
+                          Constraint(less_than, [11, 'LAnkleRoll']),
                          Constraint(max_difference, [10, 'lpitch', 'rpitch']),
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lroll', 'lpitch']
@@ -498,6 +498,15 @@ COMMANDS = [
                           Constraint(less_than, [-22, 'RAnklePitch']),
                          Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
                         ['lpitch']
+                        ),
+            CommandSpec('turn_out', 'feet',
+                        set(['LAnkleRoll', 'RAnkleRoll']),
+                        [Transform(linear, 'LAnkleRoll', 'lroll', [1, 0]),
+                         Transform(linear, 'RAnkleRoll', 'rroll', [-1, 0])],
+                        [Constraint(less_than, [-11, 'RAnkleRoll']),
+                        Constraint(greater_than, [11, 'LAnkleRoll']),
+                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                        ['lroll']
                         )
            ]
 
