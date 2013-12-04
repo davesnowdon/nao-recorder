@@ -22,10 +22,11 @@ from debounce import Debounce
 
 WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
-TRANSLATOR_NAMES = ['FluentNAO', 'JSON']
+TRANSLATORS = { 'FluentNAO' : "translators.fluentnao.core.FluentNaoTranslator",
+                'JSON' : "translators.json.core.JsonTranslator" }
 
-DEFAULT_TRANSLATOR_CLASS = "translators.fluentnao.core.FluentNaoTranslator"
-default_translator = None
+DEFAULT_TRANSLATOR_NAME = 'FluentNAO'
+translator_instances = {}
 
 # joint names in same order as returned by ALMotion.getAngles('Body')
 JOINT_NAMES = ['HeadYaw', 'HeadPitch',
@@ -107,13 +108,27 @@ def localized_text(property_name):
 
 
 def get_translator(name=None):
-    global default_translator
-    if not default_translator:
-        default_translator = find_class(DEFAULT_TRANSLATOR_CLASS)
-    return default_translator()
+    global translator_instances
+    if not name:
+        name = DEFAULT_TRANSLATOR_NAME
+
+    # force the name to be a valid translator
+    try:
+        clazzname = TRANSLATORS[name]
+    except KeyError:
+        name = DEFAULT_TRANSLATOR_NAME
+        clazzname = TRANSLATORS[DEFAULT_TRANSLATOR_NAME]
+
+    # get an existing translator instance or make a new one
+    try:
+        translator = translator_instances[name]
+    except KeyError:
+        translator = find_class(clazzname)
+        translator_instances[name] = translator
+    return translator
 
 def get_translator_names():
-    return TRANSLATOR_NAMES
+    return TRANSLATORS.keys()
 
 def is_joint(name):
     global JOINT_NAMES
