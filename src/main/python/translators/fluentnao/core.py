@@ -466,6 +466,20 @@ COMMANDS = [
                         [],
                         [Constraint(less_than, [17, 'LHand'])],
                         []
+                        ),
+
+            # feet both
+            CommandSpec('center', 'feet',
+                        set(['LAnkleRoll', 'LAnklePitch', 'RAnkleRoll', 'RAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [-1, 0]),
+                         Transform(linear, 'LAnkleRoll', 'lroll', [1, 0]),
+                         Transform(linear, 'RAnklePitch', 'rpitch', [-1, 0]),
+                         Transform(linear, 'RAnkleRoll', 'rroll', [-1, 0])],
+                        [Constraint(in_range, [-45, 45, 'LAnklePitch']),
+                          Constraint(less_than, [46, 'LAnkleRoll']),
+                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                        ['lpitch', 'lroll']
                         )
            ]
 
