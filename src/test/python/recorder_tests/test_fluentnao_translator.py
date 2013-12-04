@@ -545,6 +545,19 @@ class TestDetectArms(unittest.TestCase):
         command = result[0][0]
         self.assertEqual("feet.center", command, "Should detect command feet center; instead go: {0}".format(result))
 
+    def testFeetPointToes(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_FEET_POINT_TOES)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 FEET_JOINTS, FEET_JOINTS)
+
+        self.assertEqual(len(result), 1, "Should get one tuple(s) with command feet.point_toes(); instead got: {0}".format(result))
+
+        # command
+        command = result[0][0]
+        self.assertEqual("feet.point_toes", command, "Should detect command feet point toes; instead go: {0}".format(result))
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
