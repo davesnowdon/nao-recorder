@@ -45,7 +45,7 @@ class Feet():
     def right_raise_toes(self, duration=0, offset=0):
         duration = self.nao.determine_duration(duration)       
         angle = -68.0 - offset
-        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnklePitch, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnklePitch, angle, duration)
         return self;
         
     def left_raise_toes(self, duration=0, offset=0):
