@@ -481,13 +481,21 @@ COMMANDS = [
                          Constraint(max_difference, [10, 'lroll', 'rroll'])],
                         ['lroll', 'lpitch']
                         ),
-
             CommandSpec('point_toes', 'feet',
                         set(['LAnklePitch', 'RAnklePitch']),
                         [Transform(linear, 'LAnklePitch', 'lpitch', [1, 0]),
                          Transform(linear, 'RAnklePitch', 'rpitch', [1, 0])],
                         [Constraint(greater_than, [22, 'LAnklePitch']),
                           Constraint(greater_than, [22, 'RAnklePitch']),
+                         Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
+                        ['lpitch']
+                        ),
+            CommandSpec('raise_toes', 'feet',
+                        set(['LAnklePitch', 'RAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [-1, -68]),
+                         Transform(linear, 'RAnklePitch', 'rpitch', [-1, -68])],
+                        [Constraint(less_than, [-22, 'LAnklePitch']),
+                          Constraint(less_than, [-22, 'RAnklePitch']),
                          Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
                         ['lpitch']
                         )

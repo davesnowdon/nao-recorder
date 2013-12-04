@@ -530,7 +530,7 @@ class TestDetectArms(unittest.TestCase):
         else:
             self.fail("expected head.center().left() or head.left().center(); instead got: {0}".format(result))
 
-    # POSITION_FEET_POINT_TOES, POSITION_FEET_RAISE_TOES, POSITION_FEET_TURN_OUT, POSITION_FEET_TURN_IN, 
+    # , POSITION_FEET_TURN_OUT, POSITION_FEET_TURN_IN, 
     def testFeetCenter(self):
         # joint positions
         joint_dict = make_joint_dict(POSITION_FEET_CENTER)
@@ -558,6 +558,20 @@ class TestDetectArms(unittest.TestCase):
         # command
         command = result[0][0]
         self.assertEqual("feet.point_toes", command, "Should detect command feet point toes; instead go: {0}".format(result))
+
+    def testFeetRaiseToes(self):
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_FEET_RAISE_TOES)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 FEET_JOINTS, FEET_JOINTS)
+
+        self.assertEqual(len(result), 1, "Should get one tuple(s) with command feet.raise_toes(); instead got: {0}".format(result))
+
+        # command
+        command = result[0][0]
+        self.assertEqual("feet.raise_toes", command, "Should detect command feet raise toes; instead go: {0}".format(result))
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
