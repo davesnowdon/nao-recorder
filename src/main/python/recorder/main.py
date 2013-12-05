@@ -72,6 +72,18 @@ class ConnectionDialog(Popup):
     def localized_text(self, property_name):
         return localized_text(property_name)
 
+
+class ConfirmationDialog(Popup):
+    def localized_text(self, property_name):
+        return localized_text(property_name)
+    def ok(self):
+        self.is_ok = True
+        self.dismiss()
+    def cancel(self):
+        self.is_ok = False
+        self.dismiss()
+
+
 class NaoJoints(BoxLayout):
 
     def __init__(self, **kwargs):
@@ -189,6 +201,7 @@ class NaoJoints(BoxLayout):
             is_open = btn.state == 'down'
             self.on_hand_open_close(hand_name, is_open)
 
+
 class NaoRecorderApp(App):
 
     files = ListProperty([None, ])
@@ -278,10 +291,12 @@ class NaoRecorderApp(App):
 
         # allow user to select which translator to use
         active_translator = Spinner(
-            text=get_translator_names()[0],
+            text=self.robot.get_translator_name(),
             values=get_translator_names())
-        active_translator.bind(text=self._on_mode_changed)
+        active_translator.bind(text=self._on_translator_changed)
         controls.add_widget(active_translator)
+        self.active_translator = active_translator
+        self.is_translator_cancel = False
 
         b.add_widget(controls)
 
@@ -393,9 +408,32 @@ class NaoRecorderApp(App):
         if self.robot.is_connected():
             self.robot.go_to_posture(l)
 
-    def _on_mode_changed(self, instance, l):
-        # TODO change translation mode
-        pass
+    def _on_translator_changed(self, instance, translator_name):
+        if self.is_translator_cancel:
+            self.is_translator_cancel = False
+        else:
+            if self.get_code().strip():
+                if self.robot.can_convert_code():
+                    msg = localized_text('translator_change_warning').format(src=self.robot.get_translator_name(), dest=translator_name)
+                else:
+                    msg = localized_text('translator_change_no_convert').format(src=self.robot.get_translator_name(), dest=translator_name)
+                p = ConfirmationDialog()
+                p.f_content.text = msg
+                p.translator_name = translator_name
+                p.bind(on_dismiss=self._on_translator_confirm_dismissed)
+                p.open()
+            else:
+                # if code window is empty, no reason to warn
+                self.robot.change_translator(translator_name, '')
+
+    def _on_translator_confirm_dismissed(self, popup):
+        if popup.is_ok:
+            self.is_translator_cancel = False
+            self.set_code(self.robot.change_translator(popup.translator_name, self.get_code()))
+        else:
+            # we need this as our callback will get called when we revert the value
+            self.is_translator_cancel = True
+            self.active_translator.text = self.robot.get_translator_name()
 
     def _on_motors(self, motor_button):
         if motor_button.state == 'down':
@@ -410,8 +448,7 @@ class NaoRecorderApp(App):
             # TODO: run only selected code
             # code = self.codeinput.selection_text
             # if not code or len(code) == 0:
-            code = self.codeinput.text
-            self.robot.run_script(code)
+            self.robot.run_script(self.get_code())
 
     def _on_add_keyframe(self, dummy1=None, dummy2=None, dummy=None):
         code = self.robot.keyframe()

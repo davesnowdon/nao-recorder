@@ -123,7 +123,8 @@ def get_translator(name=None):
     try:
         translator = translator_instances[name]
     except KeyError:
-        translator = find_class(clazzname)
+        klass = find_class(clazzname)
+        translator = klass()
         translator_instances[name] = translator
     return translator
 
@@ -205,6 +206,7 @@ class Robot(object):
         self.keyframe_duration = 1.0
         self.is_speech_recognition_enabled = True
         self.is_touch_sensors_enabled = True
+        self.translator = get_translator(DEFAULT_TRANSLATOR_NAME)
 
         self.joints = { }
         for j in JOINT_NAMES:
@@ -439,6 +441,17 @@ class Robot(object):
             stiff_chains.add('Body')
         print "stiff chains = {}\n".format(stiff_chains)
         return stiff_chains
+
+    def get_translator_name(self):
+        return self.translator.name
+
+    def can_convert_code(self):
+        return self.translator.is_reversible
+
+    def change_translator(self, dest_name, existing_code):
+        # TODO
+        print "change translator = {}".format(dest_name)
+        return ''
 
     def get_joint(self, name):
         return self.joints[name]

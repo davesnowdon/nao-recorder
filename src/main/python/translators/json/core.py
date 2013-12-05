@@ -7,6 +7,10 @@ Created on 4 Dec 2013
 import json
 
 class JsonTranslator(object):
+    def __init__(self):
+        super(JsonTranslator, self).__init__()
+        self.name = 'JSON'
+        self.is_reversible = True
 
     def commands_to_text(self, commands, is_blocking=False, keyframe_duration=None, **kwargs):
         """

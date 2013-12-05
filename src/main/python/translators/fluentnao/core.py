@@ -471,6 +471,10 @@ COMMANDS = [
 
 
 class FluentNaoTranslator(object):
+    def __init__(self):
+        super(FluentNaoTranslator, self).__init__()
+        self.name = 'FluentNAO'
+        self.is_reversible = False
 
     def commands_to_text(self, commands, is_blocking=False, fluentnao=None, keyframe_duration=None):
         """

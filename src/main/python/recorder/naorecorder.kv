@@ -432,3 +432,29 @@
         Button:
             text: root.localized_text('connection_connect')
             on_press: root.dismiss()
+
+<ConfirmationDialog>:
+    size_hint: .5, .5
+    auto_dismiss: False
+    title: root.localized_text('confirmation_title')
+    f_content: main_content
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: main_content
+            size_hint: 1, 1
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+            text: ''
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                id: btn_ok
+                text: root.localized_text('ok')
+                on_press: root.ok()
+            Button:
+                id: btn_cancel
+                text: root.localized_text('cancel')
+                on_press: root.cancel()
+    
