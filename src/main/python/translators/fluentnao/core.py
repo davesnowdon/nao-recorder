@@ -475,6 +475,7 @@ class FluentNaoTranslator(object):
         super(FluentNaoTranslator, self).__init__()
         self.name = 'FluentNAO'
         self.is_reversible = False
+        self.is_runnable = True
 
     def commands_to_text(self, commands, is_blocking=False, fluentnao=None, keyframe_duration=None):
         """

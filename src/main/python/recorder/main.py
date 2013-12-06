@@ -252,6 +252,7 @@ class NaoRecorderApp(App):
         # run script
         btn_run_script = Button(text=localized_text('run_script'))
         btn_run_script.bind(on_press=self._on_run_script)
+        self.btn_run_script = btn_run_script
 
         # root actions menu
         robot_actions = Spinner(
@@ -425,15 +426,21 @@ class NaoRecorderApp(App):
             else:
                 # if code window is empty, no reason to warn
                 self.robot.change_translator(translator_name, '')
+                self._update_run_button()
 
     def _on_translator_confirm_dismissed(self, popup):
         if popup.is_ok:
             self.is_translator_cancel = False
             self.set_code(self.robot.change_translator(popup.translator_name, self.get_code()))
+            self._update_run_button()
         else:
             # we need this as our callback will get called when we revert the value
             self.is_translator_cancel = True
             self.active_translator.text = self.robot.get_translator_name()
+
+    def _update_run_button(self):
+        # this won't have any effect on versions of kivy before 1.8.0
+        self.btn_run_script.disabled = not self.robot.is_code_runnable()
 
     def _on_motors(self, motor_button):
         if motor_button.state == 'down':
@@ -444,7 +451,7 @@ class NaoRecorderApp(App):
             self.robot.motors_off()
 
     def _on_run_script(self, instance):
-        if self.robot.is_connected():
+        if self.robot.is_connected() and self.robot.is_code_runnable():
             # TODO: run only selected code
             # code = self.codeinput.selection_text
             # if not code or len(code) == 0:

@@ -11,6 +11,7 @@ class JsonTranslator(object):
         super(JsonTranslator, self).__init__()
         self.name = 'JSON'
         self.is_reversible = True
+        self.is_runnable = False
 
     def commands_to_text(self, commands, is_blocking=False, keyframe_duration=None, **kwargs):
         """

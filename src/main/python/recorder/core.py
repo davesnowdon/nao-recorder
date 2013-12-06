@@ -448,9 +448,13 @@ class Robot(object):
     def can_convert_code(self):
         return self.translator.is_reversible
 
+    def is_code_runnable(self):
+        return self.translator.is_runnable
+
     def change_translator(self, dest_name, existing_code):
-        # TODO
+        # TODO attempt to reverse the previous translator and run the new one on the data
         print "change translator = {}".format(dest_name)
+        self.translator = get_translator(dest_name)
         return ''
 
     def get_joint(self, name):
