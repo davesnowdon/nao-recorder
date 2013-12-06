@@ -473,9 +473,8 @@ class Robot(object):
             print "enabled changed joints = {}".format(changed_enabled_joints)
 
             # translating
-            translator = get_translator()
-            commands = translator.detect_command(angles, changed_enabled_joints, self.enabled_joints)
-            command_str = translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.",
+            commands = self.translator.detect_command(angles, changed_enabled_joints, self.enabled_joints)
+            command_str = self.translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.",
                                                       keyframe_duration=self.keyframe_duration)
             self.last_keyframe_joints = angles.copy()
             return command_str
