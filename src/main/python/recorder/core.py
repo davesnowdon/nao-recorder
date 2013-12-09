@@ -482,7 +482,7 @@ class Robot(object):
             return None
 
     def append_command(self, code, new_command):
-        self.translator.append_command(code, new_command)
+        return self.translator.append_command(code, new_command)
 
     def update_joints(self):
         '''
