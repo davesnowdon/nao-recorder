@@ -408,6 +408,7 @@ class NaoRecorderApp(App):
     def on_action(self, instance, l):
         if self.robot.is_connected():
             self.robot.go_to_posture(l)
+            instance.text = localized_text('action_menu_title')
 
     def _on_translator_changed(self, instance, translator_name):
         if self.is_translator_cancel:
