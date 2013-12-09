@@ -547,3 +547,6 @@ class FluentNaoTranslator(object):
             return (cs.command, command_parameters)
         else:
             return ("{}.{}".format(cs.prefix, cs.command), command_parameters)
+
+    def append_command(self, code, new_command):
+        return "{}\r\n{}".format(code, new_command)

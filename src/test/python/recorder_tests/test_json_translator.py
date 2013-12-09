@@ -57,3 +57,49 @@ class TestCommandsToText(unittest.TestCase):
         result = get_translator().commands_to_text(commands, is_blocking=True, fluentnao="nao.",
                                                    keyframe_duration=1.0)
         self.assertEqual("", result, "empty command list should generate empty string even with duration")
+
+
+class TestAppendCommands(unittest.TestCase):
+    def testAppendEmptytoEmpty(self):
+        result = get_translator().append_command('', '')
+        self.assertEqual("", result, "appending empty to empty should be empty")
+
+    def testAppendEmptyToCommand(self):
+        cmd = '{ "is_blocking" : true }'
+        result = get_translator().append_command(cmd, '')
+        try:
+            json.loads(result)
+        except ValueError as e:
+            self.fail("result '{}' should be valid JSON: {}".format(result, e))
+        self.assertEqual(cmd.strip(), result.strip(),
+                         "appending empty string should not change command apart from leading and trailing whitespace")
+
+    def testAppendCommandToEmpty(self):
+        cmd = '{ "is_blocking" : true }'
+        result = get_translator().append_command('', cmd)
+        try:
+            json.loads(result)
+        except ValueError as e:
+            self.fail("result '{}' should be valid JSON: {}".format(result, e))
+        self.assertEqual("[\r\n{}\r\n]".format(cmd), result.strip(),
+                         "single command shoud be enclosed by square brackets")
+
+    def testAppendCommandToCommand(self):
+        code = '[\r\n{ "HeadPitch" : 0, "HeadYaw" : 0 }\r\n]'
+        cmd = '{ "is_blocking" : true }'
+        result = get_translator().append_command(code, cmd)
+        try:
+            result_obj = json.loads(result)
+            self.assertEqual(2, len(result_obj), "should be 2 commands")
+        except ValueError as e:
+            self.fail("result '{}' should be valid JSON: {}".format(result, e))
+
+    def testAppendCommandToMultipleCommands(self):
+        code = '[{ "HeadPitch" : 0, "HeadYaw" : 0 }, { "HeadPitch" : 0, "HeadYaw" : 0 }]'
+        cmd = '{ "is_blocking" : true }'
+        result = get_translator().append_command(code, cmd)
+        try:
+            result_obj = json.loads(result)
+            self.assertEqual(3, len(result_obj), "should be 3 commands")
+        except ValueError as e:
+            self.fail("result '{}' should be valid JSON: {}".format(result, e))

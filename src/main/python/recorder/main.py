@@ -339,7 +339,7 @@ class NaoRecorderApp(App):
         self.codeinput.text = code
 
     def append_code(self, code):
-        self.set_code("{}\r\n{}".format(self.get_code(), code))
+        self.set_code(self.robot.append_command(self.get_code(), code))
 
     def add_status(self, text):
         self.status.text = self.status.text + "\n" + text

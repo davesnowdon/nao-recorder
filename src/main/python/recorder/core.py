@@ -481,6 +481,9 @@ class Robot(object):
         else:
             return None
 
+    def append_command(self, code, new_command):
+        self.translator.append_command(code, new_command)
+
     def update_joints(self):
         '''
         Updates the current set of joint angles so that we can track changes from a known point

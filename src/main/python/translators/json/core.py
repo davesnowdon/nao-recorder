@@ -43,3 +43,18 @@ class JsonTranslator(object):
             commands.append(cmd)
 
         return commands
+
+    def append_command(self, code, new_command):
+        if code.strip():
+            if new_command:
+                # remove any enclosing square brackets
+                code = code.strip().lstrip('[').rstrip(']').strip()
+                # add a comma after the existing code and replace square brackets
+                return "[\r\n{},\r\n{}\r\n]".format(code, new_command)
+            else:
+                return code
+        else:
+            if new_command:
+                return "[\r\n{}\r\n]".format(new_command)
+            else:
+                return ''
