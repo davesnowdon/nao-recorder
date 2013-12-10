@@ -58,3 +58,6 @@ class JsonTranslator(object):
                 return "[\r\n{}\r\n]".format(new_command)
             else:
                 return ''
+
+    def parse_commands(self, code):
+        return json.loads(code)

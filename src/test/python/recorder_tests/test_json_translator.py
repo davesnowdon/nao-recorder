@@ -103,3 +103,22 @@ class TestAppendCommands(unittest.TestCase):
             self.assertEqual(3, len(result_obj), "should be 3 commands")
         except ValueError as e:
             self.fail("result '{}' should be valid JSON: {}".format(result, e))
+
+
+class TestReversible(unittest.TestCase):
+    def testIsRevsible(self):
+        self.assertTrue(get_translator().is_reversible, "JSON translator should be reversible")
+
+    def testReversible(self):
+        code = '''
+        [
+        {"duration": 1.0, "is_blocking": true, "changes": {"RShoulderPitch": 1.1658821105957031}},
+        {"duration": 1.0, "is_blocking": true, "changes": {"RShoulderPitch": 1.1137261390686035}},
+        {"duration": 1.0, "is_blocking": true, "changes": {"RShoulderPitch": 1.0600361824035645}}
+        ]
+        '''
+        try:
+            result_obj = get_translator().parse_commands(code)
+            self.assertEqual(3, len(result_obj), "Parsed result should contain 3 commands")
+        except:
+            self.fail("Parsing commands failed")
