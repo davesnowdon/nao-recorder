@@ -74,7 +74,7 @@
    "status_right_leg_relaxed" : "right leg relaxed",
    "status_head_stiff" : "head stiff",
    "status_head_relaxed" : "head relaxed",
-   "translator_change_warning" : "Converting from {src} to {dest} may lose actions not related to joint movment. Do you want to proceed?",
+   "translator_change_warning" : "Converting from {src} to {dest} may lose actions not related to joint movement. Do you want to proceed?",
    "translator_change_no_convert" : "It's not possible to convert from {src} to {dest}. If you proceed you will lose any text in the code window. Do you want to proceed?",
    "error_set_vocabulary" : "Error setting speech vocabulary: {}",
    "error_set_callback" : "Error enabling callback: {}",
