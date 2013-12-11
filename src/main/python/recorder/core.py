@@ -514,7 +514,7 @@ class Robot(object):
         Updates the current set of joint angles so that we can track changes from a known point
         '''
         if self.is_connected():
-            self.last_keyframe_joints = self.get_joint_angles()
+            self.last_keyframe_joints = self.get_joint_angles().copy()
 
     def run_script(self, code):
         if self.is_connected():
