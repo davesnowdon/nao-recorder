@@ -13,38 +13,30 @@ class JsonTranslator(object):
         self.is_reversible = True
         self.is_runnable = False
 
-    def commands_to_text(self, commands, is_blocking=False, keyframe_duration=None, **kwargs):
-        """
-        Takes a list of commands and converts them to text
-        """
-        if commands:
-            joints = {}
-            for cmd_tuple in commands:
-                joint_name = cmd_tuple[0]
-                joint_value = cmd_tuple[1][0]
-                joints[joint_name] = joint_value
+    def generate(self, joint_dict, changed_joint_names, enabled_joint_names,
+                 is_blocking=False, keyframe_duration=None, **kwargs):
+
+        if changed_joint_names:
+            changed_joints = {}
+            for j in changed_joint_names:
+                changed_joints[j] = joint_dict[j]
+
+            state = {}
+            for j in enabled_joint_names:
+                state[j] = joint_dict[j]
 
             json_map = { "is_blocking" : is_blocking,
-                         "changes" : joints }
+                         "state" : state,
+                         "changes" : changed_joints }
 
             if keyframe_duration:
                 json_map["duration"] = keyframe_duration
 
             return json.dumps(json_map)
         else:
-            return ""
+            return ''
 
-
-    def detect_command(self, joint_dict, changed_joint_names, enabled_joint_names):
-        commands = []
-
-        for j in changed_joint_names:
-            cmd = (j, [joint_dict[j]])
-            commands.append(cmd)
-
-        return commands
-
-    def append_command(self, code, new_command):
+    def append(self, code, new_command):
         if code.strip():
             if new_command:
                 # remove any enclosing square brackets
@@ -59,5 +51,5 @@ class JsonTranslator(object):
             else:
                 return ''
 
-    def parse_commands(self, code):
+    def parse(self, code):
         return json.loads(code)

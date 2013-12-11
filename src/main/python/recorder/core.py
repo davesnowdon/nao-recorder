@@ -452,10 +452,35 @@ class Robot(object):
         return self.translator.is_runnable
 
     def change_translator(self, dest_name, existing_code):
-        # TODO attempt to reverse the previous translator and run the new one on the data
         print "change translator = {}".format(dest_name)
-        self.translator = get_translator(dest_name)
-        return ''
+
+        new_translator = get_translator(dest_name)
+
+        converted_code = ''
+        if self.can_convert_code():
+            command_data = self.translator.parse(existing_code)
+            converted_code = self.translate_data_to_code(new_translator, command_data)
+            print "Changed existing code:\n{}\n to\n{}".format(existing_code, converted_code)
+
+        self.translator = new_translator
+        return converted_code
+
+    def translate_data_to_code(self, translator, command_data):
+        code_str = ''
+        if command_data:
+            angles = {}
+            for cmd in command_data:
+                print "cmd: {}".format(cmd)
+                changed_angles = set(cmd['changes'].keys())
+                angles.update(cmd['changes'])   # update the current state
+
+                command_str = translator.generate(angles, changed_angles, changed_angles,
+                                                  is_blocking=cmd['is_blocking'], fluentnao="nao.",
+                                                  keyframe_duration=cmd['duration'])
+
+                print "result: {}".format(command_str)
+                code_str = translator.append(code_str, command_str)
+        return code_str
 
     def get_joint(self, name):
         return self.joints[name]
@@ -473,16 +498,16 @@ class Robot(object):
             print "enabled changed joints = {}".format(changed_enabled_joints)
 
             # translating
-            commands = self.translator.detect_command(angles, changed_enabled_joints, self.enabled_joints)
-            command_str = self.translator.commands_to_text(commands, is_blocking=True, fluentnao="nao.",
-                                                      keyframe_duration=self.keyframe_duration)
+            command_str = self.translator.generate(angles, changed_enabled_joints, self.enabled_joints,
+                                                   is_blocking=True, fluentnao="nao.",
+                                                   keyframe_duration=self.keyframe_duration)
             self.last_keyframe_joints = angles.copy()
             return command_str
         else:
             return None
 
     def append_command(self, code, new_command):
-        return self.translator.append_command(code, new_command)
+        return self.translator.append(code, new_command)
 
     def update_joints(self):
         '''

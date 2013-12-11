@@ -12,41 +12,37 @@ from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_
 def get_translator():
     return JsonTranslator()
 
-class TestCommandsToText(unittest.TestCase):
+class TestGenerate(unittest.TestCase):
     def testEmptyList(self):
-        commands = []
-        result = get_translator().commands_to_text(commands)
+        result = get_translator().generate(set(), set(), set())
         # print "empty command result = {}".format(result)
         self.assertEqual("", result, "Empty commands should yield empty string")
 
     def testOneCommand(self):
-        commands = [("HeadPitch", [0])]
-        result = get_translator().commands_to_text(commands)
+        joint_dict = { "HeadPitch" : 0 }
+        changed_joints = set(["HeadPitch"])
+        result = get_translator().generate(joint_dict, changed_joints, changed_joints)
         # print "one command result = {}".format(result)
-
         result_obj = json.loads(result)
         self.assertEqual(0, result_obj["changes"]["HeadPitch"],
                          "HeadPitch joint should be in JSON")
 
     def testTwoCommands(self):
-        commands = [("HeadPitch", [0]),
-                    ("HeadYaw", [0])]
-        result = get_translator().commands_to_text(commands)
+        joint_dict = { "HeadPitch" : 0,
+                       "HeadYaw" : 0 }
+        changed_joints = set(["HeadPitch", "HeadYaw"])
+        result = get_translator().generate(joint_dict, changed_joints, changed_joints)
         result_obj = json.loads(result)
         # print "two command result = {}".format(result)
         self.assertEqual(2, len(result_obj["changes"]),
                          "Two commands should yield 2 changed joint anbles")
 
-    def testNoCommands(self):
-        commands = []
-        result = get_translator().commands_to_text(commands, is_blocking=True, fluentnao="nao.")
-        self.assertEqual("", result, "empty command list should generate empty string")
-
     def testKeyframeWithDuration(self):
-        commands = [("HeadPitch", [0]),
-                    ("HeadYaw", [0])]
-        result = get_translator().commands_to_text(commands, is_blocking=True,
-                                                   keyframe_duration=1.0)
+        joint_dict = { "HeadPitch" : 0,
+                       "HeadYaw" : 0 }
+        changed_joints = set(["HeadPitch", "HeadYaw"])
+        result = get_translator().generate(joint_dict, changed_joints, changed_joints,
+                                           is_blocking=True, keyframe_duration=1.0)
         result_obj = json.loads(result)
         # print "two command result = {}".format(result)
         self.assertEqual(1.0, result_obj["duration"], "Command should include duration")
@@ -54,19 +50,19 @@ class TestCommandsToText(unittest.TestCase):
 
     def testNoCommandsithDuration(self):
         commands = []
-        result = get_translator().commands_to_text(commands, is_blocking=True, fluentnao="nao.",
+        result = get_translator().generate(set(), set(), set(), is_blocking=True, fluentnao="nao.",
                                                    keyframe_duration=1.0)
         self.assertEqual("", result, "empty command list should generate empty string even with duration")
 
 
 class TestAppendCommands(unittest.TestCase):
     def testAppendEmptytoEmpty(self):
-        result = get_translator().append_command('', '')
+        result = get_translator().append('', '')
         self.assertEqual("", result, "appending empty to empty should be empty")
 
     def testAppendEmptyToCommand(self):
         cmd = '{ "is_blocking" : true }'
-        result = get_translator().append_command(cmd, '')
+        result = get_translator().append(cmd, '')
         try:
             json.loads(result)
         except ValueError as e:
@@ -76,7 +72,7 @@ class TestAppendCommands(unittest.TestCase):
 
     def testAppendCommandToEmpty(self):
         cmd = '{ "is_blocking" : true }'
-        result = get_translator().append_command('', cmd)
+        result = get_translator().append('', cmd)
         try:
             json.loads(result)
         except ValueError as e:
@@ -87,7 +83,7 @@ class TestAppendCommands(unittest.TestCase):
     def testAppendCommandToCommand(self):
         code = '[\r\n{ "HeadPitch" : 0, "HeadYaw" : 0 }\r\n]'
         cmd = '{ "is_blocking" : true }'
-        result = get_translator().append_command(code, cmd)
+        result = get_translator().append(code, cmd)
         try:
             result_obj = json.loads(result)
             self.assertEqual(2, len(result_obj), "should be 2 commands")
@@ -97,7 +93,7 @@ class TestAppendCommands(unittest.TestCase):
     def testAppendCommandToMultipleCommands(self):
         code = '[{ "HeadPitch" : 0, "HeadYaw" : 0 }, { "HeadPitch" : 0, "HeadYaw" : 0 }]'
         cmd = '{ "is_blocking" : true }'
-        result = get_translator().append_command(code, cmd)
+        result = get_translator().append(code, cmd)
         try:
             result_obj = json.loads(result)
             self.assertEqual(3, len(result_obj), "should be 3 commands")
@@ -118,7 +114,7 @@ class TestReversible(unittest.TestCase):
         ]
         '''
         try:
-            result_obj = get_translator().parse_commands(code)
+            result_obj = get_translator().parse(code)
             self.assertEqual(3, len(result_obj), "Parsed result should contain 3 commands")
         except:
             self.fail("Parsing commands failed")
