@@ -45,13 +45,13 @@ class Feet():
     def right_raise_toes(self, duration=0, offset=0):
         duration = self.nao.determine_duration(duration)       
         angle = -68.0 - offset
-        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnklePitch, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnklePitch, angle, duration)
         return self;
         
     def left_raise_toes(self, duration=0, offset=0):
         duration = self.nao.determine_duration(duration)  
         angle = -68.0 - offset
-        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnklePitch, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnklePitch, angle, duration)
         return self;
 
 
@@ -100,19 +100,24 @@ class Feet():
     ###################################
     # center
     ###################################
-    def center(self, duration=0, offset=0):   
-        self.right_center(duration, offset)
-        self.left_center(duration, offset)
+    def center(self, duration=0, offset=0, offset2=0):   
+        self.right_center(duration, offset, offset2)
+        self.left_center(duration, offset, offset2)
         return self;
 
-    def left_center(self, duration=0, offset=0):
+    def left_center(self, duration=0, offset=0, offset2=0):
+        angle = 0 - offset
+        angle2 = 0 - offset2
+
         duration = self.nao.determine_duration(duration)       
-        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnkleRoll, 0, duration)
-        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnklePitch, 0, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnkleRoll, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LAnklePitch, angle2, duration)
         return self;
         
-    def right_center(self, duration=0, offset=0):
-        duration = self.nao.determine_duration(duration)        
-        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnkleRoll, 0, duration)
-        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnklePitch, 0, duration)
+    def right_center(self, duration=0, offset=0, offset2=0):
+        duration = self.nao.determine_duration(duration)      
+        angle = 0 + offset
+        angle2 = 0 - offset2  
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnkleRoll, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RAnklePitch, angle2, duration)
         return self;

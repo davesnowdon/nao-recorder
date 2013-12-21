@@ -466,6 +466,125 @@ COMMANDS = [
                         [],
                         [Constraint(less_than, [17, 'LHand'])],
                         []
+                        ),
+
+            # feet both
+            CommandSpec('center', 'feet',
+                        set(['LAnkleRoll', 'LAnklePitch', 'RAnkleRoll', 'RAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [-1, 0]),
+                         Transform(linear, 'LAnkleRoll', 'lroll', [-1, 0]),
+                         Transform(linear, 'RAnklePitch', 'rpitch', [-1, 0]),
+                         Transform(linear, 'RAnkleRoll', 'rroll', [1, 0])],
+                        [Constraint(in_range, [-22, 22, 'LAnklePitch']),
+                        Constraint(in_range, [-11, 11, 'LAnkleRoll']),
+                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                        ['lroll', 'lpitch']
+                        ),
+            CommandSpec('point_toes', 'feet',
+                        set(['LAnklePitch', 'RAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [1, -52]),
+                         Transform(linear, 'RAnklePitch', 'rpitch', [1, -52])],
+                        [Constraint(greater_than, [22, 'LAnklePitch']),
+                          Constraint(greater_than, [22, 'RAnklePitch']),
+                         Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
+                        ['lpitch']
+                        ),
+            CommandSpec('raise_toes', 'feet',
+                        set(['LAnklePitch', 'RAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [-1, -68]),
+                         Transform(linear, 'RAnklePitch', 'rpitch', [-1, -68])],
+                        [Constraint(less_than, [-22, 'LAnklePitch']),
+                          Constraint(less_than, [-22, 'RAnklePitch']),
+                         Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
+                        ['lpitch']
+                        ),
+            CommandSpec('turn_out', 'feet',
+                        set(['LAnkleRoll', 'RAnkleRoll']),
+                        [Transform(linear, 'LAnkleRoll', 'lroll', [1, -22.8]),
+                         Transform(linear, 'RAnkleRoll', 'rroll', [-1, -22.8])],
+                        [Constraint(greater_than, [11, 'LAnkleRoll']),
+                        Constraint(less_than, [-11, 'RAnkleRoll']),
+                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                        ['lroll']
+                        ),
+            CommandSpec('turn_in', 'feet',
+                        set(['LAnkleRoll', 'RAnkleRoll']),
+                        [Transform(linear, 'LAnkleRoll', 'lroll', [-1, -22.8]),
+                         Transform(linear, 'RAnkleRoll', 'rroll', [1, -22.8])],
+                        [Constraint(less_than, [-11, 'LAnkleRoll']),
+                         Constraint(greater_than, [11, 'RAnkleRoll']),
+                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                        ['lroll']
+                        ),
+
+             # feet left
+            CommandSpec('left_center', 'feet',
+                        set(['LAnkleRoll', 'LAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [-1, 0]),
+                         Transform(linear, 'LAnkleRoll', 'lroll', [-1, 0])],
+                        [Constraint(in_range, [-22, 22, 'LAnklePitch']),
+                        Constraint(in_range, [-11, 11, 'LAnkleRoll'])],
+                        ['lroll', 'lpitch']
+                        ),
+            CommandSpec('left_point_toes', 'feet',
+                        set(['LAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [1, -52])],
+                        [Constraint(greater_than, [22, 'LAnklePitch'])],
+                        ['lpitch']
+                        ),
+            CommandSpec('left_raise_toes', 'feet',
+                        set(['LAnklePitch']),
+                        [Transform(linear, 'LAnklePitch', 'lpitch', [-1, -68])],
+                        [Constraint(less_than, [-22, 'LAnklePitch'])],
+                        ['lpitch']
+                        ),
+            CommandSpec('left_turn_out', 'feet',
+                        set(['LAnkleRoll']),
+                        [Transform(linear, 'LAnkleRoll', 'lroll', [1, -22.8])],
+                        [Constraint(greater_than, [11, 'LAnkleRoll'])],
+                        ['lroll']
+                        ),
+            CommandSpec('left_turn_in', 'feet',
+                        set(['LAnkleRoll']),
+                        [Transform(linear, 'LAnkleRoll', 'lroll', [-1, -22.8])],
+                        [Constraint(less_than, [-11, 'LAnkleRoll'])],
+                        ['lroll']
+                        ),
+
+
+            # feet right
+            CommandSpec('right_center', 'feet',
+                        set(['RAnkleRoll', 'RAnklePitch']),
+                        [Transform(linear, 'RAnklePitch', 'rpitch', [-1, 0]),
+                         Transform(linear, 'RAnkleRoll', 'rroll', [1, 0])],
+                        [Constraint(in_range, [-22, 22, 'RAnklePitch']),
+                        Constraint(in_range, [-11, 11, 'RAnkleRoll'])],
+                        ['rroll', 'rpitch']
+                        ),
+            CommandSpec('right_point_toes', 'feet',
+                        set(['RAnklePitch']),
+                        [Transform(linear, 'RAnklePitch', 'rpitch', [1, -52])],
+                        [Constraint(greater_than, [22, 'RAnklePitch'])],
+                        ['rpitch']
+                        ),
+            CommandSpec('right_raise_toes', 'feet',
+                        set(['RAnklePitch']),
+                        [Transform(linear, 'RAnklePitch', 'rpitch', [-1, -68])],
+                        [Constraint(less_than, [-22, 'RAnklePitch'])],
+                        ['rpitch']
+                        ),
+            CommandSpec('right_turn_out', 'feet',
+                        set(['RAnkleRoll']),
+                        [Transform(linear, 'RAnkleRoll', 'rroll', [-1, -22.8])],
+                        [Constraint(less_than, [-11, 'RAnkleRoll'])],
+                        ['rroll']
+                        ),
+            CommandSpec('right_turn_in', 'feet',
+                        set(['RAnkleRoll']),
+                        [Transform(linear, 'RAnkleRoll', 'rroll', [1, -22.8])],
+                        [Constraint(greater_than, [11, 'RAnkleRoll'])],
+                        ['rroll']
                         )
            ]
 
