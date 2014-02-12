@@ -623,7 +623,70 @@ class TestDetectArms(unittest.TestCase):
             self.fail("expected legs.left_foward().right_in() or legs.right_in().left_foward(); instead got: {0}".format(result))
 
 
-    #, POSITION_LEGS_RIGHT_FORWARD_LEFT_IN, POSITION_LEGS_LEFT_OUT_RIGHT_IN, POSITION_LEGS_RIGHT_OUT_LEFT_IN
+    def testLegsRightForwardLeftIn(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_LEGS_RIGHT_FORWARD_LEFT_IN)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 LEG_JOINTS, LEG_JOINTS)
+
+        self.assertEqual(len(result), 2, "Should get two tuple(s) with command legs.right_foward().left_in(); instead got: {0}".format(result))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "legs.right_forward" and second_tuple[0] == "left_in") or (first_tuple[0] == "legs.left_in" and  second_tuple[0] == "right_forward"):
+            pass
+        else:
+            self.fail("expected legs.right_forward().left_in() or legs.left_in().right_forward(); instead got: {0}".format(result))
+
+
+    def testLegsLeftOutRightIn(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_LEGS_LEFT_OUT_RIGHT_IN)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 LEG_JOINTS, LEG_JOINTS)
+
+        self.assertEqual(len(result), 2, "Should get two tuple(s) with command legs.left_out().right_in(); instead got: {0}".format(result))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "legs.left_out" and second_tuple[0] == "right_in") or (first_tuple[0] == "legs.right_in" and  second_tuple[0] == "left_out"):
+            pass
+        else:
+            self.fail("expected legs.left_out().right_in() or legs.right_in().left_out(); instead got: {0}".format(result))
+
+    def testLegsRightOutLeftIn(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_LEGS_RIGHT_OUT_LEFT_IN)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 LEG_JOINTS, LEG_JOINTS)
+
+        self.assertEqual(len(result), 2, "Should get two tuple(s) with command legs.right_out().left_in(); instead got: {0}".format(result))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "legs.right_out" and second_tuple[0] == "left_in") or (first_tuple[0] == "legs.left_in" and  second_tuple[0] == "right_out"):
+            pass
+        else:
+            self.fail("expected legs.right_out().left_in() or legs.left_in().right_out(); instead got: {0}".format(result))
+
 
 
 if __name__ == "__main__":

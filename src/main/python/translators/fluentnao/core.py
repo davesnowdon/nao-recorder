@@ -590,34 +590,46 @@ COMMANDS = [
             # right leg
             CommandSpec('right_forward', 'legs',
                         set(['RHipPitch']),
-                        [Transform(linear, 'RHipPitch', 'rroll', [1, -50])],
-                        [Constraint(less_than, [-25, 'RHipPitch'])],
-                        ['rroll']
+                        [Transform(linear, 'RHipPitch', 'rpitch', [1, -50])],
+                        [Constraint(less_than, [-24, 'RHipPitch'])],
+                        ['rpitch']
                         ),
-
             CommandSpec('right_in', 'legs',
                         set(['RHipPitch', 'RHipRoll']),
                         [Transform(linear, 'RHipPitch', 'rpitch', [-1, 0]),
                          Transform(linear, 'RHipRoll', 'rroll', [-1, 0])],
-                        [Constraint(greater_than, [-24, 'RHipPitch'])],
+                        [Constraint(greater_than, [-23, 'RHipPitch']),
+                        Constraint(greater_than, [-13, 'RHipRoll'])],
                         ['rpitch', 'rroll']
+                        ),
+            CommandSpec('right_out', 'legs',
+                        set(['RHipRoll']),
+                        [Transform(linear, 'RHipRoll', 'rroll', [-1, -35])],
+                        [Constraint(less_than, [-12, 'RHipRoll'])],
+                        ['rroll']
                         ),
 
             # left leg
             CommandSpec('left_forward', 'legs',
                         set(['LHipPitch']),
-                        [Transform(linear, 'LHipPitch', 'lroll', [-1, -50])],
-                        [Constraint(less_than, [-25, 'LHipPitch'])],
-                        ['lroll']
+                        [Transform(linear, 'LHipPitch', 'lpitch', [-1, -50])],
+                        [Constraint(less_than, [-24, 'LHipPitch'])],
+                        ['lpitch']
                         ),
-
             CommandSpec('left_in', 'legs',
                         set(['LHipPitch', 'LHipRoll']),
                         [Transform(linear, 'LHipPitch', 'lpitch', [-1, 0]),
                          Transform(linear, 'LHipRoll', 'lroll', [1, 0])],
-                        [Constraint(greater_than, [-24, 'LHipPitch'])],
+                        [Constraint(greater_than, [-23, 'LHipPitch']),
+                        Constraint(less_than, [17, 'LHipRoll'])],
                         ['lpitch', 'lroll']
                         ),
+            CommandSpec('left_out', 'legs',
+                        set(['LHipRoll']),
+                        [Transform(linear, 'LHipRoll', 'lroll', [1, -35])],
+                        [Constraint(greater_than, [16, 'LHipRoll'])],
+                        ['lroll']
+                        )
            ]
 
 
