@@ -6,6 +6,8 @@ Created on 6 Jul 2013
 
 import collections
 
+from pygments import lexers
+
 from recorder.core import joints_to_degrees
 
 DEFAULT_FRAME_TIME = 0
@@ -595,6 +597,7 @@ class FluentNaoTranslator(object):
         self.name = 'FluentNAO'
         self.is_reversible = False
         self.is_runnable = True
+        self.lexer = lexers.PythonLexer()
 
     def generate(self, joint_dict, changed_joint_names, enabled_joint_names, **kwargs):
         commands = self.detect_command(joint_dict, changed_joint_names, enabled_joint_names)

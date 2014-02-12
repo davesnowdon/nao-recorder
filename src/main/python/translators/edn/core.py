@@ -4,6 +4,8 @@ Created on 12 Feb 2014
 @author: davesnowdon
 '''
 
+from pygments import lexers
+
 import edn_format
 
 class EDNTranslator(object):
@@ -12,6 +14,7 @@ class EDNTranslator(object):
         self.name = 'EDN'
         self.is_reversible = True
         self.is_runnable = False
+        self.lexer = lexers.ClojureLexer()
 
     def generate(self, joint_dict, changed_joint_names, enabled_joint_names,
                  is_blocking=False, keyframe_duration=None, **kwargs):

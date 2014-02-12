@@ -4,6 +4,8 @@ Created on 9 Feb 2014
 @author: davesnowdon
 '''
 
+from pygments import lexers
+
 from translators.fluentnao.core import FluentNaoTranslator
 
 COMMAND_TO_KEYWORD = {'forward' : ':forward',
@@ -68,6 +70,7 @@ class NaojureTranslator(object):
         # TODO implement connection to nrepl server to allow naojure code to be run
         self.is_runnable = False
         self.fluentnao = FluentNaoTranslator()
+        self.lexer = lexers.ClojureLexer()
 
     def generate(self, joint_dict, changed_joint_names, enabled_joint_names, **kwargs):
         # reuse FluentNAO code to decide on commands

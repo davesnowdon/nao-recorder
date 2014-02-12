@@ -338,6 +338,15 @@ class NaoRecorderApp(App):
     def set_code(self, code):
         self.codeinput.text = code
 
+    def set_lexer(self, new_lexer):
+        # code = self.get_code()
+        # self.codeinput = CodeInput(
+        #    lexer=new_lexer,
+        #    font_name='data/fonts/DroidSansMono.ttf', font_size=12,
+        #    text=code)
+        # self.codeinput.lexer = lexer
+        pass
+
     def append_code(self, code):
         self.set_code(self.robot.append_command(self.get_code(), code))
 
@@ -428,12 +437,15 @@ class NaoRecorderApp(App):
                 # if code window is empty, no reason to warn
                 self.robot.change_translator(translator_name, '')
                 self._update_run_button()
+                self.set_lexer(self.robot.translator.lexer)
+
 
     def _on_translator_confirm_dismissed(self, popup):
         if popup.is_ok:
             self.is_translator_cancel = False
             self.set_code(self.robot.change_translator(popup.translator_name, self.get_code()))
             self._update_run_button()
+            self.set_lexer(self.robot.translator.lexer)
         else:
             # we need this as our callback will get called when we revert the value
             self.is_translator_cancel = True

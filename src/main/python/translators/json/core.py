@@ -6,12 +6,15 @@ Created on 4 Dec 2013
 
 import json
 
+from pygments import lexers
+
 class JsonTranslator(object):
     def __init__(self):
         super(JsonTranslator, self).__init__()
         self.name = 'JSON'
         self.is_reversible = True
         self.is_runnable = False
+        self.lexer = lexers.JavascriptLexer()
 
     def generate(self, joint_dict, changed_joint_names, enabled_joint_names,
                  is_blocking=False, keyframe_duration=None, **kwargs):
