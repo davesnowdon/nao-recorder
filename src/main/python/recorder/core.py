@@ -24,8 +24,8 @@ WORD_RECOGNITION_MIN_CONFIDENCE = 0.55
 
 TRANSLATORS = { 'FluentNAO' : "translators.fluentnao.core.FluentNaoTranslator",
                 'JSON' : "translators.json.core.JsonTranslator",
-                'Naojure' : 'translators.naojure.core.NaojureTranslator' }
-# TODO add 'EDN' : 'translators.edn.core.EDNTranslator'
+                'Naojure' : 'translators.naojure.core.NaojureTranslator',
+                'EDN' : 'translators.edn.core.EDNTranslator' }
 
 DEFAULT_TRANSLATOR_NAME = 'FluentNAO'
 translator_instances = {}
