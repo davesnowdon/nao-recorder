@@ -62,6 +62,7 @@ def max_difference(joints, params):
             return False
     return True
 
+DEFAULT_MAX_DIFF = 3
 
 COMMANDS = [
 
@@ -113,8 +114,8 @@ COMMANDS = [
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
                         [Constraint(in_range, [-45, 45, 'LShoulderPitch']),
                           Constraint(less_than, [46, 'LShoulderRoll']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('out', 'arms',
@@ -124,7 +125,7 @@ COMMANDS = [
                          Transform(linear, 'RShoulderPitch', 'rpitch', [-1, 0]),
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, -90])],
                         [Constraint(greater_than, [44, 'LShoulderRoll']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('up', 'arms',
@@ -135,8 +136,8 @@ COMMANDS = [
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
                         [Constraint(in_range, [-110, -45, 'LShoulderPitch']),
                           Constraint(less_than, [45, 'LShoulderRoll']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('down', 'arms',
@@ -147,8 +148,8 @@ COMMANDS = [
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
                         [Constraint(in_range, [46, 95, 'LShoulderPitch']),
                           Constraint(less_than, [45, 'LShoulderRoll']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
             CommandSpec('back', 'arms',
@@ -159,8 +160,8 @@ COMMANDS = [
                          Transform(linear, 'RShoulderRoll', 'rroll', [-1, 0])],
                         [Constraint(in_range, [96, 119.5, 'LShoulderPitch']),
                           Constraint(less_than, [45, 'LShoulderRoll']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['lpitch', 'lroll']
                         ),
 
@@ -253,7 +254,7 @@ COMMANDS = [
                          Transform(linear, 'RElbowRoll', 'rroll', [1, -89])],
                         [Constraint(less_than, [-43, 'LElbowRoll']),
                           Constraint(greater_than, [43, 'RElbowRoll']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['rroll']
                         ),
             CommandSpec('straight', 'elbows',
@@ -262,7 +263,7 @@ COMMANDS = [
                          Transform(linear, 'RElbowRoll', 'rroll', [1, 0.5])],
                         [Constraint(greater_than, [-43, 'LElbowRoll']),
                           Constraint(less_than, [43, 'RElbowRoll']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
                         ['rroll']
                         ),
             CommandSpec('turn_up', 'elbows',
@@ -271,7 +272,7 @@ COMMANDS = [
                          Transform(linear, 'RElbowYaw', 'ryaw', [1, -90])],
                         [Constraint(greater_than, [45, 'RElbowYaw']),
                           Constraint(less_than, [-45, 'LElbowYaw']),
-                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lyaw', 'ryaw'])],
                         ['ryaw']
                         ),
             CommandSpec('turn_in', 'elbows',
@@ -280,7 +281,7 @@ COMMANDS = [
                          Transform(linear, 'RElbowYaw', 'ryaw', [1, 0])],
                         [Constraint(in_range, [-44, 44, 'RElbowYaw']),
                           Constraint(in_range, [-44, 44, 'LElbowYaw']),
-                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lyaw', 'ryaw'])],
                         ['ryaw']
                         ),
             CommandSpec('turn_down', 'elbows',
@@ -289,7 +290,7 @@ COMMANDS = [
                          Transform(linear, 'RElbowYaw', 'ryaw', [-1, -90])],
                         [Constraint(less_than, [-45, 'RElbowYaw']),
                           Constraint(greater_than, [45, 'LElbowYaw']),
-                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lyaw', 'ryaw'])],
                         ['ryaw']
                         ),
 
@@ -364,7 +365,7 @@ COMMANDS = [
                          Transform(linear, 'RWristYaw', 'ryaw', [-1, 0])],
                         [Constraint(in_range, [-44, 44, 'LWristYaw']),
                           Constraint(in_range, [-44, 44, 'RWristYaw']),
-                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lyaw', 'ryaw'])],
                         ['ryaw']
                         ),
             CommandSpec('turn_out', 'wrists',
@@ -373,7 +374,7 @@ COMMANDS = [
                          Transform(linear, 'RWristYaw', 'ryaw', [-1, -90])],
                         [Constraint(greater_than, [45, 'LWristYaw']),
                           Constraint(less_than, [-45, 'RWristYaw']),
-                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lyaw', 'ryaw'])],
                         ['ryaw']
                         ),
             CommandSpec('turn_in', 'wrists',
@@ -382,7 +383,7 @@ COMMANDS = [
                          Transform(linear, 'RWristYaw', 'ryaw', [1, -90])],
                         [Constraint(less_than, [-45, 'LWristYaw']),
                           Constraint(greater_than, [45, 'RWristYaw']),
-                         Constraint(max_difference, [10, 'lyaw', 'ryaw'])],
+                         Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lyaw', 'ryaw'])],
                         ['ryaw']
                         ),
 
@@ -479,8 +480,8 @@ COMMANDS = [
                          Transform(linear, 'RAnkleRoll', 'rroll', [1, 0])],
                         [Constraint(in_range, [-22, 22, 'LAnklePitch']),
                         Constraint(in_range, [-11, 11, 'LAnkleRoll']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [1, 'lpitch', 'rpitch']),
+                         Constraint(max_difference, [1, 'lroll', 'rroll'])],
                         ['lroll', 'lpitch']
                         ),
             CommandSpec('point_toes', 'feet',
@@ -489,7 +490,7 @@ COMMANDS = [
                          Transform(linear, 'RAnklePitch', 'rpitch', [1, -52])],
                         [Constraint(greater_than, [22, 'LAnklePitch']),
                           Constraint(greater_than, [22, 'RAnklePitch']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
+                         Constraint(max_difference, [1, 'lpitch', 'rpitch'])],
                         ['lpitch']
                         ),
             CommandSpec('raise_toes', 'feet',
@@ -498,7 +499,7 @@ COMMANDS = [
                          Transform(linear, 'RAnklePitch', 'rpitch', [-1, -68])],
                         [Constraint(less_than, [-22, 'LAnklePitch']),
                           Constraint(less_than, [-22, 'RAnklePitch']),
-                         Constraint(max_difference, [10, 'lpitch', 'rpitch'])],
+                         Constraint(max_difference, [1, 'lpitch', 'rpitch'])],
                         ['lpitch']
                         ),
             CommandSpec('turn_out', 'feet',
@@ -507,7 +508,7 @@ COMMANDS = [
                          Transform(linear, 'RAnkleRoll', 'rroll', [-1, -22.8])],
                         [Constraint(greater_than, [11, 'LAnkleRoll']),
                         Constraint(less_than, [-11, 'RAnkleRoll']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [1, 'lroll', 'rroll'])],
                         ['lroll']
                         ),
             CommandSpec('turn_in', 'feet',
@@ -516,7 +517,7 @@ COMMANDS = [
                          Transform(linear, 'RAnkleRoll', 'rroll', [1, -22.8])],
                         [Constraint(less_than, [-11, 'LAnkleRoll']),
                          Constraint(greater_than, [11, 'RAnkleRoll']),
-                         Constraint(max_difference, [10, 'lroll', 'rroll'])],
+                         Constraint(max_difference, [1, 'lroll', 'rroll'])],
                         ['lroll']
                         ),
 
@@ -631,7 +632,38 @@ COMMANDS = [
                         [Transform(linear, 'LHipRoll', 'lroll', [1, -35])],
                         [Constraint(greater_than, [16, 'LHipRoll'])],
                         ['lroll']
+                        ),
+
+
+            # left knee
+            CommandSpec('left_knee_bent', 'legs',
+                        set(['LKneePitch']),
+                        [Transform(linear, 'LKneePitch', 'lpitch', [1, -90])],
+                        [Constraint(in_range, [45, 122, 'LKneePitch'])],
+                        ['lpitch']
+                        ),
+            CommandSpec('left_knee_straight', 'legs',
+                        set(['LKneePitch']),
+                        [Transform(linear, 'LKneePitch', 'lpitch', [-1, 0])],
+                        [Constraint(in_range, [-6, 44, 'LKneePitch'])],
+                        ['lpitch']
+                        ),
+
+            # right knee
+            CommandSpec('right_knee_bent', 'legs',
+                        set(['RKneePitch']),
+                        [Transform(linear, 'RKneePitch', 'lpitch', [1, -90])],
+                        [Constraint(in_range, [45, 122, 'RKneePitch'])],
+                        ['rpitch']
+                        ),
+
+            CommandSpec('right_knee_straight', 'legs',
+                        set(['RKneePitch']),
+                        [Transform(linear, 'RKneePitch', 'lpitch', [-1, 0])],
+                        [Constraint(in_range, [-6, 44, 'RKneePitch'])],
+                        ['rpitch']
                         )
+
            ]
 
 
