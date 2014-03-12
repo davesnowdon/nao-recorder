@@ -1,24 +1,23 @@
 '''
-Created on 4 Dec 2013
+Created on 12 Feb 2014
 
 @author: davesnowdon
 '''
 
-import json
-
 from pygments import lexers
 
-class JsonTranslator(object):
+import edn_format
+
+class EDNTranslator(object):
     def __init__(self):
-        super(JsonTranslator, self).__init__()
-        self.name = 'JSON'
+        super(EDNTranslator, self).__init__()
+        self.name = 'EDN'
         self.is_reversible = True
         self.is_runnable = False
-        self.lexer = lexers.JavascriptLexer()
+        self.lexer = lexers.ClojureLexer()
 
     def generate(self, joint_dict, changed_joint_names, enabled_joint_names,
                  is_blocking=False, keyframe_duration=None, **kwargs):
-
         if changed_joint_names:
             changed_joints = {}
             for j in changed_joint_names:
@@ -28,14 +27,14 @@ class JsonTranslator(object):
             for j in enabled_joint_names:
                 state[j] = joint_dict[j]
 
-            json_map = { "is_blocking" : is_blocking,
+            edn_map = { "is_blocking" : is_blocking,
                          "state" : state,
                          "changes" : changed_joints }
 
             if keyframe_duration:
-                json_map["duration"] = keyframe_duration
+                edn_map["duration"] = keyframe_duration
 
-            return json.dumps(json_map)
+            return edn_format.dumps(edn_map)
         else:
             return ''
 
@@ -55,4 +54,4 @@ class JsonTranslator(object):
                 return ''
 
     def parse(self, code):
-        return json.loads(code)
+        return edn_format.loads(code)
