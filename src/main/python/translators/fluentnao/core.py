@@ -590,7 +590,7 @@ COMMANDS = [
             # right leg
             CommandSpec('right_forward', 'legs',
                         set(['RHipPitch']),
-                        [Transform(linear, 'RHipPitch', 'rpitch', [1, -50])],
+                        [Transform(linear, 'RHipPitch', 'rpitch', [-1, -50])],
                         [Constraint(less_than, [-24, 'RHipPitch'])],
                         ['rpitch']
                         ),
