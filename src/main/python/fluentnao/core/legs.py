@@ -79,81 +79,138 @@ class Legs():
     ###################################
     # Out
     ###################################
-    def left_out(self, duration=0, offset=0):
+    def left_out(self, duration=0, offset=0, balance=True):
+
+        if balance:
+            self.nao.feet.left_plane_on()
 
         # move leg out
         duration = self.nao.determine_duration(duration)       
         angle = 35 + offset
         self.nao.move_with_degrees_and_duration(self.joints.LLeg.LHipRoll, angle, duration)
 
-        # turn feet in
-        self.feet.lTurnIn()
-        self.feet.rTurnIn(0, -15)
+        if balance:
+            self.nao.feet.plane_off()
 
         return self;
 
-    def right_out(self, duration=0, offset=0):
+    def right_out(self, duration=0, offset=0, balance=True):
+
+        if balance:
+            self.nao.feet.right_plane_on()
 
         # move leg out
         duration = self.nao.determine_duration(duration)       
         angle = -35 - offset
         self.nao.move_with_degrees_and_duration(self.joints.RLeg.RHipRoll, angle, duration)
 
-        # turn feet in
-        self.feet.rTurnIn()
-        self.feet.lTurnIn(0, -15)
+        if balance:
+            self.nao.feet.plane_off()
+
+        return self;
+
+    ###################################
+    # In
+    ###################################
+    def left_in(self, duration=0, offset=0, offset2=0, balance=True):
+
+        if balance:
+            self.nao.feet.left_plane_on()
+
+        # move leg in
+        duration = self.nao.determine_duration(duration)       
+        angle = 0 - offset
+        angle2 = 0 + offset2        
+        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LHipPitch, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LHipRoll, angle2, duration)
+        
+        if balance:
+            self.nao.feet.plane_off()
+
+        return self;
+
+    def right_in(self, duration=0, offset=0, offset2=0, balance=True):
+
+        if balance:
+            self.nao.feet.right_plane_on()
+
+        # move leg out
+        duration = self.nao.determine_duration(duration) 
+        angle = 0 - offset
+        angle2 = 0 - offset2
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RHipPitch, angle, duration)
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RHipRoll, angle2, duration)
+
+        if balance:
+            self.nao.feet.plane_off()
 
         return self;
 
     ###################################
     # Forward
     ###################################
-    def left_forward(self, duration=0, offset=0):
+    def left_forward(self, duration=0, offset=0, balance=True):
 
-        # stiffen body & enable wb
-        self.nao.stiff()
-        self.nao.whole_body_enable()
-
-        # constrain feet
-        self.nao.foot_state(self.joints.SupportLeg.RLeg, self.joints.StateName.Fixed)
-        self.nao.foot_state(self.joints.SupportLeg.LLeg, self.joints.StateName.Plane)
+        if balance:
+            self.nao.feet.left_plane_on()
 
         # move leg forward
         duration = self.nao.determine_duration(duration)       
-        angle = -90 - offset
+        angle = -50 - offset
         self.nao.move_with_degrees_and_duration(self.joints.LLeg.LHipPitch, angle, duration)
 
-        # block call
-        self.go()
-
-        # free feet & disable wb
-        self.nao.foot_state(self.joints.SupportLeg.Legs, self.joints.StateName.Free)
-        self.nao.whole_body_disable()
+        if balance:
+            self.nao.feet.plane_off()
 
         return self;
 
 
-    def right_forward(self, duration=0, offset=0):
+    def right_forward(self, duration=0, offset=0, balance=True):
 
-        # stiffen body & enable wb
-        self.nao.stiff()
-        self.nao.whole_body_enable()
-
-        # constrain feet
-        self.nao.foot_state(self.joints.SupportLeg.LLeg, self.joints.StateName.Fixed)
-        self.nao.foot_state(self.joints.SupportLeg.RLeg, self.joints.StateName.Plane)
+        if balance:
+            self.nao.feet.right_plane_on()
 
         # move leg forward
         duration = self.nao.determine_duration(duration)       
-        angle = -90 - offset
+        angle = -50 - offset
         self.nao.move_with_degrees_and_duration(self.joints.RLeg.RHipPitch, angle, duration)
 
-        # block call
-        self.go()
+        if balance:
+            self.nao.feet.plane_off()
+        
+        return self;
 
-        # free feet & disable wb
-        self.nao.foot_state(self.joints.SupportLeg.Legs, self.joints.StateName.Free)
-        self.nao.whole_body_disable()
+    ###################################
+    # Back
+    ###################################
+    def left_back(self, duration=0, offset=0, balance=True):
+
+        if balance:
+            self.nao.feet.left_plane_on()
+
+        # move leg forward
+        duration = self.nao.determine_duration(duration)       
+        angle = 50 - offset
+        self.nao.move_with_degrees_and_duration(self.joints.LLeg.LHipPitch, angle, duration)
+
+        if balance:
+            self.nao.feet.plane_off()
+
+        return self;
+
+
+    def right_back(self, duration=0, offset=0, balance=True):
+
+        if balance:
+            self.nao.feet.right_plane_on()
+
+        # move leg forward
+        duration = self.nao.determine_duration(duration)       
+        angle = 50 - offset
+        self.nao.move_with_degrees_and_duration(self.joints.RLeg.RHipPitch, angle, duration)
+
+        if balance:
+            self.nao.feet.plane_off()
         
         return self;
 
@@ -209,7 +266,7 @@ class Legs():
 
 
     ###################################
-    # Bent
+    # Knee Bent
     ###################################
     
     def left_knee_bent(self, duration=0, offset=0):
@@ -226,16 +283,16 @@ class Legs():
 
 
     ###################################
-    # Straight
+    # Knee Straight
     ###################################
 
-    def left_straight(self, duration=0, offset=0):
+    def left_knee_straight(self, duration=0, offset=0):
         duration = self.nao.determine_duration(duration) 
         angle = 0 - offset      
         self.nao.move_with_degrees_and_duration(self.joints.LLeg.LKneePitch, angle, duration)
         return self;
         
-    def right_straight(self, duration=0, offset=0):
+    def right_knee_straight(self, duration=0, offset=0):
         duration = self.nao.determine_duration(duration)  
         angle = 0 - offset
         self.nao.move_with_degrees_and_duration(self.joints.RLeg.RKneePitch, angle, duration)
