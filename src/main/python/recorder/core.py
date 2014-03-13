@@ -266,6 +266,14 @@ class Robot(object):
             self.broker = broker.Broker('NaoRecorder', nao_id=hostname, nao_port=portnumber)
             if self.broker:
                 self.env = naoenv.make_environment(None)
+                self.saved_alife_state = None
+                try:
+                    self.saved_alife_state = self.env.alife.getState()
+                    print "Autonomous life was {}".format(self.saved_alife_state)
+                    self.env.alife.setState('disabled')
+                except RuntimeError:
+                    pass
+
                 self.nao = nao.Nao(self.env, None)
                 try:
                     if self.event_handlers and self.vocabulary:
@@ -287,6 +295,11 @@ class Robot(object):
             self.broker.shutdown()
             if self.on_disconnect:
                 self.on_disconnect()
+            if self.saved_alife_state:
+                try:
+                    self.env.alife.setState(self.saved_alife_state)
+                except RuntimeError:
+                    pass
 
     def do_subscribe(self):
         if self.event_handlers:
