@@ -478,7 +478,7 @@ COMMANDS = [
                         set(['RHipPitch']),
                         [Transform(linear, 'RHipPitch', 'rpitch', [-1, -50]),
                          Transform(constant, None, 'balance', ['False'])],
-                        [Constraint(less_than, [-24, 'RHipPitch'])],
+                        [Constraint(less_than, [0, 'RHipPitch'])],
                         ['rpitch', 'balance']
                         ),
             CommandSpec('right_in', 'legs',
@@ -496,6 +496,13 @@ COMMANDS = [
                          Transform(constant, None, 'balance', ['False'])],
                         [Constraint(less_than, [-12, 'RHipRoll'])],
                         ['rroll', 'balance']
+                        ),
+            CommandSpec('right_back', 'legs',
+                        set(['RHipPitch']),
+                        [Transform(linear, 'RHipPitch', 'rpitch', [-1, 50]),
+                         Transform(constant, None, 'balance', ['False'])],
+                        [Constraint(more_than, [0, 'RHipPitch'])],
+                        ['rpitch', 'balance']
                         ),
 
             # left leg
@@ -521,6 +528,13 @@ COMMANDS = [
                          Transform(constant, None, 'balance', ['False'])],
                         [Constraint(greater_than, [16, 'LHipRoll'])],
                         ['lroll', 'balance']
+                        ),
+            CommandSpec('left_back', 'legs',
+                        set(['LHipPitch']),
+                        [Transform(linear, 'LHipPitch', 'lpitch', [-1, 50]),
+                         Transform(constant, None, 'balance', ['False'])],
+                        [Constraint(more_than, [0, 'LHipPitch'])],
+                        ['lpitch', 'balance']
                         ),
 
 
