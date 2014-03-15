@@ -17,7 +17,8 @@ HAND_JOINTS = set(['LHand', 'RHand'])
 WRIST_JOINTS = set(['LWristYaw', 'RWristYaw'])
 HEAD_JOINTS = set(['HeadYaw', 'HeadPitch'])
 FEET_JOINTS = set(['LAnkleRoll', 'LAnklePitch', 'RAnkleRoll', 'RAnklePitch'])
-LEG_JOINTS = set(['LHipYawPitch','LHipRoll','LHipPitch','LKneePitch','RHipYawPitch','RHipRoll','RHipPitch','RKneePitch'])
+LEG_JOINTS = set(['LHipYawPitch','LHipRoll','LHipPitch','RHipYawPitch','RHipRoll','RHipPitch'])
+KNEE_JOINTS = set(['LKneePitch','RKneePitch'])
 
 class TestCommandsToText(unittest.TestCase):
     def testEmptyList(self):
@@ -401,7 +402,7 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("wrists.center", command, "Should detect command wrists center; instead go: {0}".format(result))
 
 
-    def testWristsCenter(self):
+    def testWristsTurnIn(self):
         # joint positions
         joint_dict = make_joint_dict(POSITION_WRISTS_TURN_IN)
 
@@ -417,7 +418,7 @@ class TestDetectArms(unittest.TestCase):
         self.assertEqual("wrists.turn_in", command, "Should detect command wrists turn in; instead go: {0}".format(result))
 
 
-    def testWristsCenter(self):
+    def testWristsTurnOut(self):
         # joint positions
         joint_dict = make_joint_dict(POSITION_WRISTS_TURN_OUT)
 
