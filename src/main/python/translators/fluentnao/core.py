@@ -501,7 +501,7 @@ COMMANDS = [
                         set(['RHipPitch']),
                         [Transform(linear, 'RHipPitch', 'rpitch', [-1, 50]),
                          Transform(constant, None, 'balance', ['False'])],
-                        [Constraint(more_than, [0, 'RHipPitch'])],
+                        [Constraint(greater_than, [0, 'RHipPitch'])],
                         ['rpitch', 'balance']
                         ),
 
@@ -533,7 +533,7 @@ COMMANDS = [
                         set(['LHipPitch']),
                         [Transform(linear, 'LHipPitch', 'lpitch', [-1, 50]),
                          Transform(constant, None, 'balance', ['False'])],
-                        [Constraint(more_than, [0, 'LHipPitch'])],
+                        [Constraint(greater_than, [0, 'LHipPitch'])],
                         ['lpitch', 'balance']
                         ),
 
