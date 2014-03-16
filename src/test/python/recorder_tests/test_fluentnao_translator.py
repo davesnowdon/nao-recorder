@@ -62,6 +62,18 @@ class TestCommandsToText(unittest.TestCase):
                                                    keyframe_duration=1.0)
         self.assertEqual("", result, "empty command list should generate empty string even with duration")
 
+    def testMultStanza(self):
+        commands = [("head.forward", [0, 0]),
+                    ("arms.left_forward", [0, 0, 0]),
+                    ("right_forward", [0, 0, 0]),
+                    ("legs.forward", [0, 0]),
+                    ("feet.point_toes", [0, 0])]
+        result = get_translator().commands_to_text(commands, is_blocking=True, fluentnao="nao.",
+                                                   keyframe_duration=1.0)
+        # print "two command result = {}".format(result)
+        self.assertEqual("nao.set_duration(1.0).head.forward(0,0)\nnao.arms.left_forward(0,0,0).right_forward(0,0,0)\nnao.legs.forward(0,0).feet.point_toes(0,0).go()", result,
+                         "Commands from different chains must be separate stanzas")
+
 class TestCommandSelection(unittest.TestCase):
     def testOnlyUsesCommandsWithEnabledJoints(self):
         joint_dict = make_joint_dict(POSITION_ZERO)

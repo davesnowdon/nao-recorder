@@ -22,6 +22,15 @@ CommandSpec = collections.namedtuple('CommandSpec',
                                      ['command', 'prefix', 'joints', 'transforms',
                                       'constraints', 'parameters'])
 
+FLUENTNAO_LINKS = {'head' : [],
+                   'arms' : ['elbows', 'wrists', 'hands'],
+                   'elbows' : ['wrists', 'hands'],
+                   'wrists' : ['hands'],
+                   'hands' : [],
+                   'legs' : ['feet'],
+                   'feet' : []
+                   }
+
 
 def linear(value, params):
     return value * params[0] + params[1]
@@ -714,7 +723,17 @@ class FluentNaoTranslator(object):
         Takes a list of commands and converts them to text
         """
         output = ""
+        stanzas = []
+        prefix = ''
         for command_tuple in commands:
+            pc = command_tuple[0].split('.')
+            if len(pc) == 2:
+                # prefix, need to check if it's in current chain
+                if prefix and not pc[0] in FLUENTNAO_LINKS[prefix]:
+                    stanzas.append(output)
+                    output = ''
+                prefix = pc[0]
+
             # the command
             if not output == "":
                 output = output + "."
@@ -723,20 +742,29 @@ class FluentNaoTranslator(object):
             command_str = "{cmd}({params})".format(cmd=command_tuple[0], params=",".join(args))
             output = output + command_str
 
-        if commands:
-            prefix = ''
-            if fluentnao:
-                prefix = fluentnao
+        if output:
+            stanzas.append(output)
 
-            if keyframe_duration:
-                prefix = prefix + "set_duration({duration}).".format(duration=keyframe_duration)
+        combined_output = ''
+        if stanzas:
+            for s in stanzas:
+                prefix = ''
+                if fluentnao:
+                    prefix = fluentnao
 
-            output = prefix + output
+                # duration only set on first stanza
+                if keyframe_duration and not combined_output:
+                    prefix = prefix + "set_duration({duration}).".format(duration=keyframe_duration)
+
+                combined_output = combined_output + prefix + s + "\n"
+
+            # strip trailing new line
+            combined_output = combined_output.strip()
 
             if is_blocking:
-                output = output + ".go()"
+                combined_output = combined_output + ".go()"
 
-        return output
+        return combined_output
 
     def detect_command(self, joint_dict, changed_joint_names, enabled_joint_names):
         joints_degrees = joints_to_degrees(joint_dict, True)
