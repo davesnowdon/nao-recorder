@@ -305,7 +305,7 @@ COMMANDS = [
                         ),
             CommandSpec('right_straight', 'elbows',
                         set(['RElbowRoll']),
-                        [Transform(linear, 'RElbowRoll', 'rroll', [1, 0.5])],
+                        [Transform(linear, 'RElbowRoll', 'rroll', [-1, 0.5])],
                         [Constraint(less_than, [43, 'RElbowRoll'])],
                         ['rroll']
                         ),
