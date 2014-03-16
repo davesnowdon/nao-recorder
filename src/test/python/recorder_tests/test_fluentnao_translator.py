@@ -6,7 +6,7 @@ Created on 6 Jul 2013
 import unittest
 
 from translators.fluentnao.core import FluentNaoTranslator
-from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT, POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER, POSITION_HEAD_DOWN_HEAD_FORWARD, POSITION_HEAD_UP_HEAD_RIGHT, POSITION_HEAD_CENTER_HEAD_LEFT, POSITION_FEET_POINT_TOES, POSITION_FEET_RAISE_TOES, POSITION_FEET_TURN_OUT, POSITION_FEET_TURN_IN, POSITION_FEET_CENTER, POSITION_LEGS_LEFT_FORWARD_RIGHT_IN, POSITION_LEGS_RIGHT_FORWARD_LEFT_IN, POSITION_LEGS_LEFT_OUT_RIGHT_IN, POSITION_LEGS_RIGHT_OUT_LEFT_IN
+from testutil import make_joint_dict, POSITION_ZERO, POSITION_ARMS_UP, POSITION_ARMS_OUT, POSITION_ARMS_DOWN, POSITION_ARMS_BACK, POSITION_ARMS_RIGHT_UP_LEFT_OUT, POSITION_ARMS_LEFT_UP_RIGHT_OUT, POSITION_ARMS_LEFT_FORWARD_RIGHT_DOWN, POSITION_ARMS_RIGHT_FORWARD_LEFT_DOWN, POSITION_ARMS_RIGHT_DOWN_LEFT_BACK, POSITION_ARMS_LEFT_DOWN_RIGHT_BACK, POSITION_HANDS_CLOSE, POSITION_HANDS_OPEN, POSITION_HANDS_RIGHT_OPEN_LEFT_CLOSE, POSITION_HANDS_LEFT_OPEN_RIGHT_CLOSE, POSITION_ELBOWS_STRAIGHT_TURN_IN, POSITION_ELBOWS_BENT_TURN_UP, POSITION_ELBOWS_STRAIGHT_TURN_DOWN, POSITION_WRISTS_CENTER, POSITION_WRISTS_TURN_IN, POSITION_WRISTS_TURN_OUT, POSITION_WRISTS_RIGHT_CENTER_LEFT_TURN_OUT, POSITION_WRISTS_RIGHT_TURN_IN_LEFT_CENTER, POSITION_HEAD_DOWN_HEAD_FORWARD, POSITION_HEAD_UP_HEAD_RIGHT, POSITION_HEAD_CENTER_HEAD_LEFT, POSITION_FEET_POINT_TOES, POSITION_FEET_RAISE_TOES, POSITION_FEET_TURN_OUT, POSITION_FEET_TURN_IN, POSITION_FEET_CENTER, POSITION_LEGS_LEFT_FORWARD_RIGHT_IN, POSITION_LEGS_RIGHT_FORWARD_LEFT_IN, POSITION_LEGS_LEFT_OUT_RIGHT_IN, POSITION_LEGS_RIGHT_OUT_LEFT_IN, POSITION_LEGS_LEFT_BACK_RIGHT_IN,POSITION_LEGS_RIGHT_BACK_LEFT_IN
 
 def get_translator():
     return FluentNaoTranslator()
@@ -687,6 +687,48 @@ class TestDetectArms(unittest.TestCase):
             pass
         else:
             self.fail("expected legs.right_out().left_in() or legs.left_in().right_out(); instead got: {0}".format(result))
+
+    def testLegsLeftBackRightIn(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_LEGS_LEFT_BACK_RIGHT_IN)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 LEG_JOINTS, LEG_JOINTS)
+
+        self.assertEqual(len(result), 2, "Should get two tuple(s) with command legs.left_back().right_in(); instead got: {0}".format(result))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "legs.left_back" and second_tuple[0] == "right_in") or (first_tuple[0] == "legs.right_in" and  second_tuple[0] == "left_back"):
+            pass
+        else:
+            self.fail("expected legs.left_back().right_in() or legs.right_in().left_back(); instead got: {0}".format(result))
+
+    def testLegsRightBackLeftIn(self):
+
+        # joint positions
+        joint_dict = make_joint_dict(POSITION_LEGS_RIGHT_BACK_LEFT_IN)
+
+        # call function under test
+        result = get_translator().detect_command(joint_dict,
+                                                 LEG_JOINTS, LEG_JOINTS)
+
+        self.assertEqual(len(result), 2, "Should get two tuple(s) with command legs.right_back().left_in(); instead got: {0}".format(result))
+
+        # expected tuple(s)
+        first_tuple = result[0]
+        second_tuple = result[1]
+
+        # command
+        if (first_tuple[0] == "legs.right_back" and second_tuple[0] == "left_in") or (first_tuple[0] == "legs.left_in" and  second_tuple[0] == "right_back"):
+            pass
+        else:
+            self.fail("expected legs.right_back().left_in() or legs.left_in().right_back(); instead got: {0}".format(result))
 
 
 
