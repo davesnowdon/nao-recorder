@@ -262,7 +262,7 @@ COMMANDS = [
             CommandSpec('straight', 'elbows',
                         set(['LElbowRoll', 'RElbowRoll']),
                         [Transform(linear, 'LElbowRoll', 'lroll', [1, -0.5]),
-                         Transform(linear, 'RElbowRoll', 'rroll', [1, 0.5])],
+                         Transform(linear, 'RElbowRoll', 'rroll', [-1, 0.5])],
                         [Constraint(greater_than, [-43, 'LElbowRoll']),
                           Constraint(less_than, [43, 'RElbowRoll']),
                          Constraint(max_difference, [DEFAULT_MAX_DIFF, 'lroll', 'rroll'])],
@@ -341,12 +341,15 @@ COMMANDS = [
                         [Constraint(less_than, [43, 'LElbowRoll'])],
                         ['lroll']
                         ),
+
             CommandSpec('left_turn_up', 'elbows',
                         set(['LElbowYaw']),
                         [Transform(linear, 'LElbowYaw', 'lyaw', [-1, -90])],
                         [Constraint(less_than, [-45, 'LElbowYaw'])],
                         ['lyaw']
                         ),
+
+
             CommandSpec('left_turn_in', 'elbows',
                         set(['LElbowYaw']),
                         [Transform(linear, 'LElbowYaw', 'lyaw', [1, 0])],
