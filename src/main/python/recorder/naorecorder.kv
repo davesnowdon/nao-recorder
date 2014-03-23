@@ -423,11 +423,13 @@
             text: root.localized_text('connection_address')
         TextInput:
             id: hostname
+            multiline: False
             text: root.localized_text('connection_default_address')
         Label:
             text: root.localized_text('connection_port_number')
         TextInput:
             id: port
+            multiline: False
             text: '9559'
         Button:
             text: root.localized_text('connection_connect')
