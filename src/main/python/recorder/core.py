@@ -491,7 +491,8 @@ class Robot(object):
 
                 command_str = translator.generate(angles, changed_angles, changed_angles,
                                                   is_blocking=cmd['is_blocking'], fluentnao="nao.",
-                                                  keyframe_duration=cmd['duration'])
+                                                  keyframe_duration=cmd['duration'],
+                                                  keyframe_comment=localized_text('keyframe_comment'))
 
                 print "result: {}".format(command_str)
                 code_str = translator.append(code_str, command_str)
@@ -515,7 +516,8 @@ class Robot(object):
             # translating
             command_str = self.translator.generate(angles, changed_enabled_joints, self.enabled_joints,
                                                    is_blocking=True, fluentnao="nao.",
-                                                   keyframe_duration=self.keyframe_duration)
+                                                   keyframe_duration=self.keyframe_duration,
+                                                   keyframe_comment=localized_text('keyframe_comment'))
             self.last_keyframe_joints = angles.copy()
             return command_str
         else:

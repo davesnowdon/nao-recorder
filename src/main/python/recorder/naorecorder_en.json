@@ -47,6 +47,7 @@
    "connection_port_number" : "Port number",
    "connection_connect" : "Connect",
    "confirmation_title" : "Are you sure?",
+   "keyframe_comment" : "keyframe",
    "status_enable_speech_recognition" : "Enabling speech recognition",
    "status_disable_speech_recognition" : "Disabling speech recognition",
    "status_speech_recogniton_enabled" : "Speech recognition is enabled", 

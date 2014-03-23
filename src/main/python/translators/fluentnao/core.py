@@ -715,10 +715,12 @@ class FluentNaoTranslator(object):
         commands = self.detect_command(joint_dict, changed_joint_names, enabled_joint_names)
         command_str = self.commands_to_text(commands, is_blocking=kwargs['is_blocking'],
                                             fluentnao=kwargs['fluentnao'],
-                                            keyframe_duration=kwargs['keyframe_duration'])
+                                            keyframe_duration=kwargs['keyframe_duration'],
+                                            keyframe_comment=kwargs['keyframe_comment'])
         return command_str
 
-    def commands_to_text(self, commands, is_blocking=False, fluentnao=None, keyframe_duration=None):
+    def commands_to_text(self, commands, is_blocking=False, fluentnao=None,
+                         keyframe_duration=None, keyframe_comment=None):
         """
         Takes a list of commands and converts them to text
         """
@@ -763,6 +765,9 @@ class FluentNaoTranslator(object):
 
             if is_blocking:
                 combined_output = combined_output + ".go()"
+
+            if keyframe_comment:
+                combined_output = "# {}\n{}".format(keyframe_comment, combined_output)
 
         return combined_output
 
@@ -814,7 +819,7 @@ class FluentNaoTranslator(object):
     def append(self, code, new_command):
         if new_command:
             if code:
-                return "{}\r\n{}".format(code, new_command)
+                return "{}\r\n\r\n{}".format(code, new_command)
             else:
                 return new_command
         else:
