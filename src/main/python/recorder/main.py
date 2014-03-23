@@ -335,6 +335,9 @@ class NaoRecorderApp(App):
     def get_code(self):
         return self.codeinput.text
 
+    def get_selected_code(self):
+        return self.codeinput.selection_text
+
     def set_code(self, code):
         self.codeinput.text = code
 
@@ -415,7 +418,8 @@ class NaoRecorderApp(App):
         self.show_connection_dialog(None)
 
     def on_action(self, instance, l):
-        if self.robot.is_connected():
+        title = localized_text('action_menu_title')
+        if self.robot.is_connected() and l != title:
             self.robot.go_to_posture(l)
             instance.text = localized_text('action_menu_title')
 
@@ -465,10 +469,13 @@ class NaoRecorderApp(App):
 
     def _on_run_script(self, instance):
         if self.robot.is_connected() and self.robot.is_code_runnable():
-            # TODO: run only selected code
-            # code = self.codeinput.selection_text
-            # if not code or len(code) == 0:
-            self.robot.run_script(self.get_code())
+            code = self.get_selected_code() if self.get_selected_code() else self.get_code()
+            print "executing\n'{}'".format(code)
+            self.robot.run_script(code)
+            # Selected text is hidden when focus lost so remove selection to prevent confusion
+            # when people click "run script" and only a portion of the code is run
+            if self.get_selected_code():
+                self.codeinput.select_text(0, 0)
 
     def _on_add_keyframe(self, dummy1=None, dummy2=None, dummy=None):
         code = self.robot.keyframe()
