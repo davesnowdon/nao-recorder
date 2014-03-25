@@ -34,3 +34,6 @@ nosetests.xml
 .project
 .pydevproject
 .settings
+
+# Place to put Aldebaran PyNAOqi libraries for installer
+pynaoqi
