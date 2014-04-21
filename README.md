@@ -38,3 +38,29 @@ NAO recorder uses Kivy for its user interface. Follow the instructions at http:/
 If you need EDN support then 'pip install edn_format' this uses https://github.com/swaroopch/edn_format
 
 NAO recorder also depends on Aldebaran Robotics Python SDK
+
+Binary distributions are available for MacOS X and Windows. These are packaged with Aldebaran's python bindings for NAOQI 1.14.5.
+
+Windows binary
+--------------
+Download the windows zip file from 
+[google drive](https://drive.google.com/folderview?id=0B7SclNdkbVzFZGx2VzFWZHI2eUU&usp=sharing)
+
+Unzip and run `the nao-recorder.bat` script to launch NAO recorder
+
+MacOS X binary
+--------------
+Download the macosx zip file form 
+[google drive](https://drive.google.com/folderview?id=0B7SclNdkbVzFZGx2VzFWZHI2eUU&usp=sharing)
+
+Unzip the file and you should be able to launch the application.
+
+Linux
+-----
+There is currently no single download available for Linux, but it's not hard to run NAO recorder from the source
+* Clone the repository or download the ZIP file from github
+* Ensure that Aldebaran's python bindings are in your PYTHONPATH
+* Use your native package managed to install Kivy (eg `yum install python-Kivy` or download from kivy.org)
+* sudo pip install edn_format
+* launch NAO recorder using the `naorecorder.sh` script in the top-level directory
+* 
