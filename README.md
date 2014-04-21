@@ -63,4 +63,3 @@ There is currently no single download available for Linux, but it's not hard to 
 * Use your native package managed to install Kivy (eg `yum install python-Kivy` or download from kivy.org)
 * sudo pip install edn_format
 * launch NAO recorder using the `naorecorder.sh` script in the top-level directory
-* 
