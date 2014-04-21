@@ -37,3 +37,10 @@ nosetests.xml
 
 # Place to put Aldebaran PyNAOqi libraries for installer
 pynaoqi
+
+# ignore pyinstaller dist dir
+dist
+build
+
+# mac
+.DS_Store
